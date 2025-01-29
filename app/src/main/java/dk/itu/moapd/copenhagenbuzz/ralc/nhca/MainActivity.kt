@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         val calDay = calendar.get(Calendar.DAY_OF_MONTH)
 
         // Used to create and show the calendar
-        val datePickerDialog = DatePickerDialog(
+        val calendarPicker = DatePickerDialog(
             this,
             { _, selectedYear, selectedMonth, selectedDay ->
                 // Formats the selected date to be displayed in the EditText
@@ -39,6 +39,6 @@ class MainActivity : AppCompatActivity() {
             },
             calYear, calMonth, calDay
         )
-        datePickerDialog.show()
+        calendarPicker.show()
     }
 }
