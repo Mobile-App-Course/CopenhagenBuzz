@@ -4,9 +4,13 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android .util.Log
 import android.view.Window
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android .widget . EditText
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx .core.view. WindowCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google . android . material . floatingactionbutton . FloatingActionButton
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
@@ -24,9 +28,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var eventName: EditText
     private lateinit var eventLocation: EditText
     private lateinit var eventDate: EditText
-    private lateinit var eventType: EditText
+    private lateinit var eventType: AutoCompleteTextView
     private lateinit var eventDescription: EditText
     private lateinit var addEventButton: FloatingActionButton
+
 
     // Creates an instance of the Event class
     private val event: Event = Event("", "", "", "", "")
@@ -42,9 +47,31 @@ class MainActivity : AppCompatActivity() {
         eventName = findViewById(R.id.edit_text_event_name)
         eventLocation = findViewById(R.id.edit_text_event_location)
         eventDate = findViewById(R.id.edit_text_event_date)
-        eventType = findViewById(R.id.edit_text_event_type)
+        eventType = findViewById(R.id.auto_complete_text_view_event_type)
         eventDescription = findViewById(R.id.edit_text_event_description)
         addEventButton = findViewById(R.id.floating_button_event_add)
+
+        // AutoCompleteTextView (list of event types) configuration
+        val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, eventTypes)
+
+        val eventTypeDropdown = findViewById<AutoCompleteTextView>(R.id.auto_complete_text_view_event_type)
+        eventTypeDropdown.setAdapter(adapter)
+
+        // Listener for if the user clicks on the Event Type once
+        eventTypeDropdown.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                eventTypeDropdown.showDropDown()
+            }
+        }
+
+        // Listener for if the user clicks away from the Event Type (but doesn't click on any other boxes), and then clicks back unto the list
+        eventTypeDropdown.setOnClickListener {
+            eventTypeDropdown.requestFocus() // Ensure it gets focus
+            eventTypeDropdown.showDropDown() // Show dropdown immediately
+        }
+
+
 
         // Listener for user interaction in the `Add Event` button.
         addEventButton.setOnClickListener {
@@ -58,7 +85,6 @@ class MainActivity : AppCompatActivity() {
                 event.setEventDate(eventDate.text.toString().trim())
                 event.setEventType(eventType.text.toString().trim())
                 event.setEventDescription(eventDescription.text.toString().trim())
-                // TODO: Implement the missing code here.
 
                 // Write in the `Logcat` system.
                 showMessage()
