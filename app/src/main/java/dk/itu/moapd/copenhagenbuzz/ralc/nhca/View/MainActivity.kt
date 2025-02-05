@@ -36,6 +36,7 @@
     import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
     import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ContentMainBinding
     import java.util.Calendar
+    import com.google.android.material.snackbar.Snackbar
 
     /**
      * The MainActivity class represents the main screen of the application, and also allows the user to input event details and add them to the event list.
@@ -159,6 +160,7 @@
          * Function to log the event details.
          */
         private fun showMessage() {
-            Log.d(TAG, event.toString())
+            val message = "Event Added: " + event.toString()
+            Snackbar.make(activityMainBinding.root, message, Snackbar.LENGTH_LONG).show()
         }
     }
