@@ -12,11 +12,13 @@ import com.google . android . material . floatingactionbutton . FloatingActionBu
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ContentMainBinding
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityMainBinding
+    private lateinit var activityMainBinding: ActivityMainBinding
+    private lateinit var contentMainBinding: ContentMainBinding
 
     companion object {
         private val TAG = MainActivity::class.qualifiedName
@@ -38,16 +40,18 @@ class MainActivity : AppCompatActivity() {
         androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(activityMainBinding.root)
+
+        contentMainBinding = ContentMainBinding.bind(activityMainBinding.root.findViewById(R.id.content_main))
 
         // Linking of UI components
-        eventName = findViewById(R.id.edit_text_event_name)
-        eventLocation = findViewById(R.id.edit_text_event_location)
-        eventDate = findViewById(R.id.edit_text_event_date)
-        eventType = findViewById(R.id.auto_complete_text_view_event_type)
-        eventDescription = findViewById(R.id.edit_text_event_description)
-        addEventButton = findViewById(R.id.floating_button_event_add)
+        eventName = contentMainBinding.editTextEventName
+        eventLocation = contentMainBinding.editTextEventLocation
+        eventDate = contentMainBinding.editTextEventDate
+        eventType = contentMainBinding.autoCompleteTextViewEventType
+        eventDescription = contentMainBinding.editTextEventDescription
+        addEventButton = contentMainBinding.floatingButtonEventAdd
 
         // AutoCompleteTextView (list of event types) configuration
         val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference")
@@ -78,11 +82,11 @@ class MainActivity : AppCompatActivity() {
                 eventLocation.text.toString().isNotEmpty()) {
 
                 // Update the object attributes.
-                event.setEventName(eventName.text.toString().trim())
-                event.setEventLocation(eventLocation.text.toString().trim())
-                event.setEventDate(eventDate.text.toString().trim())
-                event.setEventType(eventType.text.toString().trim())
-                event.setEventDescription(eventDescription.text.toString().trim())
+                event.eventName = eventName.text.toString().trim()
+                event.eventLocation = eventLocation.text.toString().trim()
+                event.eventDate = eventDate.text.toString().trim()
+                event.eventType = eventType.text.toString().trim()
+                event.eventDescription = eventDescription.text.toString().trim()
 
                 // Write in the `Logcat` system.
                 showMessage()
