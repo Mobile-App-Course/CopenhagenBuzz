@@ -1,18 +1,16 @@
-package dk.itu.moapd.copenhagenbuzz.ralc.nhca
+package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android .util.Log
-import android.view.Window
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android .widget . EditText
-import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
-import androidx .core.view. WindowCompat
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google . android . material . floatingactionbutton . FloatingActionButton
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
 import java.util.Calendar
 
@@ -37,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private val event: Event = Event("", "", "", "", "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
