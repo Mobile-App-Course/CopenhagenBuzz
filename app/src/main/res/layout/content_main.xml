@@ -30,8 +30,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_view_app_name"
         app:startIconDrawable="@drawable/event_icon"
-        app:boxBackgroundColor="@color/white"
-        app:defaultHintTextColor="@color/your_hint_color">
+        app:boxBackgroundColor="@color/white">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_event_name"

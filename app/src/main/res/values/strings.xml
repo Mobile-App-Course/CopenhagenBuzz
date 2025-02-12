@@ -6,4 +6,6 @@
     <string name="event_date_hint">Event Date</string>
     <string name="event_type_hint">Event Type</string>
     <string name="event_description_hint">Event Description</string>
+    <string name="material_button_login">Login</string>
+    <string name="material_button_guest">Guest</string>
 </resources>
