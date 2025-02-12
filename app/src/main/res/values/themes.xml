@@ -3,6 +3,12 @@
     <style name="Base.Theme.CopenhagenBuzz" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <!-- Primary app colors -->
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorSecondary">@color/bg_secondary</item>
+
+        <item name="android:textColorPrimary">@color/text_primary</item>
     </style>
 
     <style name="Theme.CopenhagenBuzz" parent="Base.Theme.CopenhagenBuzz" />

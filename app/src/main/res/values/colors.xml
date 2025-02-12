@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg_primary">#283618</color>
+    <color name="bg_primary">#1B230F</color>
     <color name="bg_secondary">#606C38</color>
     <color name="primary">#BC6C25</color>
     <color name="secondary">#DDA15E</color>
     <color name="tertiary">#FEFAE0</color>
+    <color name="white">#FFFFFF</color>
     <color name="text_primary">#FAF9F9</color>
+    <color name="text_secondary">#0a0a0a</color>
 </resources>

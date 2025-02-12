@@ -24,18 +24,21 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        android:hint=""
+        android:hint="@string/event_name_hint"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_view_app_name"
-        app:startIconDrawable="@drawable/event_icon">
+        app:startIconDrawable="@drawable/event_icon"
+        app:boxBackgroundColor="@color/white"
+        app:defaultHintTextColor="@color/your_hint_color">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_event_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text" />
+            android:inputType="text"
+            android:textColor="@color/text_secondary"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -48,10 +51,12 @@
         android:layout_marginTop="8dp"
         android:hint="@string/event_location_hint"
         app:startIconDrawable="@drawable/event_location_icon"
+        app:boxBackgroundColor="@color/white"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_field_event_name">
+
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_event_location"
@@ -70,6 +75,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         app:startIconDrawable="@drawable/event_date_icon"
+        app:boxBackgroundColor="@color/white"
         android:hint="@string/event_date_hint"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -98,6 +104,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_field_event_date"
+        app:boxBackgroundColor="@color/white"
         app:startIconDrawable="@drawable/event_type_icon">
 
         <AutoCompleteTextView
@@ -119,6 +126,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:hint="@string/event_description_hint"
+        app:boxBackgroundColor="@color/white"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
