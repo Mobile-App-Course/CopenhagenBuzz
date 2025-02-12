@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="CopenhagenBuzz"
+        android:text="@string/app_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,7 +24,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        android:hint="Event name"
+        android:hint=""
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +46,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:hint="Event location"
+        android:hint="@string/event_location_hint"
         app:startIconDrawable="@drawable/event_location_icon"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,7 +70,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         app:startIconDrawable="@drawable/event_date_icon"
-        android:hint="Event date"
+        android:hint="@string/event_date_hint"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -93,7 +93,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:hint="Event type"
+        android:hint="@string/event_type_hint"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -118,7 +118,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:hint="Event description"
+        android:hint="@string/event_description_hint"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -141,8 +141,8 @@
         android:contentDescription="@string/add_event"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:backgroundTint="@color/design_default_color_primary"
-        app:tint="@android:color/white" />
+        app:backgroundTint="@color/primary"
+        app:tint="@color/text_primary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
