@@ -23,11 +23,15 @@
     package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
     import android.app.DatePickerDialog
+    import android.media.Image
     import android.os.Bundle
     import android.util.Log
+    import android.view.Menu
+    import android.view.MenuItem
     import android.widget.ArrayAdapter
     import android.widget.AutoCompleteTextView
     import android.widget.EditText
+    import android.widget.ImageView
     import androidx.appcompat.app.AppCompatActivity
     import com.google.android.material.textfield.TextInputEditText
     import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -76,6 +80,7 @@
             // Inflate the layout for this activity
             activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
             setContentView(activityMainBinding.root)
+            setSupportActionBar(findViewById(R.id.toolbar))
 
             // Bind the content layout
             contentMainBinding = ContentMainBinding.bind(activityMainBinding.root.findViewById(R.id.content_main))
@@ -87,6 +92,7 @@
             eventType = contentMainBinding.autoCompleteTextViewEventType
             eventDescription = contentMainBinding.editTextEventDescription
             addEventButton = contentMainBinding.floatingButtonEventAdd
+
 
             // AutoCompleteTextView (list of event types) configuration
             val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference")
@@ -131,6 +137,19 @@
                 showCalendar(eventDate as TextInputEditText)
             }
         }
+
+        override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+            menuInflater.inflate(R.menu.menu_toolbar, menu)
+            return true
+        }
+        
+        override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+            val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
+            menu.findItem(R.id.menu_profile).isVisible = isLoggedIn
+            menu.findItem(R.id.menu_logout).isVisible = !isLoggedIn
+            return super.onPrepareOptionsMenu(menu)
+        }
+
 
         /**
          * Function to show the calendar and allow the user to pick a date.

@@ -1,5 +1,6 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -31,11 +32,13 @@ class LoginActivity : AppCompatActivity() {
 
         binding.materialButtonLogin.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("isLoggedIn", true)
             startActivity(intent)
         }
 
         binding.materialButtonGuest.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("isLoggedIn", false)
             startActivity(intent)
         }
     }
