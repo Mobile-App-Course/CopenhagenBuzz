@@ -20,8 +20,14 @@
         <item name="android:textColor">@color/text_secondary</item>
         <item name="android:buttonBarButtonStyle">@style/AcceptAndCancelText</item>
     </style>
-
+    <!-- Custom style for the accept and cancel buttons in the date picker dialog -->
     <style name="AcceptAndCancelText" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
         <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+        <!-- Custom style for dropdown list items -->
+    <style name="CustomDropdownItem" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:background">@color/white</item>
     </style>
 </resources>

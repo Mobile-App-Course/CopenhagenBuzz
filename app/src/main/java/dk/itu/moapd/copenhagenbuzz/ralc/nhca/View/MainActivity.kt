@@ -98,7 +98,7 @@
 
             // AutoCompleteTextView (list of event types) configuration
             val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference")
-            val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, eventTypes)
+            val adapter = ArrayAdapter(this, R.layout.custom_dropdown_item, eventTypes)
 
             val eventTypeDropdown = findViewById<AutoCompleteTextView>(R.id.auto_complete_text_view_event_type)
             eventTypeDropdown.setAdapter(adapter)
