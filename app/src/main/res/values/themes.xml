@@ -12,4 +12,16 @@
     </style>
 
     <style name="Theme.CopenhagenBuzz" parent="Base.Theme.CopenhagenBuzz" />
+
+    <!-- Used to make the text black in the calendar -->
+    <style name="CustomDatePickerDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:textColorPrimary">@color/text_secondary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:buttonBarButtonStyle">@style/AcceptAndCancelText</item>
+    </style>
+
+    <style name="AcceptAndCancelText" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
 </resources>

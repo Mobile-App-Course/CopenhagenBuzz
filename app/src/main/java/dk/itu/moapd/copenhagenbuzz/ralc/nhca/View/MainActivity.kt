@@ -63,6 +63,8 @@
         private lateinit var eventType: AutoCompleteTextView
         private lateinit var eventDescription: EditText
         private lateinit var addEventButton: FloatingActionButton
+        private lateinit var menuProfile: MenuItem
+        private lateinit var menuLogout: MenuItem
 
         // Creates an instance of the Event class
         private val event: Event = Event("", "", "", "", "")
@@ -140,13 +142,17 @@
 
         override fun onCreateOptionsMenu(menu: Menu?): Boolean {
             menuInflater.inflate(R.menu.menu_toolbar, menu)
+            if (menu != null) {
+                menuProfile = menu.findItem(R.id.menu_profile)
+                menuLogout = menu.findItem(R.id.menu_logout)
+            }
             return true
         }
         
         override fun onPrepareOptionsMenu(menu: Menu): Boolean {
             val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
-            menu.findItem(R.id.menu_profile).isVisible = isLoggedIn
-            menu.findItem(R.id.menu_logout).isVisible = !isLoggedIn
+            menuProfile.isVisible = isLoggedIn
+            menuLogout.isVisible = !isLoggedIn
             return super.onPrepareOptionsMenu(menu)
         }
 
@@ -165,6 +171,7 @@
             // Used to create and show the calendar
             val calendarPicker = DatePickerDialog(
                 this,
+                R.style.CustomDatePickerDialog,
                 { _, selectedYear, selectedMonth, selectedDay ->
                     // Formats the selected date to be displayed in the EditText
                     val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
