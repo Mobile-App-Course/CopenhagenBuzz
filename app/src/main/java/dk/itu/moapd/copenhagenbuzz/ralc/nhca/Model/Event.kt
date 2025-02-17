@@ -30,7 +30,7 @@ package dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model
  * @property eventName The name of the event.
  * @property eventLocation The location where the event is held.
  * @property eventDate The date when the event takes place.
- * @property eventType The type or category of the event.
+ * @property eventType The category of the event.
  * @property eventDescription A brief description of the event.
  */
 data class Event (var eventName: String,

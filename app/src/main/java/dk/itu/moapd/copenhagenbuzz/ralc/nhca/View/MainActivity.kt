@@ -54,6 +54,12 @@
         companion object {
             // Tag for logging
             private val TAG = MainActivity::class.qualifiedName
+            // Keys for saving the state of the activity
+            private const val EVENT_NAME = "EVENT_NAME"
+            private const val EVENT_LOCATION = "EVENT_LOCATION"
+            private const val EVENT_DATE = "EVENT_DATE"
+            private const val EVENT_TYPE = "EVENT_TYPE"
+            private const val EVENT_DESCRIPTION = "EVENT_DESCRIPTION"
         }
 
         // GUI variables
@@ -138,6 +144,14 @@
             eventDate.setOnClickListener {
                 showCalendar(eventDate as TextInputEditText)
             }
+            // Checks if there is a saved instance state and sets the text fields to the saved values, otherwise empty
+            savedInstanceState?.let {
+                eventName.setText(it.getString(EVENT_NAME, ""))
+                eventLocation.setText(it.getString(EVENT_LOCATION, ""))
+                eventDate.setText(it.getString(EVENT_DATE, ""))
+                eventType.setText(it.getString(EVENT_TYPE, ""))
+                eventDescription.setText(it.getString(EVENT_DESCRIPTION, ""))
+            }
         }
 
         override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -156,6 +170,23 @@
             return super.onPrepareOptionsMenu(menu)
         }
 
+
+        /**
+         * The method saves the current state of the activity.
+         *
+         * It is called before the activity may be destroyed so that the state can be saved.
+         * The state is then saved in the provided Bundle object.
+         *
+         * @param outState The Bundle in which to place the saved state.
+         */
+        override fun onSaveInstanceState(outState: Bundle) {
+            outState.putString(EVENT_NAME, eventName.text.toString())
+            outState.putString(EVENT_LOCATION, eventLocation.text.toString())
+            outState.putString(EVENT_DATE, eventDate.text.toString())
+            outState.putString(EVENT_TYPE, eventType.text.toString())
+            outState.putString(EVENT_DESCRIPTION, eventDescription.text.toString())
+            super.onSaveInstanceState(outState)
+        }
 
         /**
          * Function to show the calendar and allow the user to pick a date.
