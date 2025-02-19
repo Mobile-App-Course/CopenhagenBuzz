@@ -34,12 +34,14 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("isLoggedIn", true)
             startActivity(intent)
+            finish()
         }
 
         binding.materialButtonGuest.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("isLoggedIn", false)
             startActivity(intent)
+            finish()
         }
     }
 }

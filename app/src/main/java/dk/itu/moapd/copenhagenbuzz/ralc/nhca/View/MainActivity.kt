@@ -99,7 +99,7 @@
             eventDate = contentMainBinding.editTextEventDate
             eventType = contentMainBinding.autoCompleteTextViewEventType
             eventDescription = contentMainBinding.editTextEventDescription
-            addEventButton = contentMainBinding.floatingButtonEventAdd
+            addEventButton = activityMainBinding.floatingButtonEventAdd
 
 
             // AutoCompleteTextView (list of event types) configuration

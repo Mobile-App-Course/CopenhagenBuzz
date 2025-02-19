@@ -19,8 +19,8 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_field_event_name"
-        android:layout_width="375dp"
-        android:layout_height="81dp"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
@@ -68,8 +68,8 @@
     <!-- Implement the other UI components here. -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_field_event_date"
-        android:layout_width="375dp"
-        android:layout_height="81dp"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
@@ -94,7 +94,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_field_event_type"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
@@ -139,18 +139,6 @@
             android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floating_button_event_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:src="@drawable/event_add_icon"
-        android:contentDescription="@string/add_event"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:backgroundTint="@color/primary"
-        app:tint="@color/text_primary" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
