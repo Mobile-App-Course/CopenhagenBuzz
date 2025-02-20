@@ -71,8 +71,6 @@
         private lateinit var eventType: AutoCompleteTextView
         private lateinit var eventDescription: EditText
         private lateinit var addEventButton: FloatingActionButton
-        private lateinit var menuProfile: MenuItem
-        private lateinit var menuLogout: MenuItem
 
         // Creates an instance of the Event class
         private val event: Event = Event("", "", "", "", "", "")
@@ -89,11 +87,15 @@
 
             // Inflate the layout for this activity
             activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+            // Set the content view of the activity
             setContentView(activityMainBinding.root)
-            setSupportActionBar(contentMainBinding.toolbar)
 
             // Bind the content layout
             contentMainBinding = ContentMainBinding.bind(activityMainBinding.root.findViewById(R.id.content_main))
+
+            // Set the toolbar as the action bar
+            setSupportActionBar(contentMainBinding.toolbar)
+
 
             // Linking of UI components
             eventName = contentMainBinding.editTextEventName
@@ -109,7 +111,7 @@
             val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference", "Lan party")
             val adapter = ArrayAdapter(this, R.layout.custom_dropdown_item, eventTypes)
 
-            val eventTypeDropdown = findViewById<AutoCompleteTextView>(R.id.auto_complete_text_view_event_type)
+            val eventTypeDropdown = contentMainBinding.autoCompleteTextViewEventType
             eventTypeDropdown.setAdapter(adapter)
 
             // Listener for if the user clicks on the Event Type once
@@ -163,16 +165,16 @@
         override fun onCreateOptionsMenu(menu: Menu?): Boolean {
             menuInflater.inflate(R.menu.menu_toolbar, menu)
             if (menu != null) {
-                menuProfile = menu.findItem(R.id.menu_profile)
-                menuLogout = menu.findItem(R.id.menu_logout)
+                menu.findItem(R.id.menu_profile)
+                menu.findItem(R.id.menu_logout)
             }
             return true
         }
-        
+
         override fun onPrepareOptionsMenu(menu: Menu): Boolean {
             val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
-            menuProfile.isVisible = isLoggedIn
-            menuLogout.isVisible = !isLoggedIn
+            menu.findItem(R.id.menu_profile).isVisible = isLoggedIn
+            menu.findItem(R.id.menu_logout).isVisible = !isLoggedIn
             return super.onPrepareOptionsMenu(menu)
         }
 
