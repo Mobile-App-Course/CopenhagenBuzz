@@ -9,4 +9,5 @@
     <string name="material_button_login">Login</string>
     <string name="material_button_guest">Guest</string>
     <string name="profile_image_description">profile_image</string>
+    <string name="event_photo_url_hint">Event Photo URL</string>
 </resources>

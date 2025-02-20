@@ -10,11 +10,11 @@
 
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/text_view_app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textSize="36sp"
+        android:textSize="46sp"
         app:layout_constraintBottom_toTopOf="@+id/button_group"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,25 +23,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_group"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/material_button_guest"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/material_button_guest"
-            android:textColor="@color/primary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/material_button_login"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/material_button_login"
@@ -49,12 +36,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/material_button_login"
+            android:textSize="30sp"
             android:textColor="@color/primary"
             app:layout_constraintBottom_toTopOf="@+id/material_button_guest"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/material_button_guest"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/material_button_guest"
+            android:textSize="30sp"
+            android:textColor="@color/primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/material_button_login"/>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 

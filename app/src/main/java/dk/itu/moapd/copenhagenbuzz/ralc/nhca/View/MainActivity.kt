@@ -218,6 +218,8 @@
          */
         private fun showMessage() {
             val message = "Event Added: " + event.toString()
-            Snackbar.make(activityMainBinding.root, message, Snackbar.LENGTH_LONG).show()
+            Snackbar.make(activityMainBinding.root, message, Snackbar.LENGTH_LONG)
+                .setAnchorView(addEventButton)
+                .show()
         }
     }
