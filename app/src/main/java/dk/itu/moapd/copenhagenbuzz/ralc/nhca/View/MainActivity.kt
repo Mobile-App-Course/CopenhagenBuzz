@@ -90,7 +90,7 @@
             // Inflate the layout for this activity
             activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
             setContentView(activityMainBinding.root)
-            setSupportActionBar(findViewById(R.id.toolbar))
+            setSupportActionBar(contentMainBinding.toolbar)
 
             // Bind the content layout
             contentMainBinding = ContentMainBinding.bind(activityMainBinding.root.findViewById(R.id.content_main))
