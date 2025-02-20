@@ -23,6 +23,7 @@
     package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
     import android.app.DatePickerDialog
+    import android.content.Intent
     import android.media.Image
     import android.os.Bundle
     import android.util.Log
@@ -61,6 +62,8 @@
             private const val EVENT_DATE = "EVENT_DATE"
             private const val EVENT_TYPE = "EVENT_TYPE"
             private const val EVENT_DESCRIPTION = "EVENT_DESCRIPTION"
+            private lateinit var menuProfile: MenuItem
+            private lateinit var menuLogout: MenuItem
         }
 
         // GUI variables
@@ -151,6 +154,7 @@
             eventDate.setOnClickListener {
                 showCalendar(eventDate as TextInputEditText)
             }
+
             // Checks if there is a saved instance state and sets the text fields to the saved values, otherwise empty
             savedInstanceState?.let {
                 eventName.setText(it.getString(EVENT_NAME, ""))
@@ -165,16 +169,18 @@
         override fun onCreateOptionsMenu(menu: Menu?): Boolean {
             menuInflater.inflate(R.menu.menu_toolbar, menu)
             if (menu != null) {
-                menu.findItem(R.id.menu_profile)
-                menu.findItem(R.id.menu_logout)
+                menuProfile = menu.findItem(R.id.menu_profile)
+                menuLogout = menu.findItem(R.id.menu_logout)
             }
+            setMenuListeners()
+
             return true
         }
 
         override fun onPrepareOptionsMenu(menu: Menu): Boolean {
             val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
-            menu.findItem(R.id.menu_profile).isVisible = isLoggedIn
-            menu.findItem(R.id.menu_logout).isVisible = !isLoggedIn
+            menuProfile.isVisible = isLoggedIn
+            menuLogout.isVisible = !isLoggedIn
             return super.onPrepareOptionsMenu(menu)
         }
 
@@ -230,5 +236,23 @@
             Snackbar.make(activityMainBinding.root, message, Snackbar.LENGTH_LONG)
                 .setAnchorView(addEventButton)
                 .show()
+        }
+
+        private fun setMenuListeners() {
+            menuProfile.setOnMenuItemClickListener {
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.putExtra("isLoggedIn", true)
+                startActivity(intent)
+                finish()
+                true
+            }
+
+            menuLogout.setOnMenuItemClickListener {
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.putExtra("isLoggedIn", false)
+                startActivity(intent)
+                finish()
+                true
+            }
         }
     }

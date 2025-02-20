@@ -7,7 +7,7 @@
         android:icon="@drawable/baseline_account_circle_24"
         android:title="@string/profile_image_description"
         android:visible="false"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:orderInCategory="1" />
 
     <item
@@ -15,7 +15,7 @@
         android:icon="@drawable/baseline_login_24"
         android:title="@string/profile_image_description"
         android:visible="false"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:orderInCategory="1" />
 
 </menu>
