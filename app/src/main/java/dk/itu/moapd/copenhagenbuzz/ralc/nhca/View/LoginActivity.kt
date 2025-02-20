@@ -24,12 +24,14 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
+        // onClickListener for the login button
+        // Creating a new intent and starting the MainActivity
         binding.materialButtonLogin.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("isLoggedIn", true)
@@ -37,6 +39,8 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
 
+        // onClickListener for the guest button
+        // Creating a new intent and starting the MainActivity
         binding.materialButtonGuest.setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("isLoggedIn", false)

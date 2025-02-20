@@ -23,6 +23,7 @@
     package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
     import android.app.DatePickerDialog
+    import android.content.Intent
     import android.media.Image
     import android.os.Bundle
     import android.util.Log
@@ -61,6 +62,8 @@
             private const val EVENT_DATE = "EVENT_DATE"
             private const val EVENT_TYPE = "EVENT_TYPE"
             private const val EVENT_DESCRIPTION = "EVENT_DESCRIPTION"
+            private lateinit var menuProfile: MenuItem
+            private lateinit var menuLogout: MenuItem
         }
 
         // GUI variables
@@ -71,8 +74,6 @@
         private lateinit var eventType: AutoCompleteTextView
         private lateinit var eventDescription: EditText
         private lateinit var addEventButton: FloatingActionButton
-        private lateinit var menuProfile: MenuItem
-        private lateinit var menuLogout: MenuItem
 
         // Creates an instance of the Event class
         private val event: Event = Event("", "", "", "", "", "")
@@ -89,11 +90,15 @@
 
             // Inflate the layout for this activity
             activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+            // Set the content view of the activity
             setContentView(activityMainBinding.root)
-            setSupportActionBar(findViewById(R.id.toolbar))
 
             // Bind the content layout
             contentMainBinding = ContentMainBinding.bind(activityMainBinding.root.findViewById(R.id.content_main))
+
+            // Set the toolbar as the action bar
+            setSupportActionBar(contentMainBinding.toolbar)
+
 
             // Linking of UI components
             eventName = contentMainBinding.editTextEventName
@@ -109,7 +114,7 @@
             val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference", "Lan party")
             val adapter = ArrayAdapter(this, R.layout.custom_dropdown_item, eventTypes)
 
-            val eventTypeDropdown = findViewById<AutoCompleteTextView>(R.id.auto_complete_text_view_event_type)
+            val eventTypeDropdown = contentMainBinding.autoCompleteTextViewEventType
             eventTypeDropdown.setAdapter(adapter)
 
             // Listener for if the user clicks on the Event Type once
@@ -149,6 +154,7 @@
             eventDate.setOnClickListener {
                 showCalendar(eventDate as TextInputEditText)
             }
+
             // Checks if there is a saved instance state and sets the text fields to the saved values, otherwise empty
             savedInstanceState?.let {
                 eventName.setText(it.getString(EVENT_NAME, ""))
@@ -166,9 +172,11 @@
                 menuProfile = menu.findItem(R.id.menu_profile)
                 menuLogout = menu.findItem(R.id.menu_logout)
             }
+            setMenuListeners()
+
             return true
         }
-        
+
         override fun onPrepareOptionsMenu(menu: Menu): Boolean {
             val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
             menuProfile.isVisible = isLoggedIn
@@ -228,5 +236,23 @@
             Snackbar.make(activityMainBinding.root, message, Snackbar.LENGTH_LONG)
                 .setAnchorView(addEventButton)
                 .show()
+        }
+
+        private fun setMenuListeners() {
+            menuProfile.setOnMenuItemClickListener {
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.putExtra("isLoggedIn", true)
+                startActivity(intent)
+                finish()
+                true
+            }
+
+            menuLogout.setOnMenuItemClickListener {
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.putExtra("isLoggedIn", false)
+                startActivity(intent)
+                finish()
+                true
+            }
         }
     }
