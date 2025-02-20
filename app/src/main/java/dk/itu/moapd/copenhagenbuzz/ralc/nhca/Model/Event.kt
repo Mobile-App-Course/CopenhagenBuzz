@@ -34,10 +34,11 @@ package dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model
  * @property eventDescription A brief description of the event.
  */
 data class Event (var eventName: String,
-                   var eventLocation: String,
-                   var eventDate: String,
-                   var eventType: String,
-                   var eventDescription: String) {
+                  var eventLocation: String,
+                  var eventPhotoURL: String,
+                  var eventDate: String,
+                  var eventType: String,
+                  var eventDescription: String) {
 
 
     /**
@@ -46,7 +47,7 @@ data class Event (var eventName: String,
      * @return A string containing the event details.
      */
     override fun toString(): String {
-        return "Event(eventName='$eventName', eventLocation='$eventLocation', eventDate='$eventDate', eventType='$eventType', eventDescription='$eventDescription')"
+        return "Event(eventName='$eventName', eventLocation='$eventLocation', eventPhotoURL='$eventPhotoURL', eventDate='$eventDate', eventType='$eventType', eventDescription='$eventDescription')"
     }
 
 }

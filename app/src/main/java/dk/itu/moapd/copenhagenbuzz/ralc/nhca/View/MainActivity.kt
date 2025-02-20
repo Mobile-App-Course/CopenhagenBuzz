@@ -57,6 +57,7 @@
             // Keys for saving the state of the activity
             private const val EVENT_NAME = "EVENT_NAME"
             private const val EVENT_LOCATION = "EVENT_LOCATION"
+            private const val EVENT_PHOTO_URL = "EVENT_PHOTO_URL"
             private const val EVENT_DATE = "EVENT_DATE"
             private const val EVENT_TYPE = "EVENT_TYPE"
             private const val EVENT_DESCRIPTION = "EVENT_DESCRIPTION"
@@ -65,6 +66,7 @@
         // GUI variables
         private lateinit var eventName: EditText
         private lateinit var eventLocation: EditText
+        private lateinit var eventPhotoURL: EditText
         private lateinit var eventDate: EditText
         private lateinit var eventType: AutoCompleteTextView
         private lateinit var eventDescription: EditText
@@ -73,7 +75,7 @@
         private lateinit var menuLogout: MenuItem
 
         // Creates an instance of the Event class
-        private val event: Event = Event("", "", "", "", "")
+        private val event: Event = Event("", "", "", "", "", "")
 
         /**
          * Called when the activity is first created. This inflates the different bindings with the necessary variables.
@@ -96,6 +98,7 @@
             // Linking of UI components
             eventName = contentMainBinding.editTextEventName
             eventLocation = contentMainBinding.editTextEventLocation
+            eventPhotoURL = contentMainBinding.editTextEventPhotoUrl
             eventDate = contentMainBinding.editTextEventDate
             eventType = contentMainBinding.autoCompleteTextViewEventType
             eventDescription = contentMainBinding.editTextEventDescription
@@ -103,7 +106,7 @@
 
 
             // AutoCompleteTextView (list of event types) configuration
-            val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference")
+            val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference", "Lan party")
             val adapter = ArrayAdapter(this, R.layout.custom_dropdown_item, eventTypes)
 
             val eventTypeDropdown = findViewById<AutoCompleteTextView>(R.id.auto_complete_text_view_event_type)
@@ -131,11 +134,13 @@
                     // Update the object attributes.
                     event.eventName = eventName.text.toString().trim()
                     event.eventLocation = eventLocation.text.toString().trim()
+                    event.eventPhotoURL = eventPhotoURL.text.toString().trim()
                     event.eventDate = eventDate.text.toString().trim()
                     event.eventType = eventType.text.toString().trim()
                     event.eventDescription = eventDescription.text.toString().trim()
 
                     // Write in the `Logcat` system.
+                    println("showMessage()")
                     showMessage()
                 }
             }
@@ -148,6 +153,7 @@
             savedInstanceState?.let {
                 eventName.setText(it.getString(EVENT_NAME, ""))
                 eventLocation.setText(it.getString(EVENT_LOCATION, ""))
+                eventPhotoURL.setText(it.getString(EVENT_PHOTO_URL, ""))
                 eventDate.setText(it.getString(EVENT_DATE, ""))
                 eventType.setText(it.getString(EVENT_TYPE, ""))
                 eventDescription.setText(it.getString(EVENT_DESCRIPTION, ""))
@@ -182,6 +188,7 @@
         override fun onSaveInstanceState(outState: Bundle) {
             outState.putString(EVENT_NAME, eventName.text.toString())
             outState.putString(EVENT_LOCATION, eventLocation.text.toString())
+            outState.putString(EVENT_PHOTO_URL, eventPhotoURL.text.toString())
             outState.putString(EVENT_DATE, eventDate.text.toString())
             outState.putString(EVENT_TYPE, eventType.text.toString())
             outState.putString(EVENT_DESCRIPTION, eventDescription.text.toString())
