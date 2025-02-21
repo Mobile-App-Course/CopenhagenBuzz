@@ -26,4 +26,10 @@
         android:title="@string/fragment_favorites_text"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/calendar_fragment"
+        android:icon="@drawable/calendar_icon"
+        android:title="@string/fragment_calendar_text"
+        app:showAsAction="ifRoom" />
+
 </menu>
