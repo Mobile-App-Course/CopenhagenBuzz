@@ -20,17 +20,6 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floating_button_event_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:contentDescription="@string/add_event"
-        android:src="@drawable/event_add_icon"
-        app:backgroundTint="@color/primary"
-        app:tint="@color/text_primary" />
-
     <!-- Bottom navigation bar with 4 fragments -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
