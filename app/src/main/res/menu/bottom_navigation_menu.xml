@@ -11,6 +11,7 @@
     <item
         android:id="@+id/add_event_fragment"
         android:icon="@drawable/add_event_icon"
+        android:visible="false"
         android:title="@string/add_event_text"
         app:showAsAction="ifRoom" />
 

@@ -57,6 +57,7 @@
         companion object {
             private lateinit var menuProfile: MenuItem
             private lateinit var menuLogout: MenuItem
+            private lateinit var addEventButton: MenuItem
         }
 
         /**
@@ -82,13 +83,16 @@
 
 
             val navHostFragment = supportFragmentManager
-                .findFragmentById(
-                    R.id.fragment_container_view
-                ) as NavHostFragment
+                .findFragmentById(R.id.fragment_container_view) as NavHostFragment
             val navController = navHostFragment.navController
 
             activityMainBinding.bottomNavigation.setupWithNavController(navController)
 
+            // Conditionally show the add_event_fragment item
+            val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
+            val bottomNavigationMenu = activityMainBinding.bottomNavigation.menu
+            val addEventMenuItem = bottomNavigationMenu.findItem(R.id.add_event_fragment)
+            addEventMenuItem.isVisible = isLoggedIn
         }
 
         override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -96,9 +100,10 @@
             if (menu != null) {
                 menuProfile = menu.findItem(R.id.menu_profile)
                 menuLogout = menu.findItem(R.id.menu_logout)
+                //addEventButton = menu.findItem(R.id.add_event_fragment)
             }
-            setMenuListeners()
 
+            setMenuListeners()
             return true
         }
 
@@ -106,6 +111,7 @@
             val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
             menuProfile.isVisible = isLoggedIn
             menuLogout.isVisible = !isLoggedIn
+            //addEventButton.isVisible = isLoggedIn
             return super.onPrepareOptionsMenu(menu)
         }
 
