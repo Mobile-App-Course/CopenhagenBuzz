@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/timeline_fragment"
+        android:icon="@drawable/timeline_icon"
+        android:title="@string/fragment_timeline_text"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/timeline_add_event"
+        android:icon="@drawable/add_event_icon"
+        android:title="@string/add_event_text"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/maps_fragment"
+        android:icon="@drawable/map_icon"
+        android:title="@string/fragment_maps_text"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/favorites_fragment"
+        android:icon="@drawable/favorite_icon"
+        android:title="@string/fragment_favorites_text"
+        app:showAsAction="ifRoom" />
+
+</menu>

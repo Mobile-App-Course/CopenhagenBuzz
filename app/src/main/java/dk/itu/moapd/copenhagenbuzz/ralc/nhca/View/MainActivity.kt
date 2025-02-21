@@ -24,6 +24,7 @@
 
     import android.app.DatePickerDialog
     import android.content.Intent
+    import androidx.navigation.fragment.NavHostFragment
     import android.media.Image
     import android.os.Bundle
     import android.util.Log
@@ -34,6 +35,7 @@
     import android.widget.EditText
     import android.widget.ImageView
     import androidx.appcompat.app.AppCompatActivity
+    import androidx.navigation.ui.setupWithNavController
     import com.google.android.material.textfield.TextInputEditText
     import com.google.android.material.floatingactionbutton.FloatingActionButton
     import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
@@ -164,6 +166,14 @@
                 eventType.setText(it.getString(EVENT_TYPE, ""))
                 eventDescription.setText(it.getString(EVENT_DESCRIPTION, ""))
             }
+            val navHostFragment = supportFragmentManager
+                .findFragmentById(
+                    R.id.fragment_container_view
+                ) as NavHostFragment
+            val navController = navHostFragment.navController
+
+            activityMainBinding.bottomNavigation.setupWithNavController(navController)
+
         }
 
         override fun onCreateOptionsMenu(menu: Menu?): Boolean {

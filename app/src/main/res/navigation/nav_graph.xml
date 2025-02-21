@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/timeline_fragment">
+    <!--<fragment
+        android:id="@+id/fragment_articles"
+        android:name="dk.itu.moapd.fragments.ArticlesFragment"
+        android:label="@string/fragment_articles"
+        tools:layout="@layout/fragment_articles">
+        <action
+            android:id="@+id/action_articles_to_contacts"
+            app:destination="@id/fragment_contacts" />
+    </fragment>-->
+
+    <fragment
+        android:id="@+id/timeline_fragment"
+        android:name="dk.itu.moapd.copenhagenbuzz.ralc.nhca.View.TimelineFragment"
+        android:label="fragment_timeline"
+        tools:layout="@layout/fragment_timeline" >
+        <action
+            android:id="@+id/action_timeline_fragment_to_favorites_fragment"
+            app:destination="@id/favorites_fragment" />
+        <action
+            android:id="@+id/action_timeline_fragment_to_maps_fragment"
+            app:destination="@id/maps_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/maps_fragment"
+        android:name="dk.itu.moapd.copenhagenbuzz.ralc.nhca.View.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_maps_fragment_to_favorites_fragment"
+            app:destination="@id/favorites_fragment" />
+        <action
+            android:id="@+id/action_maps_fragment_to_timeline_fragment"
+            app:destination="@id/timeline_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favorites_fragment"
+        android:name="dk.itu.moapd.copenhagenbuzz.ralc.nhca.View.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites" >
+        <action
+            android:id="@+id/action_favorites_fragment_to_maps_fragment"
+            app:destination="@id/maps_fragment" />
+        <action
+            android:id="@+id/action_favorites_fragment_to_timeline_fragment"
+            app:destination="@id/timeline_fragment" />
+    </fragment>
+</navigation>
