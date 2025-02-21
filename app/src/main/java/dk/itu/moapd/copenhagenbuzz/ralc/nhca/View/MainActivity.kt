@@ -55,30 +55,9 @@
         private lateinit var contentMainBinding: ContentMainBinding
 
         companion object {
-            // Tag for logging
-            private val TAG = MainActivity::class.qualifiedName
-            // Keys for saving the state of the activity
-            private const val EVENT_NAME = "EVENT_NAME"
-            private const val EVENT_LOCATION = "EVENT_LOCATION"
-            private const val EVENT_PHOTO_URL = "EVENT_PHOTO_URL"
-            private const val EVENT_DATE = "EVENT_DATE"
-            private const val EVENT_TYPE = "EVENT_TYPE"
-            private const val EVENT_DESCRIPTION = "EVENT_DESCRIPTION"
             private lateinit var menuProfile: MenuItem
             private lateinit var menuLogout: MenuItem
         }
-
-        // GUI variables
-        private lateinit var eventName: EditText
-        private lateinit var eventLocation: EditText
-        private lateinit var eventPhotoURL: EditText
-        private lateinit var eventDate: EditText
-        private lateinit var eventType: AutoCompleteTextView
-        private lateinit var eventDescription: EditText
-        private lateinit var addEventButton: FloatingActionButton
-
-        // Creates an instance of the Event class
-        private val event: Event = Event("", "", "", "", "", "")
 
         /**
          * Called when the activity is first created. This inflates the different bindings with the necessary variables.
@@ -102,70 +81,6 @@
             setSupportActionBar(contentMainBinding.toolbar)
 
 
-            // Linking of UI components
-            eventName = contentMainBinding.editTextEventName
-            eventLocation = contentMainBinding.editTextEventLocation
-            eventPhotoURL = contentMainBinding.editTextEventPhotoUrl
-            eventDate = contentMainBinding.editTextEventDate
-            eventType = contentMainBinding.autoCompleteTextViewEventType
-            eventDescription = contentMainBinding.editTextEventDescription
-            addEventButton = activityMainBinding.floatingButtonEventAdd
-
-
-            // AutoCompleteTextView (list of event types) configuration
-            val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference", "Lan party")
-            val adapter = ArrayAdapter(this, R.layout.custom_dropdown_item, eventTypes)
-
-            val eventTypeDropdown = contentMainBinding.autoCompleteTextViewEventType
-            eventTypeDropdown.setAdapter(adapter)
-
-            // Listener for if the user clicks on the Event Type once
-            eventTypeDropdown.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    eventTypeDropdown.showDropDown()
-                }
-            }
-
-            // Listener for if the user clicks away from the Event Type (but doesn't click on any other boxes), and then clicks back unto the list
-            eventTypeDropdown.setOnClickListener {
-                eventTypeDropdown.requestFocus() // Ensure it gets focus
-                eventTypeDropdown.showDropDown() // Show dropdown immediately
-            }
-
-            // Listener for user interaction in the `Add Event` button.
-            addEventButton.setOnClickListener {
-                // Only execute the following code when the user fills all `EditText`.
-                if (eventName.text.toString().isNotEmpty() &&
-                    eventLocation.text.toString().isNotEmpty()) {
-
-                    // Update the object attributes.
-                    event.eventName = eventName.text.toString().trim()
-                    event.eventLocation = eventLocation.text.toString().trim()
-                    event.eventPhotoURL = eventPhotoURL.text.toString().trim()
-                    event.eventDate = eventDate.text.toString().trim()
-                    event.eventType = eventType.text.toString().trim()
-                    event.eventDescription = eventDescription.text.toString().trim()
-
-                    // Write in the `Logcat` system.
-                    println("showMessage()")
-                    showMessage()
-                }
-            }
-
-            // Set a OnClickListener to show the calendar when clicked
-            eventDate.setOnClickListener {
-                showCalendar(eventDate as TextInputEditText)
-            }
-
-            // Checks if there is a saved instance state and sets the text fields to the saved values, otherwise empty
-            savedInstanceState?.let {
-                eventName.setText(it.getString(EVENT_NAME, ""))
-                eventLocation.setText(it.getString(EVENT_LOCATION, ""))
-                eventPhotoURL.setText(it.getString(EVENT_PHOTO_URL, ""))
-                eventDate.setText(it.getString(EVENT_DATE, ""))
-                eventType.setText(it.getString(EVENT_TYPE, ""))
-                eventDescription.setText(it.getString(EVENT_DESCRIPTION, ""))
-            }
             val navHostFragment = supportFragmentManager
                 .findFragmentById(
                     R.id.fragment_container_view
@@ -194,59 +109,6 @@
             return super.onPrepareOptionsMenu(menu)
         }
 
-
-        /**
-         * The method saves the current state of the activity.
-         *
-         * It is called before the activity may be destroyed so that the state can be saved.
-         * The state is then saved in the provided Bundle object.
-         *
-         * @param outState The Bundle in which to place the saved state.
-         */
-        override fun onSaveInstanceState(outState: Bundle) {
-            outState.putString(EVENT_NAME, eventName.text.toString())
-            outState.putString(EVENT_LOCATION, eventLocation.text.toString())
-            outState.putString(EVENT_PHOTO_URL, eventPhotoURL.text.toString())
-            outState.putString(EVENT_DATE, eventDate.text.toString())
-            outState.putString(EVENT_TYPE, eventType.text.toString())
-            outState.putString(EVENT_DESCRIPTION, eventDescription.text.toString())
-            super.onSaveInstanceState(outState)
-        }
-
-        /**
-         * Function to show the calendar and allow the user to pick a date.
-         * @param editText The TextInputEditText where the selected date will be displayed.
-         */
-        private fun showCalendar(editText: TextInputEditText) {
-            // Values used to get the current date
-            val calendar = Calendar.getInstance()
-            val calYear = calendar.get(Calendar.YEAR)
-            val calMonth = calendar.get(Calendar.MONTH)
-            val calDay = calendar.get(Calendar.DAY_OF_MONTH)
-
-            // Used to create and show the calendar
-            val calendarPicker = DatePickerDialog(
-                this,
-                R.style.CustomDatePickerDialog,
-                { _, selectedYear, selectedMonth, selectedDay ->
-                    // Formats the selected date to be displayed in the EditText
-                    val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
-                    editText.setText(selectedDate)
-                },
-                calYear, calMonth, calDay
-            )
-            calendarPicker.show()
-        }
-
-        /**
-         * Function to log the event details.
-         */
-        private fun showMessage() {
-            val message = "Event Added: " + event.toString()
-            Snackbar.make(activityMainBinding.root, message, Snackbar.LENGTH_LONG)
-                .setAnchorView(addEventButton)
-                .show()
-        }
 
         private fun setMenuListeners() {
             menuProfile.setOnMenuItemClickListener {

@@ -17,148 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="@string/app_name"/>
 
-    <!-- Event Name section -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_field_event_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:startIconDrawable="@drawable/event_name_icon">
 
-        <!-- Event Name input field -->
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_event_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/event_name_hint"
-            android:inputType="text"
-            android:text="" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Event location section -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_field_event_location"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_field_event_name"
-        app:startIconDrawable="@drawable/event_location_icon">
-
-        <!-- Event Name input field -->
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_event_location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/event_location_hint"
-            android:inputType="text"
-            android:text="" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Event Photo url section -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_field_event_photo_url"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_field_event_location"
-        app:startIconDrawable="@drawable/event_photo_icon">
-
-        <!-- Event Name input field -->
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_event_photo_url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/event_photo_url_hint"
-            android:inputType="text"
-            android:text="" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Event Date section -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_field_event_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_field_event_photo_url"
-        app:startIconDrawable="@drawable/event_date_icon">
-
-        <!-- Event Name input field -->
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_event_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="false"
-            android:hint="@string/event_date_hint" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Event Type section -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_field_event_type"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_field_event_date"
-        app:startIconDrawable="@drawable/event_type_icon">
-
-        <!-- Event Name input field -->
-        <AutoCompleteTextView
-            android:id="@+id/auto_complete_text_view_event_type"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:ems="10"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:hint="@string/event_type_hint"
-            android:inputType="none" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Event Description section -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_field_event_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_field_event_type"
-        app:startIconDrawable="@drawable/event_description_icon">
-
-        <!-- Event Name input field -->
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_event_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:gravity="top"
-            android:hint="@string/event_description_hint"
-            android:inputType="textMultiLine"
-            android:minLines="3"
-            android:text="" />
-    </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view"
@@ -167,7 +26,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_field_event_description"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:name="androidx.navigation.fragment.NavHostFragment"
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
