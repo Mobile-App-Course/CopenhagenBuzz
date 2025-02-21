@@ -9,7 +9,7 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/timeline_add_event"
+        android:id="@+id/add_event_fragment"
         android:icon="@drawable/add_event_icon"
         android:title="@string/add_event_text"
         app:showAsAction="ifRoom" />
