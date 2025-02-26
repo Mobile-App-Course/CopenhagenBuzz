@@ -17,4 +17,5 @@
     <string name="fragment_calendar_text">Calendar</string>
     <string name="fragment_maps_text">Maps</string>
     <string name="add_event_text">Add event</string>
+    <string name="content_description_card">This is a description</string>
 </resources>
