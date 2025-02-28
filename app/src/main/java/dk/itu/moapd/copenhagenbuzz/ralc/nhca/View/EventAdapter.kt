@@ -63,7 +63,7 @@ class EventAdapter(private val context: Context, private var resource: Int, data
         with(viewHolder) {
             Picasso.get().load(event.eventPhotoURL).into(eventPhoto)
             eventName.text = event.eventName
-            eventSubtitle.text = "${event.eventDate}\n${event.eventLocation}\n${event.eventType}"
+            eventSubtitle.text = "Date: ${event.eventDate}\nLocation: ${event.eventLocation}\nType: ${event.eventType}"
             eventDescription.text = event.eventDescription
 
             // set like button listener

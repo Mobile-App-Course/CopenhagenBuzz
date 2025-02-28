@@ -9,6 +9,8 @@ import kotlinx.coroutines.withContext
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import com.github.javafaker.Faker
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DataViewModel : ViewModel() {
 
@@ -21,6 +23,7 @@ class DataViewModel : ViewModel() {
         get() = _events
 
     private val faker = Faker()
+    val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
     init {
         fetchEvents()
@@ -45,13 +48,13 @@ class DataViewModel : ViewModel() {
         return withContext(Dispatchers.Default) {
             // Simulate generating a list of events
             val faker = Faker()
-            List(10) { index ->
+            List(10) { _ ->
                 Event(
                     eventName = faker.name().toString(),
                     eventLocation = faker.address().cityName(),
                     eventPhotoURL = faker.internet().url(),
-                    eventDate = faker.date().toString(),
-                    eventType = faker.chuckNorris().toString(),
+                    eventDate = dateFormat.format(faker.date().birthday()),
+                    eventType = faker.book().genre(),
                     eventDescription = faker.lorem().sentence(10)
                 )
             }

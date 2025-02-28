@@ -11,4 +11,11 @@
         android:layout_height="match_parent"
         android:text="Timeline Fragment"/>
 
+    <ListView
+        android:id="@+id/event_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"/>
+
 </FrameLayout>
