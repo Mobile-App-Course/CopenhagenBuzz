@@ -7,18 +7,10 @@
     android:fitsSystemWindows="true"
     tools:context=".View.MainActivity">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include
-            android:id="@+id/content_main"
-            layout="@layout/content_main" />
-
-    </androidx.core.widget.NestedScrollView>
+    <include
+        android:id="@+id/content_main"
+        layout="@layout/content_main" />
 
     <!-- Bottom navigation bar with 4 fragments -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
