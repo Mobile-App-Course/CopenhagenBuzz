@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.`MaterialButton$InspectionCompanion`
+import com.google.android.material.snackbar.Snackbar
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import com.squareup.picasso.Picasso
@@ -32,6 +35,9 @@ class EventAdapter(private val context: Context, private var resource: Int, data
         val eventPhoto: ImageView = view.findViewById(R.id.event_photo_image_view)
         val eventSubtitle: TextView = view.findViewById(R.id.event_subtitle_text_view)
         val eventDescription: TextView = view.findViewById(R.id.event_description_text_view)
+        val likeButton: MaterialButton = view.findViewById(R.id.button_thumb_up)
+        val favoriteButton: MaterialButton = view.findViewById(R.id.button_favorite)
+        val shareButton: MaterialButton = view.findViewById(R.id.button_share)
     }
 
     /**
@@ -66,7 +72,20 @@ class EventAdapter(private val context: Context, private var resource: Int, data
             eventSubtitle.text = "Date: ${event.eventDate}\nLocation: ${event.eventLocation}\nType: ${event.eventType}"
             eventDescription.text = event.eventDescription
 
-            // set like button listener
+            // Like button listener
+            likeButton.setOnClickListener { view ->
+                Snackbar.make(view, "Event Liked!", Snackbar.LENGTH_SHORT).show()
+            }
+
+            // Favorite button listener
+            favoriteButton.setOnClickListener { view ->
+                Snackbar.make(view, "Event Favorite!", Snackbar.LENGTH_SHORT).show()
+            }
+
+            // Share button listener
+            shareButton.setOnClickListener { view ->
+                Snackbar.make(view, "Event Shared!", Snackbar.LENGTH_SHORT).show()
+            }
 
         }
     }

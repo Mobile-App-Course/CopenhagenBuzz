@@ -1,5 +1,7 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel
 
+import android.util.Log
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -52,7 +54,7 @@ class DataViewModel : ViewModel() {
                 Event(
                     eventName = faker.name().toString(),
                     eventLocation = faker.address().cityName(),
-                    eventPhotoURL = faker.internet().url(),
+                    eventPhotoURL = "https://picsum.photos/300/200?random=${System.currentTimeMillis()}",
                     eventDate = dateFormat.format(faker.date().birthday()),
                     eventType = faker.book().genre(),
                     eventDescription = faker.lorem().sentence(10)
