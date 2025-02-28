@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import com.github.javafaker.Faker
 
 class DataViewModel : ViewModel() {
 
@@ -19,6 +20,7 @@ class DataViewModel : ViewModel() {
     val events: LiveData<List<Event>>
         get() = _events
 
+    private val faker = Faker()
 
     init {
         fetchEvents()
@@ -42,14 +44,15 @@ class DataViewModel : ViewModel() {
     private suspend fun generateEvents(): List<Event> {
         return withContext(Dispatchers.Default) {
             // Simulate generating a list of events
+            val faker = Faker()
             List(10) { index ->
                 Event(
-                    eventName = "Event $index",
-                    eventLocation = "Location $index",
-                    eventPhotoURL = "http://example.com/photo$index.jpg",
-                    eventDate = "2025-12-0${index + 1}",
-                    eventType = "Type $index",
-                    eventDescription = "Description for event $index"
+                    eventName = faker.name().toString(),
+                    eventLocation = faker.address().cityName(),
+                    eventPhotoURL = faker.internet().url(),
+                    eventDate = faker.date().toString(),
+                    eventType = faker.chuckNorris().toString(),
+                    eventDescription = faker.lorem().sentence(10)
                 )
             }
         }
