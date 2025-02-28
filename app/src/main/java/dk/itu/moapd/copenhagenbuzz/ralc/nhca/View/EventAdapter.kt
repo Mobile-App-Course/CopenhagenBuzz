@@ -35,7 +35,6 @@ class EventAdapter(private val context: Context, private var resource: Int, data
         val eventPhoto: ImageView = view.findViewById(R.id.event_photo_image_view)
         val eventSubtitle: TextView = view.findViewById(R.id.event_subtitle_text_view)
         val eventDescription: TextView = view.findViewById(R.id.event_description_text_view)
-        val likeButton: MaterialButton = view.findViewById(R.id.button_thumb_up)
         val favoriteButton: MaterialButton = view.findViewById(R.id.button_favorite)
         val shareButton: MaterialButton = view.findViewById(R.id.button_share)
     }
@@ -71,11 +70,6 @@ class EventAdapter(private val context: Context, private var resource: Int, data
             eventName.text = event.eventName
             eventSubtitle.text = "Date: ${event.eventDate}\nLocation: ${event.eventLocation}\nType: ${event.eventType}"
             eventDescription.text = event.eventDescription
-
-            // Like button listener
-            likeButton.setOnClickListener { view ->
-                Snackbar.make(view, "Event Liked!", Snackbar.LENGTH_SHORT).show()
-            }
 
             // Favorite button listener
             favoriteButton.setOnClickListener { view ->

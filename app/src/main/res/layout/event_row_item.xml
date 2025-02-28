@@ -77,18 +77,6 @@
 
             <com.google.android.material.button.MaterialButton
                 style="?attr/borderlessButtonStyle"
-                android:id="@+id/button_thumb_up"
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_small"
-                android:contentDescription="Like"
-                app:icon="@drawable/thumb_up"
-                app:layout_constraintBottom_toBottomOf="@+id/button_favorite"
-                app:layout_constraintEnd_toStartOf="@+id/button_favorite"
-                app:layout_constraintTop_toTopOf="@+id/button_favorite"  />
-
-            <com.google.android.material.button.MaterialButton
-                style="?attr/borderlessButtonStyle"
                 android:id="@+id/button_favorite"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
