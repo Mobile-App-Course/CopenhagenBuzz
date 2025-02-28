@@ -11,18 +11,37 @@ import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import com.squareup.picasso.Picasso
 
+/**
+ * An adapter that provides views for displaying Event data in a ListView.
+ *
+ * @param context The context in which the adapter is running.
+ * @param resource The resource ID for a layout file containing a layout to use when instantiating views.
+ * @param data The list of Event objects to represent in the ListView.
+ */
 class EventAdapter(private val context: Context, private var resource: Int, data: List<Event>) :
     ArrayAdapter<Event>(context, R.layout.event_row_item, data) {
 
+    /**
+     * A ViewHolder class that holds references to the views for each data item.
+     *
+     * @constructor Creates a ViewHolder and initializes the views.
+     * @param view The view containing the views to be initialized.
+     */
     private class ViewHolder(view: View) {
-        val eventName = view.findViewById<TextView>(R.id.text_field_event_name)
-        val eventLocation = view.findViewById<TextView>(R.id.edit_text_event_location)
-        val eventPhoto = view.findViewById<ImageView>(R.id.text_field_event_photo_url)
-        val eventDate = view.findViewById<TextView>(R.id.text_field_event_date)
-        val eventType = view.findViewById<TextView>(R.id.text_field_event_type)
-        val eventDescription = view.findViewById<TextView>(R.id.text_field_event_description)
+        val eventName: TextView = view.findViewById(R.id.event_name_text_view)
+        val eventPhoto: ImageView = view.findViewById(R.id.event_photo_image_view)
+        val eventSubtitle: TextView = view.findViewById(R.id.event_subtitle_text_view)
+        val eventDescription: TextView = view.findViewById(R.id.event_description_text_view)
     }
 
+    /**
+     * Returns a view for the specified position in the data set.
+     *
+     * @param position The position of the item within the adapter's data set.
+     * @param convertView The old view to reuse, if possible.
+     * @param parent The parent that this view will eventually be attached to.
+     * @return A view corresponding to the data at the specified position.
+     */
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: LayoutInflater.from(context).inflate(resource, parent, false)
         val viewHolder = (view.tag as? ViewHolder) ?: ViewHolder(view)
@@ -34,17 +53,21 @@ class EventAdapter(private val context: Context, private var resource: Int, data
         return view
     }
 
+    /**
+     * Populates the ViewHolder with data from the given Event object.
+     *
+     * @param viewHolder The ViewHolder containing the views to be populated.
+     * @param event The Event object containing the data to populate the views.
+     */
     private fun populateViewHolder(viewHolder: ViewHolder, event: Event) {
         with(viewHolder) {
             Picasso.get().load(event.eventPhotoURL).into(eventPhoto)
             eventName.text = event.eventName
-            eventLocation.text = event.eventLocation
-            eventDate.text = event.eventDate
-            eventType.text = event.eventType
+            eventSubtitle.text = "${event.eventDate}\n${event.eventLocation}\n${event.eventType}"
             eventDescription.text = event.eventDescription
 
             // set like button listener
-            
+
         }
     }
 }
