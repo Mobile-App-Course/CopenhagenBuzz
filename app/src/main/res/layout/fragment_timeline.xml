@@ -14,7 +14,6 @@
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:scrollbarSize="3dp"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"/>
+        android:divider="@android:color/darker_gray"/>
 
 </LinearLayout>
