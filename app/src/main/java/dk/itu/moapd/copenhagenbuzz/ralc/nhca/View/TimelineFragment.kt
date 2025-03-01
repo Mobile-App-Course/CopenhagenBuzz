@@ -11,15 +11,19 @@ import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
 
 /**
- * A simple [Fragment] subclass.
- * Use the [TimelineFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * A simple [Fragment] subclass that displays a timeline of events.
  */
 class TimelineFragment : Fragment() {
 
     private val dataViewModel: DataViewModel by viewModels()
 
-
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,6 +32,11 @@ class TimelineFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_timeline, container, false)
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     * @param view The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -41,14 +50,9 @@ class TimelineFragment : Fragment() {
     }
     companion object {
         /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
+         * Factory method to create a new instance of this fragment.
          * @return A new instance of fragment TimelineFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance() = TimelineFragment()
     }

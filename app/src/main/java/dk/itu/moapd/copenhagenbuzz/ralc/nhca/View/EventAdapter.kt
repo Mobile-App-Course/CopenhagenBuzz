@@ -68,7 +68,7 @@ class EventAdapter(private val context: Context, private var resource: Int, data
         with(viewHolder) {
             Picasso.get().load(event.eventPhotoURL).into(eventPhoto)
             eventName.text = event.eventName
-            eventSubtitle.text = "Date: ${event.eventDate}\nLocation: ${event.eventLocation}\nType: ${event.eventType}"
+            eventSubtitle.text = context.getString(R.string.event_subtitle, event.eventDate, event.eventLocation, event.eventType)
             eventDescription.text = event.eventDescription
 
             // Favorite button listener

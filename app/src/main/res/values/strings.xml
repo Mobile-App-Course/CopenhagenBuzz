@@ -10,7 +10,6 @@
     <string name="material_button_guest">Guest</string>
     <string name="profile_image_description">profile_image</string>
     <string name="event_photo_url_hint">Event Photo URL</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="fragment_timeline_text">Timeline</string>
     <string name="fragment_favorites_text">Favorites</string>
@@ -18,4 +17,5 @@
     <string name="fragment_maps_text">Maps</string>
     <string name="add_event_text">Add event</string>
     <string name="content_description_card">This is a description</string>
+    <string name="event_subtitle">Date: %1$s\nLocation: %2$s\nType: %3$s</string>
 </resources>

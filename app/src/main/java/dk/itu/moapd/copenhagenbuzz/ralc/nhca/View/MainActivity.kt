@@ -95,6 +95,11 @@
             addEventMenuItem.isVisible = isLoggedIn
         }
 
+        /**
+         * Inflate the menu items for use in the action bar.
+         * @param menu The options menu in which you place your items.
+         * @return Boolean Return true for the menu to be displayed; if false, it will not be shown.
+         */
         override fun onCreateOptionsMenu(menu: Menu?): Boolean {
             menuInflater.inflate(R.menu.menu_toolbar, menu)
             if (menu != null) {
@@ -107,6 +112,11 @@
             return true
         }
 
+        /**
+         * Prepare the options menu before it is displayed.
+         * @param menu The options menu as last shown or first initialized by onCreateOptionsMenu().
+         * @return Boolean Return true for the menu to be displayed; if false, it will not be shown.
+         */
         override fun onPrepareOptionsMenu(menu: Menu): Boolean {
             val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
             menuProfile.isVisible = isLoggedIn
@@ -115,7 +125,9 @@
             return super.onPrepareOptionsMenu(menu)
         }
 
-
+        /**
+         * Set listeners to display the correct menu items (icons) based on the user's login status.
+         */
         private fun setMenuListeners() {
             menuProfile.setOnMenuItemClickListener {
                 val intent = Intent(this, LoginActivity::class.java)
