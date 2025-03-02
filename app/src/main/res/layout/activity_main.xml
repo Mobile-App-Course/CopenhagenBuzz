@@ -12,13 +12,15 @@
         android:id="@+id/content_main"
         layout="@layout/content_main" />
 
-    <!-- Bottom navigation bar with 4 fragments -->
+    <!-- Bottom navigation bar with fragments -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:backgroundTint="?attr/colorPrimaryContainer"
+        app:itemIconTint="@color/bottom_nav_icon_color"
+        app:itemTextColor="?attr/colorOnPrimaryContainer"
         app:menu="@menu/bottom_navigation_menu"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
