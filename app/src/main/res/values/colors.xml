@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Seed colors for your application -->
+    <color name="seed">#BC6C25</color>
+
+    <!-- Fallback colors for pre-Android 12 -->
+    <color name="md_theme_primary">#BC6C25</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#FFDCBB</color>
+    <color name="md_theme_onPrimaryContainer">#3A1D00</color>
+    <color name="md_theme_secondary">#606C38</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#DFE4BF</color>
+    <color name="md_theme_onSecondaryContainer">#1B230F</color>
+    <color name="md_theme_tertiary">#DDA15E</color>
+    <color name="md_theme_onTertiary">#FFFFFF</color>
+    <color name="md_theme_tertiaryContainer">#FEFAE0</color>
+    <color name="md_theme_onTertiaryContainer">#2A1700</color>
+
+    <!-- Other semantic colors -->
+    <color name="md_theme_error">#BA1A1A</color>
+    <color name="md_theme_errorContainer">#FFDAD6</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+    <color name="md_theme_onErrorContainer">#410002</color>
+    <color name="md_theme_background">#FFFBFF</color>
+    <color name="md_theme_onBackground">#201A17</color>
+    <color name="md_theme_surface">#FFFBFF</color>
+    <color name="md_theme_onSurface">#201A17</color>
+    <color name="md_theme_surfaceVariant">#F3DFD1</color>
+    <color name="md_theme_onSurfaceVariant">#52443C</color>
+    <color name="md_theme_outline">#84746A</color>
+    <color name="md_theme_inverseOnSurface">#FBEEE8</color>
+    <color name="md_theme_inverseSurface">#362F2B</color>
+
+    <!-- original colors for specific use cases -->
     <color name="bg_primary">#1B230F</color>
     <color name="bg_secondary">#606C38</color>
     <color name="primary">#BC6C25</color>

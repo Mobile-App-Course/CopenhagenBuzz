@@ -6,8 +6,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
     tools:context=".View.LoginActivity">
-
 
     <TextView
         android:id="@+id/text_view_app_name"
@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:text="@string/app_name"
         android:textSize="46sp"
+        android:textColor="?attr/colorOnSurface"
         app:layout_constraintBottom_toTopOf="@+id/button_group"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +33,9 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/material_button_login"
-            style="?attr/materialButtonOutlinedStyle"
+            style="@style/Widget.Material3.Button"
+            app:backgroundTint="?attr/colorPrimary"
+            android:textColor="?attr/colorOnPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/material_button_login"
@@ -45,7 +48,9 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/material_button_guest"
-            style="?attr/materialButtonOutlinedStyle"
+            style="@style/Widget.Material3.Button"
+            app:backgroundTint="?attr/colorPrimary"
+            android:textColor="?attr/colorOnPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -57,7 +62,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/material_button_login"/>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

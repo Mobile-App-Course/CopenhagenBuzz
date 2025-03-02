@@ -36,6 +36,7 @@
     import android.widget.ImageView
     import androidx.appcompat.app.AppCompatActivity
     import androidx.navigation.ui.setupWithNavController
+    import com.google.android.material.color.DynamicColors
     import com.google.android.material.textfield.TextInputEditText
     import com.google.android.material.floatingactionbutton.FloatingActionButton
     import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
@@ -69,6 +70,11 @@
         override fun onCreate(savedInstanceState: Bundle?) {
             androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
             super.onCreate(savedInstanceState)
+
+            // Apply dynamic colors if running on Android 12+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                DynamicColors.applyToActivityIfAvailable(this)
+            }
 
             // Inflate the layout for this activity
             activityMainBinding = ActivityMainBinding.inflate(layoutInflater)

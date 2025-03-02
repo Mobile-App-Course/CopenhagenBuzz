@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.color.DynamicColors
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityLoginBinding
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
@@ -18,6 +19,11 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Apply dynamic colors if running on Android 12+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            DynamicColors.applyToActivityIfAvailable(this)
+        }
 
         // Inflate the layout for this activity
         binding = ActivityLoginBinding.inflate(layoutInflater)

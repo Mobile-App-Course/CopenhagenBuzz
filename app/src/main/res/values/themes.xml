@@ -1,33 +1,31 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- Base application theme -->
     <style name="Base.Theme.CopenhagenBuzz" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Enable dynamic color -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
 
-        <!-- Primary app colors -->
-        <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorSecondary">@color/bg_secondary</item>
+        <!-- Enable system edge-to-edge -->
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
     </style>
 
-    <style name="Theme.CopenhagenBuzz" parent="Base.Theme.CopenhagenBuzz" />
-
-    <!-- Used to make the text black in the calendar -->
-    <style name="CustomDatePickerDialog" parent="Theme.AppCompat.Light.Dialog">
-        <item name="android:textColorPrimary">@color/text_secondary</item>
-        <item name="android:textColorSecondary">@color/text_secondary</item>
-        <item name="android:textColor">@color/text_secondary</item>
-        <item name="android:buttonBarButtonStyle">@style/AcceptAndCancelText</item>
-    </style>
-    <!-- Custom style for the accept and cancel buttons in the date picker dialog -->
-    <style name="AcceptAndCancelText" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/text_secondary</item>
+    <style name="Theme.CopenhagenBuzz" parent="Base.Theme.CopenhagenBuzz">
+        <!-- Enable Material You dynamic colors on Android 12+ -->
     </style>
 
-        <!-- Custom style for dropdown list items -->
-    <style name="CustomDropdownItem" parent="Widget.AppCompat.TextView">
-        <item name="android:textColor">@color/text_secondary</item>
-        <item name="android:background">@color/white</item>
+    <!-- Date picker dialog theme -->
+    <style name="CustomDatePickerDialog" parent="ThemeOverlay.Material3.MaterialCalendar">
+        <!-- Calendar text styling will inherit from Material 3 -->
     </style>
 
+    <!-- Custom style for the accept and cancel buttons -->
+    <style name="AcceptAndCancelText" parent="Widget.Material3.Button.TextButton.Dialog">
+        <!-- Will use the system accent color -->
+    </style>
 
+    <!-- Custom style for dropdown list items -->
+    <style name="CustomDropdownItem" parent="TextAppearance.Material3.BodyMedium">
+        <!-- Will use the system colors -->
+    </style>
 </resources>

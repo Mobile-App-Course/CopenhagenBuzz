@@ -8,6 +8,7 @@
         android:title="@string/profile_image_description"
         android:visible="false"
         app:showAsAction="ifRoom"
+        app:iconTint="?attr/colorOnPrimaryContainer"
         android:orderInCategory="1" />
 
     <item
@@ -16,6 +17,7 @@
         android:title="@string/profile_image_description"
         android:visible="false"
         app:showAsAction="ifRoom"
+        app:iconTint="?attr/colorOnPrimaryContainer"
         android:orderInCategory="1" />
 
 </menu>
