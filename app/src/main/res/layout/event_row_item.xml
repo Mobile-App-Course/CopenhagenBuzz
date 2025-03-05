@@ -65,16 +65,16 @@
                 android:id="@+id/event_description_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_medium"
                 android:layout_marginStart="@dimen/margin_medium"
                 android:layout_marginTop="@dimen/margin_large"
-                android:lines="4"
+                android:layout_marginEnd="@dimen/margin_medium"
                 android:ellipsize="end"
+                android:lines="4"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?attr/colorOnSurface"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_subtitle_text_view" />
+                app:layout_constraintTop_toBottomOf="@+id/event_subtitle_text_view"/>
 
             <com.google.android.material.button.MaterialButton
                 style="?attr/borderlessButtonStyle"
@@ -83,6 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:contentDescription="@string/material_button_favorite_description"
+                android:visibility="gone"
                 app:icon="@drawable/favorite"
                 app:layout_constraintBottom_toBottomOf="@+id/button_share"
                 app:layout_constraintEnd_toStartOf="@+id/button_share"
@@ -107,12 +108,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginBottom="8dp" android:text="@string/button_info_text"
-                app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"/>
+                android:layout_marginTop="4dp" android:layout_marginBottom="8dp"
+                android:text="@string/button_info_text" app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@+id/event_description_text_view"/>
             <Button
                 android:id="@+id/edit_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginStart="8dp" android:layout_marginBottom="8dp"
                 android:text="@string/button_edit_text" app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/info_button"/>

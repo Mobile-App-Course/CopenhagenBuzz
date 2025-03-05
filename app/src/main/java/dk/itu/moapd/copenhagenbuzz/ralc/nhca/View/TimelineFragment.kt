@@ -43,11 +43,15 @@ class TimelineFragment : Fragment() {
         val listView: ListView = view.findViewById(R.id.event_list_view)
 
         dataViewModel.events.observe(viewLifecycleOwner) { eventList ->
-            val adapter = EventAdapter(requireContext(), R.layout.event_row_item, eventList)
+            val isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
+            val adapter = EventAdapter(requireContext(), R.layout.event_row_item, eventList, isLoggedIn)
             listView.adapter = adapter
         }
 
     }
+
+
+
     companion object {
         /**
          * Factory method to create a new instance of this fragment.

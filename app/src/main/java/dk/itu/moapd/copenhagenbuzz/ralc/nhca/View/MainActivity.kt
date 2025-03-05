@@ -54,12 +54,9 @@
         // Binding objects for the activity and content layouts
         private lateinit var activityMainBinding: ActivityMainBinding
         private lateinit var contentMainBinding: ContentMainBinding
-
-        companion object {
-            private lateinit var menuProfile: MenuItem
-            private lateinit var menuLogout: MenuItem
-            private lateinit var addEventButton: MenuItem
-        }
+        
+        private lateinit var menuProfile: MenuItem
+        private lateinit var menuLogout: MenuItem
 
         /**
          * Called when the activity is first created. This inflates the different bindings with the necessary variables.
@@ -99,6 +96,9 @@
             val bottomNavigationMenu = activityMainBinding.bottomNavigation.menu
             val addEventMenuItem = bottomNavigationMenu.findItem(R.id.add_event_fragment)
             addEventMenuItem.isVisible = isLoggedIn
+
+            // Conditionally show event row item buttons if logged in
+            // Get this element @+id/edit_button
         }
 
         /**

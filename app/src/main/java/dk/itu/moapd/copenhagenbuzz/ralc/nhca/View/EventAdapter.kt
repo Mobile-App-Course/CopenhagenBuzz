@@ -1,6 +1,7 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
  import android.content.Context
+ import android.content.Intent
  import android.view.LayoutInflater
  import android.view.View
  import android.view.ViewGroup
@@ -11,8 +12,12 @@ package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
  import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
  import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.EventRowItemBinding
 
-class EventAdapter(private val context: Context, private var resource: Int, data: List<Event>) :
-     ArrayAdapter<Event>(context, R.layout.event_row_item, data) {
+class EventAdapter(
+    private val context: Context,
+    private var resource: Int,
+    data: List<Event>,
+    private val isLoggedIn : Boolean
+) : ArrayAdapter<Event>(context, R.layout.event_row_item, data) {
 
      private class ViewHolder(val binding: EventRowItemBinding)
 
@@ -42,6 +47,11 @@ class EventAdapter(private val context: Context, private var resource: Int, data
              eventNameTextView.text = event.eventName
              eventSubtitleTextView.text = context.getString(R.string.event_subtitle, event.eventDate, event.eventLocation, event.eventType)
              eventDescriptionTextView.text = event.eventDescription
+
+             // Conditionally render buttons
+             buttonFavorite.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
+             buttonShare.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
+             editButton.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
 
              buttonFavorite.setOnClickListener { view ->
                  Snackbar.make(view, "Event Favorite!", Snackbar.LENGTH_SHORT).show()
