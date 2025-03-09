@@ -97,6 +97,10 @@
             val addEventMenuItem = bottomNavigationMenu.findItem(R.id.add_event_fragment)
             addEventMenuItem.isVisible = isLoggedIn
 
+            // Conditionally show the favorites_fragment item
+            val favoritesMenuItem = bottomNavigationMenu.findItem(R.id.favorites_fragment)
+            favoritesMenuItem.isVisible = isLoggedIn
+
             // Conditionally show event row item buttons if logged in
             // Get this element @+id/edit_button
         }
