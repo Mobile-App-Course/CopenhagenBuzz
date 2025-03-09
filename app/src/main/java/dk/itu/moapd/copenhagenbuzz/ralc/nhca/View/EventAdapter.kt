@@ -11,6 +11,7 @@ package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
  import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
  import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
  import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.EventRowItemBinding
+ import android.graphics.Color
 
 class EventAdapter(
     private val context: Context,
@@ -58,9 +59,9 @@ class EventAdapter(
              // CHANGE SO THAT THE EVENTS THAT ARE NOT FAVORITES USE THE FAVORITE ICON THAT IS NOT OUTLINED,
              // AND NOT THE TIMELINE ICON
              if (favoriteEvents.contains(event)) {
-                 buttonFavorite.setIconResource(R.drawable.favorite_icon)
+                 buttonFavorite.icon.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN)
              } else {
-                 buttonFavorite.setIconResource(R.drawable.timeline_icon)
+                 buttonFavorite.icon.clearColorFilter()
              }
 
              buttonFavorite.setOnClickListener { view ->
