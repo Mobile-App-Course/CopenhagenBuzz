@@ -24,11 +24,20 @@ class DataViewModel : ViewModel() {
     val events: LiveData<List<Event>>
         get() = _events
 
+    private val _favoriteEvents = MutableLiveData<List<Event>>()
+    val favoriteEvents: LiveData<List<Event>>
+        get() = _favoriteEvents
+
     private val faker = Faker()
     val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
     init {
         fetchEvents()
+    }
+
+    private fun generateRandomFavorites (events: List<Event>): List<Event> {
+        val shuffledIndices = (events.indices).shuffled().take(20).sorted()
+        return shuffledIndices.mapNotNull { index -> events.getOrNull(index) }
     }
 
     /**
@@ -50,7 +59,7 @@ class DataViewModel : ViewModel() {
         return withContext(Dispatchers.Default) {
             // Simulate generating a list of events
             val faker = Faker()
-            List(10) { _ ->
+            List(40) { _ ->
                 Event(
                     eventName = faker.lorem().sentence(1),
                     eventLocation = faker.address().cityName(),
