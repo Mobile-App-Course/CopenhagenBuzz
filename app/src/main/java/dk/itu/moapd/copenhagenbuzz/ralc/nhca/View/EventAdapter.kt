@@ -19,6 +19,7 @@ class EventAdapter(
     private val isLoggedIn : Boolean
 ) : ArrayAdapter<Event>(context, R.layout.event_row_item, data) {
 
+     private var favoriteEvents: List<Event> = emptyList()
      private class ViewHolder(val binding: EventRowItemBinding)
 
      override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -53,6 +54,15 @@ class EventAdapter(
              buttonShare.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
              editButton.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
 
+             // Change favorite icon color if the event is in the favoriteEvents list
+             // CHANGE SO THAT THE EVENTS THAT ARE NOT FAVORITES USE THE FAVORITE ICON THAT IS NOT OUTLINED,
+             // AND NOT THE TIMELINE ICON
+             if (favoriteEvents.contains(event)) {
+                 buttonFavorite.setIconResource(R.drawable.favorite_icon)
+             } else {
+                 buttonFavorite.setIconResource(R.drawable.timeline_icon)
+             }
+
              buttonFavorite.setOnClickListener { view ->
                  Snackbar.make(view, "Event Favorite!", Snackbar.LENGTH_SHORT).show()
              }
@@ -62,4 +72,9 @@ class EventAdapter(
              }
          }
      }
+
+    fun setFavoriteEvents(favoriteEvents: List<Event>) {
+        this.favoriteEvents = favoriteEvents
+        notifyDataSetChanged()
+    }
  }

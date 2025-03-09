@@ -9,12 +9,14 @@ import android.widget.ListView
 import androidx.fragment.app.viewModels
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
+import androidx.lifecycle.Observer
 
 /**
  * A simple [Fragment] subclass that displays a timeline of events.
  */
 class TimelineFragment : Fragment() {
 
+    private lateinit var eventAdapter: EventAdapter
     private val dataViewModel: DataViewModel by viewModels()
 
     /**
@@ -41,12 +43,16 @@ class TimelineFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val listView: ListView = view.findViewById(R.id.event_list_view)
+        val isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
 
         dataViewModel.events.observe(viewLifecycleOwner) { eventList ->
-            val isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
             val adapter = EventAdapter(requireContext(), R.layout.event_row_item, eventList, isLoggedIn)
             listView.adapter = adapter
         }
+
+        dataViewModel.favoriteEvents.observe(viewLifecycleOwner, Observer { favoriteEvents ->
+            (listView.adapter as? EventAdapter)?.setFavoriteEvents(favoriteEvents)
+        })
 
     }
 
