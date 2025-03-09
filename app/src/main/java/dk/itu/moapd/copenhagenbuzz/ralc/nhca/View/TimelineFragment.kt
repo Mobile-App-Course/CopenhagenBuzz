@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
@@ -17,7 +18,7 @@ import androidx.lifecycle.Observer
 class TimelineFragment : Fragment() {
 
     private lateinit var eventAdapter: EventAdapter
-    private val dataViewModel: DataViewModel by viewModels()
+    private val dataViewModel: DataViewModel by activityViewModels()
 
     /**
      * Called to have the fragment instantiate its user interface view.

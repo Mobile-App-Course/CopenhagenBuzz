@@ -36,7 +36,7 @@ class DataViewModel : ViewModel() {
     }
 
     private fun generateRandomFavorites (events: List<Event>): List<Event> {
-        val shuffledIndices = (events.indices).shuffled().take(5).sorted()
+        val shuffledIndices = (events.indices).shuffled().take(10).sorted()
         return shuffledIndices.mapNotNull { index -> events.getOrNull(index) }
     }
 
@@ -60,7 +60,7 @@ class DataViewModel : ViewModel() {
         return withContext(Dispatchers.Default) {
             // Simulate generating a list of events
             val faker = Faker()
-            List(10) { _ ->
+            List(20) { _ ->
                 Event(
                     eventName = faker.lorem().sentence(1),
                     eventLocation = faker.address().cityName(),
