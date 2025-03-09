@@ -25,4 +25,5 @@
     <string name="fragment_calendar_name">Calendar Fragment</string>
     <string name="fragment_favorites_name">Favorites Fragment</string>
     <string name="fragment_maps_name">Maps Fragment</string>
+    <string name="favorite_event_image">Image of the favorite event</string>
 </resources>
