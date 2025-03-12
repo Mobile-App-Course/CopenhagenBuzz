@@ -136,7 +136,7 @@
             }
 
             menuLogout.setOnMenuItemClickListener {
-                val intent = Intent(this, LoginActivityOLD::class.java)
+                val intent = Intent(this, LoginActivity::class.java)
                 intent.putExtra("isLoggedIn", false)
                 startActivity(intent)
                 finish()

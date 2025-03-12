@@ -7,7 +7,9 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import android.content.Intent
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
+import android.util.Log
 
 class LoginActivity : AppCompatActivity() {
 
@@ -23,7 +25,8 @@ class LoginActivity : AppCompatActivity() {
         // Choose authentication providers.
         val providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(),
-            AuthUI.IdpConfig.GoogleBuilder().build())
+            AuthUI.IdpConfig.GoogleBuilder().build(),
+            AuthUI.IdpConfig.AnonymousBuilder().build())
 
         // Create and launch sign-in intent.
         val signInIntent = AuthUI.getInstance()
@@ -49,18 +52,24 @@ class LoginActivity : AppCompatActivity() {
         when (result.resultCode) {
             RESULT_OK -> {
                 // Successfully signed in.
-                showSnackBar("User logged in the app.")
-                startMainActivity()
+                val user = FirebaseAuth.getInstance().currentUser
+                if (user != null && user.isAnonymous) {
+                    showSnackBar("User logged in anonymously.")
+                    startMainActivity(true)
+                } else {
+                    showSnackBar("User logged in the app.")
+                    startMainActivity()
+                }
             }
             else -> {
-                // Sign in failed.
-                showSnackBar("Authentication failed.")
+                    showSnackBar("Authentication failed")
+
             }
         }
     }
-    private fun startMainActivity() {
+    private fun startMainActivity(anonymous: Boolean = false) {
         val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("isLoggedIn", true)
+            intent.putExtra("isLoggedIn", !anonymous)
             startActivity(intent)
             finish()
     }
