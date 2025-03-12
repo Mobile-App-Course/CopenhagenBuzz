@@ -28,4 +28,12 @@
     <style name="CustomDropdownItem" parent="TextAppearance.Material3.BodyMedium">
         <!-- Will use the system colors -->
     </style>
+
+    <style name="Base.Theme.FirebaseAuthentication" parent="Theme.Material3.DayNight.NoActionBar">
+            <!-- Customize your light theme here. -->
+            <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.FirebaseAuthentication" parent="Base.Theme.FirebaseAuthentication" />
+
 </resources>

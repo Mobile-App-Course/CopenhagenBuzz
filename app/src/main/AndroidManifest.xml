@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -16,8 +16,7 @@
         tools:targetApi="31">
         <activity
             android:name=".View.LoginActivity"
-            android:exported="true"
-            android:theme="@style/Theme.CopenhagenBuzz">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -25,10 +24,15 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".View.LoginActivityOLD"
+            android:exported="true"
+            android:theme="@style/Theme.CopenhagenBuzz">
+        </activity>
+        <activity
             android:name=".View.MainActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan|adjustResize"
-            android:theme="@style/Theme.CopenhagenBuzz"/>
+            android:theme="@style/Theme.CopenhagenBuzz"
+            android:windowSoftInputMode="adjustPan|adjustResize"/>
     </application>
 
 </manifest>

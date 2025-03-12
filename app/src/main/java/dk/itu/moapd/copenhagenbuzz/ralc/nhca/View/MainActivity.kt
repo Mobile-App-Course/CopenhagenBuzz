@@ -22,31 +22,19 @@
 
     package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
-    import android.app.DatePickerDialog
     import android.content.Intent
     import androidx.navigation.fragment.NavHostFragment
-    import android.media.Image
     import android.os.Bundle
-    import android.util.Log
     import android.view.Menu
     import android.view.MenuItem
-    import android.widget.ArrayAdapter
-    import android.widget.AutoCompleteTextView
-    import android.widget.EditText
-    import android.widget.ImageView
     import androidx.appcompat.app.AppCompatActivity
     import androidx.navigation.ui.setupWithNavController
     import com.google.android.material.color.DynamicColors
-    import com.google.android.material.textfield.TextInputEditText
-    import com.google.android.material.floatingactionbutton.FloatingActionButton
-    import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
     import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
     import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
     import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ContentMainBinding
-    import java.util.Calendar
-    import com.google.android.material.snackbar.Snackbar
 
-    /**
+/**
      * The MainActivity class represents the main screen of the application, and also allows the user to input event details and add them to the event list.
      */
     class MainActivity : AppCompatActivity() {
@@ -140,7 +128,7 @@
          */
         private fun setMenuListeners() {
             menuProfile.setOnMenuItemClickListener {
-                val intent = Intent(this, LoginActivity::class.java)
+                val intent = Intent(this, LoginActivityOLD::class.java)
                 intent.putExtra("isLoggedIn", true)
                 startActivity(intent)
                 finish()
@@ -148,7 +136,7 @@
             }
 
             menuLogout.setOnMenuItemClickListener {
-                val intent = Intent(this, LoginActivity::class.java)
+                val intent = Intent(this, LoginActivityOLD::class.java)
                 intent.putExtra("isLoggedIn", false)
                 startActivity(intent)
                 finish()
