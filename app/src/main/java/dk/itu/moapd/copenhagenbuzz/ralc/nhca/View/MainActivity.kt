@@ -128,7 +128,7 @@
          */
         private fun setMenuListeners() {
             menuProfile.setOnMenuItemClickListener {
-                val intent = Intent(this, LoginActivityOLD::class.java)
+                val intent = Intent(this, LoginActivity::class.java)
                 intent.putExtra("isLoggedIn", true)
                 startActivity(intent)
                 finish()
