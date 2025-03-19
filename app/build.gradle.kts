@@ -55,15 +55,19 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.dotenv.kotlin)
 
     // Import the Firebase BoM
     implementation(platform(libs.firebase.bom))
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.firebase.ui.database)
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
 

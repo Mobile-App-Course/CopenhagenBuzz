@@ -33,9 +33,13 @@ import com.google.android.material.color.DynamicColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ContentMainBinding
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import io.github.cdimascio.dotenv.dotenv
 
 /**
  * The MainActivity class represents the main screen of the application, and also allows the user to input event details and add them to the event list.
@@ -49,6 +53,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var menuProfile: MenuItem
     private lateinit var menuLogout: MenuItem
 
+    private lateinit var database: DatabaseReference
+
     /**
      * Called when the activity is first created. This inflates the different bindings with the necessary variables.
      * It also sets up the listeners for the different UI components.
@@ -59,10 +65,19 @@ class MainActivity : AppCompatActivity() {
         androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
+        // Load environment variables
+        val dotenv = dotenv()
+
         // Apply dynamic colors if running on Android 12+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             DynamicColors.applyToActivityIfAvailable(this)
         }
+
+        // Enable offline persistence for Firebase
+        Firebase.database(dotenv["DATABASE_URL"]).setPersistenceEnabled(true)
+
+        database = Firebase.database(dotenv["DATABASE_URL"]).reference
+        database.keepSynced(true)
 
         // Check if the user is logged in
         val currentUser = FirebaseAuth.getInstance().currentUser

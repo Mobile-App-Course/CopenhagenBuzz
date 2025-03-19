@@ -1,6 +1,7 @@
 [versions]
 activityKtx = "1.10.1"
 agp = "8.8.0-alpha05"
+dotenvKotlin = "6.2.2"
 firebaseBom = "33.10.0"
 firebaseUiAuth = "7.2.0"
 fragmentKtx = "1.8.6"
@@ -20,15 +21,20 @@ navigationUiKtx = "2.8.7"
 activity = "1.10.0"
 picasso = "2.71828"
 
+
 [libraries]
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+dotenv-kotlin = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenvKotlin" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-ui-auth = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebaseUiAuth" }
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version = "23.2.0" }
+firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", version = "20.0.5" }
+firebase-storage-ktx = { module = "com.google.firebase:firebase-storage-ktx", version = "20.0.1" }
+firebase-ui-database = { module = "com.firebaseui:firebase-ui-database", version = "7.2.0" }
 javafaker = { module = "com.github.javafaker:javafaker", version.ref = "javafaker" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

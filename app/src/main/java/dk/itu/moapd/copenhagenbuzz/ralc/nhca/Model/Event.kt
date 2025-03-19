@@ -34,12 +34,14 @@ package dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model
  * @property eventType The category of the event.
  * @property eventDescription A brief description of the event.
  */
-data class Event (var eventName: String,
-                  var eventLocation: String,
-                  var eventPhotoURL: String,
-                  var eventDate: String,
-                  var eventType: String,
-                  var eventDescription: String) {
+data class Event (
+    var creatorUserId: String,
+    var eventName: String,
+    var eventLocation: String,
+    var eventPhotoURL: String,
+    var eventDate: String,
+    var eventType: String,
+    var eventDescription: String) {
 
 
     /**
