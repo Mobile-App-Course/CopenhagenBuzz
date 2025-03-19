@@ -18,7 +18,29 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        createSignInIntent()
+
+        val isAnonymousLogin = intent.getBooleanExtra("isAnonymousLogin", false)
+        if (isAnonymousLogin) {
+            createAnonymousSignInIntent()
+        } else {
+            createSignInIntent()
+        }
+    }
+
+    private fun createAnonymousSignInIntent() {
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.AnonymousBuilder().build()
+        )
+
+        val signInIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .setIsSmartLockEnabled(false)
+            .setLogo(R.drawable.baseline_firebase)
+            .setTheme(R.style.Theme_FirebaseAuthentication)
+            .build()
+
+        signInLauncher.launch(signInIntent)
     }
 
     private fun createSignInIntent() {
@@ -69,9 +91,10 @@ class LoginActivity : AppCompatActivity() {
     }
     private fun startMainActivity(anonymous: Boolean = false) {
         val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("isLoggedIn", !anonymous)
-            startActivity(intent)
-            finish()
+
+        intent.putExtra("isLoggedIn", !anonymous)
+        startActivity(intent)
+        finish()
     }
 
     private fun showSnackBar(message: String) {

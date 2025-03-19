@@ -20,127 +20,154 @@
     SOFTWARE.
      */
 
-    package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
+package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
-    import android.content.Intent
-    import androidx.navigation.fragment.NavHostFragment
-    import android.os.Bundle
-    import android.view.Menu
-    import android.view.MenuItem
-    import androidx.appcompat.app.AppCompatActivity
-    import androidx.navigation.ui.setupWithNavController
-    import com.google.android.material.color.DynamicColors
-    import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
-    import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
-    import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ContentMainBinding
+import android.content.Intent
+import androidx.navigation.fragment.NavHostFragment
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.color.DynamicColors
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ContentMainBinding
 
 /**
-     * The MainActivity class represents the main screen of the application, and also allows the user to input event details and add them to the event list.
+ * The MainActivity class represents the main screen of the application, and also allows the user to input event details and add them to the event list.
+ */
+class MainActivity : AppCompatActivity() {
+
+    // Binding objects for the activity and content layouts
+    private lateinit var activityMainBinding: ActivityMainBinding
+    private lateinit var contentMainBinding: ContentMainBinding
+
+    private lateinit var menuProfile: MenuItem
+    private lateinit var menuLogout: MenuItem
+
+    /**
+     * Called when the activity is first created. This inflates the different bindings with the necessary variables.
+     * It also sets up the listeners for the different UI components.
+     * @param savedInstanceState Saves the latest state of the activity, if it has been shut down.
+     *
      */
-    class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        super.onCreate(savedInstanceState)
 
-        // Binding objects for the activity and content layouts
-        private lateinit var activityMainBinding: ActivityMainBinding
-        private lateinit var contentMainBinding: ContentMainBinding
-        
-        private lateinit var menuProfile: MenuItem
-        private lateinit var menuLogout: MenuItem
-
-        /**
-         * Called when the activity is first created. This inflates the different bindings with the necessary variables.
-         * It also sets up the listeners for the different UI components.
-         * @param savedInstanceState Saves the latest state of the activity, if it has been shut down.
-         *
-         */
-        override fun onCreate(savedInstanceState: Bundle?) {
-            androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
-            super.onCreate(savedInstanceState)
-
-            // Apply dynamic colors if running on Android 12+
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                DynamicColors.applyToActivityIfAvailable(this)
-            }
-
-            // Inflate the layout for this activity
-            activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
-            // Set the content view of the activity
-            setContentView(activityMainBinding.root)
-
-            // Bind the content layout
-            contentMainBinding = ContentMainBinding.bind(activityMainBinding.root.findViewById(R.id.content_main))
-
-            // Set the toolbar as the action bar
-            setSupportActionBar(contentMainBinding.toolbar)
-
-
-            val navHostFragment = supportFragmentManager
-                .findFragmentById(R.id.fragment_container_view) as NavHostFragment
-            val navController = navHostFragment.navController
-
-            activityMainBinding.bottomNavigation.setupWithNavController(navController)
-
-            // Conditionally show the add_event_fragment item
-            val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
-            val bottomNavigationMenu = activityMainBinding.bottomNavigation.menu
-            val addEventMenuItem = bottomNavigationMenu.findItem(R.id.add_event_fragment)
-            addEventMenuItem.isVisible = isLoggedIn
-
-            // Conditionally show the favorites_fragment item
-            val favoritesMenuItem = bottomNavigationMenu.findItem(R.id.favorites_fragment)
-            favoritesMenuItem.isVisible = isLoggedIn
-
-            // Conditionally show event row item buttons if logged in
-            // Get this element @+id/edit_button
+        // Apply dynamic colors if running on Android 12+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            DynamicColors.applyToActivityIfAvailable(this)
         }
 
-        /**
-         * Inflate the menu items for use in the action bar.
-         * @param menu The options menu in which you place your items.
-         * @return Boolean Return true for the menu to be displayed; if false, it will not be shown.
-         */
-        override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-            menuInflater.inflate(R.menu.menu_toolbar, menu)
-            if (menu != null) {
-                menuProfile = menu.findItem(R.id.menu_profile)
-                menuLogout = menu.findItem(R.id.menu_logout)
-                //addEventButton = menu.findItem(R.id.add_event_fragment)
-            }
-
-            setMenuListeners()
-            return true
+        // Check if the user is logged in
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            // If not logged in, start LoginActivity for anonymous login
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.putExtra("isAnonymousLogin", true)
+            startActivity(intent)
+            finish()
+            return
+        } else {
+            // Show Snackbar with authentication type
+            showAuthTypeSnackbar(currentUser)
         }
 
-        /**
-         * Prepare the options menu before it is displayed.
-         * @param menu The options menu as last shown or first initialized by onCreateOptionsMenu().
-         * @return Boolean Return true for the menu to be displayed; if false, it will not be shown.
-         */
-        override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-            val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
-            menuProfile.isVisible = isLoggedIn
-            menuLogout.isVisible = !isLoggedIn
-            //addEventButton.isVisible = isLoggedIn
-            return super.onPrepareOptionsMenu(menu)
+        // Inflate the layout for this activity
+        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        // Set the content view of the activity
+        setContentView(activityMainBinding.root)
+
+        // Bind the content layout
+        contentMainBinding = ContentMainBinding.bind(activityMainBinding.root.findViewById(R.id.content_main))
+
+        // Set the toolbar as the action bar
+        setSupportActionBar(contentMainBinding.toolbar)
+
+
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.fragment_container_view) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        activityMainBinding.bottomNavigation.setupWithNavController(navController)
+
+        // Conditionally show the add_event_fragment item
+        val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
+        val bottomNavigationMenu = activityMainBinding.bottomNavigation.menu
+        val addEventMenuItem = bottomNavigationMenu.findItem(R.id.add_event_fragment)
+        addEventMenuItem.isVisible = isLoggedIn
+
+        // Conditionally show the favorites_fragment item
+        val favoritesMenuItem = bottomNavigationMenu.findItem(R.id.favorites_fragment)
+        favoritesMenuItem.isVisible = isLoggedIn
+
+        // Conditionally show event row item buttons if logged in
+        // Get this element @+id/edit_button
+    }
+
+    /**
+     * Inflate the menu items for use in the action bar.
+     * @param menu The options menu in which you place your items.
+     * @return Boolean Return true for the menu to be displayed; if false, it will not be shown.
+     */
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_toolbar, menu)
+        if (menu != null) {
+            menuProfile = menu.findItem(R.id.menu_profile)
+            menuLogout = menu.findItem(R.id.menu_logout)
+            //addEventButton = menu.findItem(R.id.add_event_fragment)
         }
 
-        /**
-         * Set listeners to display the correct menu items (icons) based on the user's login status.
-         */
-        private fun setMenuListeners() {
-            menuProfile.setOnMenuItemClickListener {
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.putExtra("isLoggedIn", true)
-                startActivity(intent)
-                finish()
-                true
-            }
+        setMenuListeners()
+        return true
+    }
 
-            menuLogout.setOnMenuItemClickListener {
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.putExtra("isLoggedIn", false)
-                startActivity(intent)
-                finish()
-                true
-            }
+    /**
+     * Prepare the options menu before it is displayed.
+     * @param menu The options menu as last shown or first initialized by onCreateOptionsMenu().
+     * @return Boolean Return true for the menu to be displayed; if false, it will not be shown.
+     */
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
+        menuProfile.isVisible = isLoggedIn
+        menuLogout.isVisible = !isLoggedIn
+        //addEventButton.isVisible = isLoggedIn
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    /**
+     * Set listeners to display the correct menu items (icons) based on the user's login status.
+     */
+    private fun setMenuListeners() {
+        menuProfile.setOnMenuItemClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.putExtra("isLoggedIn", true)
+            startActivity(intent)
+            finish()
+            true
+        }
+
+        menuLogout.setOnMenuItemClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.putExtra("isLoggedIn", false)
+            startActivity(intent)
+            finish()
+            true
         }
     }
+
+    private fun showAuthTypeSnackbar(user: FirebaseUser) {
+        val authType = when {
+            user.isAnonymous -> "Anonymous"
+            user.providerData.any { it.providerId == "google.com" } -> "Google"
+            user.providerData.any { it.providerId == "password" } -> "Email"
+            else -> "Unknown"
+        }
+        Snackbar.make(findViewById(android.R.id.content), "Logged in as $authType", Snackbar.LENGTH_LONG).show()
+    }
+}
