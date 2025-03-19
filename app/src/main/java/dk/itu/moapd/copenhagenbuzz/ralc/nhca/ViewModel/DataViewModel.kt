@@ -62,6 +62,7 @@ class DataViewModel : ViewModel() {
             val faker = Faker()
             List(20) { _ ->
                 Event(
+                    creatorUserId = faker.number().randomNumber().toString(),
                     eventName = faker.lorem().sentence(1),
                     eventLocation = faker.address().cityName(),
                     eventPhotoURL = "https://picsum.photos/300/200?random=${System.currentTimeMillis()}",

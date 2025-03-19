@@ -7,10 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
 import androidx.lifecycle.Observer
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
+import io.github.cdimascio.dotenv.dotenv
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import com.firebase.ui.database.FirebaseListOptions
+import com.firebase.ui.database.FirebaseListAdapter
 
 /**
  * A simple [Fragment] subclass that displays a timeline of events.
@@ -46,10 +51,14 @@ class TimelineFragment : Fragment() {
         val listView: ListView = view.findViewById(R.id.event_list_view)
         val isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
 
-        dataViewModel.events.observe(viewLifecycleOwner) { eventList ->
-            val adapter = EventAdapter(requireContext(), R.layout.event_row_item, eventList, isLoggedIn)
-            listView.adapter = adapter
-        }
+        // Load environment variables
+        val dotenv = dotenv()
+
+        val databaseRef = Firebase.database(dotenv["DATABASE_URL"]).getReference("events")
+        val query = databaseRef.orderByChild("eventDate")
+
+        eventAdapter = EventAdapter.create(query, requireContext(), isLoggedIn)
+        listView.adapter = eventAdapter
 
         dataViewModel.favoriteEvents.observe(viewLifecycleOwner, Observer { favoriteEvents ->
             (listView.adapter as? EventAdapter)?.setFavoriteEvents(favoriteEvents)
