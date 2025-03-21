@@ -66,7 +66,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // Load environment variables
-        val dotenv = dotenv()
+        val dotenv = dotenv {
+            directory = "./assets"  // Change from "/assets" to "./assets"
+            filename = "env"
+        }
+
 
         // Apply dynamic colors if running on Android 12+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {

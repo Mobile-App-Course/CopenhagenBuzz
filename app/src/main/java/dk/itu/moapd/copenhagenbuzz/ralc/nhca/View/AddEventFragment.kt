@@ -32,7 +32,7 @@ class AddEventFragment : Fragment() {
     private lateinit var addEventButton: Button
 
     // Event model
-    private val event: Event = Event("", "", "", "", "", "")
+    private val event: Event = Event("", "", "", "", "", "", "")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

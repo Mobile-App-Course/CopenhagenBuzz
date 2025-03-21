@@ -10,12 +10,9 @@ import androidx.fragment.app.activityViewModels
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
 import androidx.lifecycle.Observer
-import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import io.github.cdimascio.dotenv.dotenv
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.firebase.ui.database.FirebaseListOptions
-import com.firebase.ui.database.FirebaseListAdapter
 
 /**
  * A simple [Fragment] subclass that displays a timeline of events.
@@ -52,7 +49,11 @@ class TimelineFragment : Fragment() {
         val isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
 
         // Load environment variables
-        val dotenv = dotenv()
+        val dotenv = dotenv {
+            directory = "./assets"  // Change from "/assets" to "./assets"
+            filename = "env"
+        }
+
 
         val databaseRef = Firebase.database(dotenv["DATABASE_URL"]).getReference("events")
         val query = databaseRef.orderByChild("eventDate")

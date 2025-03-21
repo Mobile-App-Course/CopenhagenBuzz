@@ -39,6 +39,21 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    sourceSets {
+        getByName("main") {
+            assets {
+                srcDirs("src/main/assets")
+            }
+        }
+    }
+
+    lint {
+        baseline = file("lint-baseline.xml")
+        // Or alternatively disable just this specific error:
+        // disable += "NotificationPermission"
+    }
+
 }
 
 dependencies {

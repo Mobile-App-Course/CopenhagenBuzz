@@ -32,4 +32,7 @@ google-services.json
 # Android Profiling
 *.hprof
 
-.env
+app/src/main/assets/.env
+
+# Ignore environment file
+app/src/main/assets/env

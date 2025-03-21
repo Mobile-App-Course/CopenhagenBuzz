@@ -1,0 +1,901 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.8.0-alpha05" type="baseline" client="gradle" dependencies="false" name="AGP (8.8.0-alpha05)" variant="all" version="8.8.0-alpha05">
+
+    <issue
+        id="ObsoleteLintCustomCheck"
+        message="Library lint checks out of date;&#xA;these checks **will be skipped**!&#xA;&#xA;Lint found an issue registry (`androidx.navigation.common.lint.NavigationCommonIssueRegistry`)&#xA;which was compiled against an older version of lint&#xA;than this one. This is usually fine, but not in this&#xA;case; some basic verification shows that the lint&#xA;check jar references (for example) the following API&#xA;which is no longer valid in this version of lint:&#xA;org.jetbrains.kotlin.analysis.api.lifetime.KaDefaultLifetimeTokenProvider#Companion&#xA;(Referenced from androidx/navigation/lint/UtilKt.class)&#xA;&#xA;Therefore, this lint check library is **not** included&#xA;in analysis. This affects the following lint checks:&#xA;`EmptyNavDeepLink`,`WrongStartDestinationType`,`MissingSerializableAnnotation`,`MissingKeepAnnotation`&#xA;&#xA;Recompile the checks against the latest version, or if&#xA;this is a check bundled with a third-party library, see&#xA;if there is a more recent version available.&#xA;&#xA;Version of Lint API this lint check is using is 14.&#xA;The Lint API version currently running is 16 (8.7+).">
+        <location
+            file="build/intermediates/lint-cache/updateLintBaselineDebug/migrated-jars/androidx.navigation.common.lint.NavigationCommonIssueRegistry-5daa12651be0734e..jar"/>
+    </issue>
+
+    <issue
+        id="ObsoleteLintCustomCheck"
+        message="Library lint checks out of date;&#xA;these checks **will be skipped**!&#xA;&#xA;Lint found an issue registry (`androidx.navigation.runtime.lint.NavigationRuntimeIssueRegistry`)&#xA;which was compiled against an older version of lint&#xA;than this one. This is usually fine, but not in this&#xA;case; some basic verification shows that the lint&#xA;check jar references (for example) the following API&#xA;which is no longer valid in this version of lint:&#xA;org.jetbrains.kotlin.analysis.api.lifetime.KaDefaultLifetimeTokenProvider#Companion&#xA;(Referenced from androidx/navigation/lint/UtilKt.class)&#xA;&#xA;Therefore, this lint check library is **not** included&#xA;in analysis. This affects the following lint checks:&#xA;`DeepLinkInActivityDestination`,`WrongStartDestinationType`,`WrongNavigateRouteType`,`MissingKeepAnnotation`,`MissingSerializableAnnotation`&#xA;&#xA;Recompile the checks against the latest version, or if&#xA;this is a check bundled with a third-party library, see&#xA;if there is a more recent version available.&#xA;&#xA;Version of Lint API this lint check is using is 14.&#xA;The Lint API version currently running is 16 (8.7+).">
+        <location
+            file="build/intermediates/lint-cache/updateLintBaselineDebug/migrated-jars/androidx.navigation.runtime.lint.NavigationRuntimeIssueRegistry-a8fea42aedb9bdb3..jar"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.application than 8.8.0-alpha05 is available: 8.9.0"
+        errorLine1="agp = &quot;8.8.0-alpha05&quot;"
+        errorLine2="      ~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="3"
+            column="7"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.application than 8.8.0-alpha05 is available: 8.9.0"
+        errorLine1="agp = &quot;8.8.0-alpha05&quot;"
+        errorLine2="      ~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="3"
+            column="7"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.application than 8.8.0-alpha05 is available: 8.9.0"
+        errorLine1="agp = &quot;8.8.0-alpha05&quot;"
+        errorLine2="      ~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="3"
+            column="7"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:firebase-bom than 33.10.0 is available: 33.11.0"
+        errorLine1="firebaseBom = &quot;33.10.0&quot;"
+        errorLine2="              ~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="5"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:firebase-bom than 33.10.0 is available: 33.11.0"
+        errorLine1="firebaseBom = &quot;33.10.0&quot;"
+        errorLine2="              ~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="5"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:firebase-bom than 33.10.0 is available: 33.11.0"
+        errorLine1="firebaseBom = &quot;33.10.0&quot;"
+        errorLine2="              ~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="5"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.constraintlayout:constraintlayout than 2.2.0 is available: 2.2.1"
+        errorLine1="constraintlayout = &quot;2.2.0&quot;"
+        errorLine2="                   ~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="17"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.constraintlayout:constraintlayout than 2.2.0 is available: 2.2.1"
+        errorLine1="constraintlayout = &quot;2.2.0&quot;"
+        errorLine2="                   ~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="17"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.constraintlayout:constraintlayout than 2.2.0 is available: 2.2.1"
+        errorLine1="constraintlayout = &quot;2.2.0&quot;"
+        errorLine2="                   ~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="17"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.material:material than 1.11.0 is available: 1.12.0"
+        errorLine1="materialVersion = &quot;1.11.0&quot;"
+        errorLine2="                  ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="18"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.material:material than 1.11.0 is available: 1.12.0"
+        errorLine1="materialVersion = &quot;1.11.0&quot;"
+        errorLine2="                  ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="18"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.material:material than 1.11.0 is available: 1.12.0"
+        errorLine1="materialVersion = &quot;1.11.0&quot;"
+        errorLine2="                  ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="18"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-fragment-ktx than 2.8.7 is available: 2.8.9"
+        errorLine1="navigationFragmentKtx = &quot;2.8.7&quot;"
+        errorLine2="                        ~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="19"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-fragment-ktx than 2.8.7 is available: 2.8.9"
+        errorLine1="navigationFragmentKtx = &quot;2.8.7&quot;"
+        errorLine2="                        ~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="19"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-fragment-ktx than 2.8.7 is available: 2.8.9"
+        errorLine1="navigationFragmentKtx = &quot;2.8.7&quot;"
+        errorLine2="                        ~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="19"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-ui-ktx than 2.8.7 is available: 2.8.9"
+        errorLine1="navigationUiKtx = &quot;2.8.7&quot;"
+        errorLine2="                  ~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="20"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-ui-ktx than 2.8.7 is available: 2.8.9"
+        errorLine1="navigationUiKtx = &quot;2.8.7&quot;"
+        errorLine2="                  ~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="20"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-ui-ktx than 2.8.7 is available: 2.8.9"
+        errorLine1="navigationUiKtx = &quot;2.8.7&quot;"
+        errorLine2="                  ~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="20"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.activity:activity than 1.10.0 is available: 1.10.1"
+        errorLine1="activity = &quot;1.10.0&quot;"
+        errorLine2="           ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="21"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.activity:activity than 1.10.0 is available: 1.10.1"
+        errorLine1="activity = &quot;1.10.0&quot;"
+        errorLine2="           ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="21"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.activity:activity than 1.10.0 is available: 1.10.1"
+        errorLine1="activity = &quot;1.10.0&quot;"
+        errorLine2="           ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="21"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:firebase-database-ktx than 20.0.5 is available: 21.0.0"
+        errorLine1="firebase-database-ktx = { module = &quot;com.google.firebase:firebase-database-ktx&quot;, version = &quot;20.0.5&quot; }"
+        errorLine2="                                                                                          ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="35"
+            column="91"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:firebase-database-ktx than 20.0.5 is available: 21.0.0"
+        errorLine1="firebase-database-ktx = { module = &quot;com.google.firebase:firebase-database-ktx&quot;, version = &quot;20.0.5&quot; }"
+        errorLine2="                                                                                          ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="35"
+            column="91"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:firebase-database-ktx than 20.0.5 is available: 21.0.0"
+        errorLine1="firebase-database-ktx = { module = &quot;com.google.firebase:firebase-database-ktx&quot;, version = &quot;20.0.5&quot; }"
+        errorLine2="                                                                                          ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="35"
+            column="91"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:firebase-storage-ktx than 20.0.1 is available: 21.0.1"
+        errorLine1="firebase-storage-ktx = { module = &quot;com.google.firebase:firebase-storage-ktx&quot;, version = &quot;20.0.1&quot; }"
+        errorLine2="                                                                                        ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="36"
+            column="89"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:firebase-storage-ktx than 20.0.1 is available: 21.0.1"
+        errorLine1="firebase-storage-ktx = { module = &quot;com.google.firebase:firebase-storage-ktx&quot;, version = &quot;20.0.1&quot; }"
+        errorLine2="                                                                                        ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="36"
+            column="89"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.firebase:firebase-storage-ktx than 20.0.1 is available: 21.0.1"
+        errorLine1="firebase-storage-ktx = { module = &quot;com.google.firebase:firebase-storage-ktx&quot;, version = &quot;20.0.1&quot; }"
+        errorLine2="                                                                                        ~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="36"
+            column="89"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies com.google.android.material:material but with different version"
+        errorLine1="material = { group = &quot;com.google.android.material&quot;, name = &quot;material&quot;, version.ref = &quot;material&quot; }"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="43"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies com.google.android.material:material but with different version"
+        errorLine1="material = { group = &quot;com.google.android.material&quot;, name = &quot;material&quot;, version.ref = &quot;material&quot; }"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="43"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies com.google.android.material:material but with different version"
+        errorLine1="material = { group = &quot;com.google.android.material&quot;, name = &quot;material&quot;, version.ref = &quot;material&quot; }"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="43"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies com.google.android.material:material but with different version"
+        errorLine1="material-v1110 = { module = &quot;com.google.android.material:material&quot;, version.ref = &quot;materialVersion&quot; }"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="48"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies com.google.android.material:material but with different version"
+        errorLine1="material-v1110 = { module = &quot;com.google.android.material:material&quot;, version.ref = &quot;materialVersion&quot; }"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="48"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="SimilarGradleDependency"
+        message="There are multiple dependencies com.google.android.material:material but with different version"
+        errorLine1="material-v1110 = { module = &quot;com.google.android.material:material&quot;, version.ref = &quot;materialVersion&quot; }"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Documents/GitHub/CopenhagenBuzz/gradle/libs.versions.toml"
+            line="48"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 27"
+        errorLine1="        &lt;item name=&quot;android:windowLayoutInDisplayCutoutMode&quot; tools:targetApi=&quot;o_mr1&quot;>shortEdges&lt;/item>"
+        errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-night/themes.xml"
+            line="9"
+            column="62"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 27"
+        errorLine1="        &lt;item name=&quot;android:windowLayoutInDisplayCutoutMode&quot; tools:targetApi=&quot;o_mr1&quot;>shortEdges&lt;/item>"
+        errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/themes.xml"
+            line="10"
+            column="62"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="This folder configuration (`v23`) is unnecessary; `minSdkVersion` is 27. Merge all the resources in this folder into `values`.">
+        <location
+            file="src/main/res/values-v23"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `?attr/colorSurface` with a theme that also paints a background (inferred theme is `@style/Theme_CopenhagenBuzz`)"
+        errorLine1="    android:background=&quot;?attr/colorSurface&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_login.xml"
+            line="9"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `?attr/colorSurface` with a theme that also paints a background (inferred theme is `@style/Theme.CopenhagenBuzz`)"
+        errorLine1="    android:background=&quot;?attr/colorSurface&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/content_main.xml"
+            line="7"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.seed` appears to be unused"
+        errorLine1="    &lt;color name=&quot;seed&quot;>#BC6C25&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="4"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_primary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_primary&quot;>#BC6C25&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="7"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onPrimary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onPrimary&quot;>#FFFFFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="8"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_primaryContainer` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_primaryContainer&quot;>#FFDCBB&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="9"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onPrimaryContainer` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onPrimaryContainer&quot;>#3A1D00&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="10"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_secondary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_secondary&quot;>#606C38&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="11"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onSecondary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onSecondary&quot;>#FFFFFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="12"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_secondaryContainer` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_secondaryContainer&quot;>#DFE4BF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="13"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onSecondaryContainer` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onSecondaryContainer&quot;>#1B230F&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="14"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_tertiary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_tertiary&quot;>#DDA15E&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="15"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onTertiary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onTertiary&quot;>#FFFFFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="16"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_tertiaryContainer` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_tertiaryContainer&quot;>#FEFAE0&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="17"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onTertiaryContainer` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onTertiaryContainer&quot;>#2A1700&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="18"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_error` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_error&quot;>#BA1A1A&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="21"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_errorContainer` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_errorContainer&quot;>#FFDAD6&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="22"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onError` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onError&quot;>#FFFFFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="23"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onErrorContainer` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onErrorContainer&quot;>#410002&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="24"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_background` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_background&quot;>#FFFBFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="25"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onBackground` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onBackground&quot;>#201A17&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="26"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_surface` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_surface&quot;>#FFFBFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="27"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onSurface` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onSurface&quot;>#201A17&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="28"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_surfaceVariant` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_surfaceVariant&quot;>#F3DFD1&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="29"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_onSurfaceVariant` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_onSurfaceVariant&quot;>#52443C&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="30"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_outline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_outline&quot;>#84746A&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="31"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_inverseOnSurface` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_inverseOnSurface&quot;>#FBEEE8&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="32"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.md_theme_inverseSurface` appears to be unused"
+        errorLine1="    &lt;color name=&quot;md_theme_inverseSurface&quot;>#362F2B&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="33"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.bg_primary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;bg_primary&quot;>#1B230F&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="36"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.bg_secondary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;bg_secondary&quot;>#606C38&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="37"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.primary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;primary&quot;>#BC6C25&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="38"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.secondary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;secondary&quot;>#DDA15E&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="39"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.tertiary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;tertiary&quot;>#FEFAE0&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="40"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.white` appears to be unused"
+        errorLine1="    &lt;color name=&quot;white&quot;>#FFFFFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="41"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.text_primary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;text_primary&quot;>#FAF9F9&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="42"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.text_secondary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;text_secondary&quot;>#0a0a0a&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="43"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.fab_margin` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;fab_margin&quot;>16dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/dimens.xml"
+            line="2"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.margin_xlarge` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;margin_xlarge&quot;>48dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/dimens.xml"
+            line="7"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.margin_extra_large` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;margin_extra_large&quot;>120dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/dimens.xml"
+            line="8"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.event_add_icon` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:autoMirrored=&quot;true&quot; android:height=&quot;48dp&quot; android:tint=&quot;#000000&quot; android:viewportHeight=&quot;24&quot; android:viewportWidth=&quot;24&quot; android:width=&quot;48dp&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/drawable/event_add_icon.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.hello_blank_fragment` appears to be unused"
+        errorLine1="    &lt;string name=&quot;hello_blank_fragment&quot;>Hello blank fragment&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.fragment_favorites_name` appears to be unused"
+        errorLine1="    &lt;string name=&quot;fragment_favorites_name&quot;>Favorites Fragment&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="26"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.AcceptAndCancelText` appears to be unused"
+        errorLine1="    &lt;style name=&quot;AcceptAndCancelText&quot; parent=&quot;Widget.Material3.Button.TextButton.Dialog&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/themes.xml"
+            line="23"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.thumb_up` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:autoMirrored=&quot;true&quot; android:height=&quot;48dp&quot; android:tint=&quot;#000000&quot; android:viewportHeight=&quot;24&quot; android:viewportWidth=&quot;24&quot; android:width=&quot;48dp&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/drawable/thumb_up.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/baseline_firebase.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/baseline_firebase.png"/>
+    </issue>
+
+</issues>
