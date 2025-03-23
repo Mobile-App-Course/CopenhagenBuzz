@@ -10,6 +10,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import android.util.Log
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
+import io.github.cdimascio.dotenv.dotenv
 
 class LoginActivity : AppCompatActivity() {
 
@@ -18,6 +21,15 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Load environment variables
+        val dotenv = dotenv {
+            directory = "./assets"
+            filename = "env"
+        }
+
+        // Enable offline persistence for Firebase
+        Firebase.database(dotenv["DATABASE_URL"]).setPersistenceEnabled(true)
 
         val isAnonymousLogin = intent.getBooleanExtra("isAnonymousLogin", false)
         if (isAnonymousLogin) {
@@ -28,19 +40,15 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun createAnonymousSignInIntent() {
-        val providers = arrayListOf(
-            AuthUI.IdpConfig.AnonymousBuilder().build()
-        )
-
-        val signInIntent = AuthUI.getInstance()
-            .createSignInIntentBuilder()
-            .setAvailableProviders(providers)
-            .setIsSmartLockEnabled(false)
-            .setLogo(R.drawable.baseline_firebase)
-            .setTheme(R.style.Theme_FirebaseAuthentication)
-            .build()
-
-        signInLauncher.launch(signInIntent)
+        FirebaseAuth.getInstance().signInAnonymously()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    showSnackBar("User logged in anonymously.")
+                    startMainActivity(true)
+                } else {
+                    showSnackBar("Authentication failed: ${task.exception?.message}")
+                }
+            }
     }
 
     private fun createSignInIntent() {

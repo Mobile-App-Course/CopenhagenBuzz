@@ -77,8 +77,6 @@ class MainActivity : AppCompatActivity() {
             DynamicColors.applyToActivityIfAvailable(this)
         }
 
-        // Enable offline persistence for Firebase
-        Firebase.database(dotenv["DATABASE_URL"]).setPersistenceEnabled(true)
 
         database = Firebase.database(dotenv["DATABASE_URL"]).reference
         database.keepSynced(true)
