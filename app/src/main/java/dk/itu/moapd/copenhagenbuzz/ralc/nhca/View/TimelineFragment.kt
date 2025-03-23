@@ -1,6 +1,7 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +11,13 @@ import androidx.fragment.app.activityViewModels
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
 import androidx.lifecycle.Observer
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import io.github.cdimascio.dotenv.dotenv
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 
 /**
  * A simple [Fragment] subclass that displays a timeline of events.
@@ -55,8 +60,27 @@ class TimelineFragment : Fragment() {
         }
 
 
-        val databaseRef = Firebase.database(dotenv["DATABASE_URL"]).getReference("events")
+        val databaseRef = Firebase.database(dotenv["DATABASE_URL"]).getReference("copenhagen_buzz/events")
         val query = databaseRef.orderByChild("eventDate")
+
+        // Used to log if there is data retrieval or not
+        query.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    Log.d("TimelineFragment", "Data retrieved: ${snapshot.childrenCount} events")
+                    for (eventSnapshot in snapshot.children) {
+                        val event = eventSnapshot.getValue(Event::class.java)
+                        Log.d("TimelineFragment", "Event: $event")
+                    }
+                } else {
+                    Log.d("TimelineFragment", "No data found")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("TimelineFragment", "Database error: ${error.message}")
+            }
+        })
 
         eventAdapter = EventAdapter.create(query, requireContext(), isLoggedIn)
         listView.adapter = eventAdapter
