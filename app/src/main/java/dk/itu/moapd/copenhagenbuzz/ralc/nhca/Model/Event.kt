@@ -39,11 +39,11 @@ data class Event (
     var eventName: String,
     var eventLocation: String,
     var eventPhotoURL: String,
-    var eventDate: String,
+    var eventDate: Long,
     var eventType: String,
     var eventDescription: String) {
 
-
+    constructor() : this("", "", "", "", 0L, "", "")
     /**
      * Returns a string representation of the Event object.
      *

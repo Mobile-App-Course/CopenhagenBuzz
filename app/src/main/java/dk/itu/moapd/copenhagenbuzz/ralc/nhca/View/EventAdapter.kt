@@ -11,6 +11,8 @@ import com.squareup.picasso.Picasso
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.EventRowItemBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EventAdapter(
     options: FirebaseListOptions<Event>,
@@ -48,7 +50,12 @@ class EventAdapter(
         with(binding) {
             Picasso.get().load(event.eventPhotoURL).into(eventPhotoImageView)
             eventNameTextView.text = event.eventName
-            eventSubtitleTextView.text = context.getString(R.string.event_subtitle, event.eventDate, event.eventLocation, event.eventType)
+            // Format the timestamp into a readable date string
+            val date = Date(event.eventDate)
+            val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(date)
+            eventSubtitleTextView.text = context.getString(R.string.event_subtitle, formattedDate, event.eventLocation, event.eventType)
+
+
             eventDescriptionTextView.text = event.eventDescription
 
             // Conditionally render buttons

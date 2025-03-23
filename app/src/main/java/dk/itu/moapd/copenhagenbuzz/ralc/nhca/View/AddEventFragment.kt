@@ -32,7 +32,7 @@ class AddEventFragment : Fragment() {
     private lateinit var addEventButton: Button
 
     // Event model
-    private val event: Event = Event("", "", "", "", "", "", "")
+    private val event: Event = Event("", "", "", "", 0L, "", "")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -80,7 +80,19 @@ class AddEventFragment : Fragment() {
                 event.eventName = eventName.text.toString().trim()
                 event.eventLocation = eventLocation.text.toString().trim()
                 event.eventPhotoURL = eventPhotoURL.text.toString().trim()
-                event.eventDate = eventDate.text.toString().trim()
+
+
+
+                val dateString = eventDate.text.toString().trim()
+                val timestamp = convertDateToTimestamp(dateString)
+
+                if (timestamp == -1L) {
+                    // Show error to user
+                    Snackbar.make(binding.root, "Invalid date format. Please use DD/MM/YYYY format",
+                        Snackbar.LENGTH_LONG).show()
+                    return@setOnClickListener
+                }
+                event.eventDate = timestamp
                 event.eventType = eventType.text.toString().trim()
                 event.eventDescription = eventDescription.text.toString().trim()
                 showMessage()
@@ -153,6 +165,30 @@ class AddEventFragment : Fragment() {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
             .setAnchorView(addEventButton)
             .show()
+    }
+
+    /**
+     * Converts a date string in format "DD/MM/YYYY" to a timestamp in milliseconds
+     * Returns a distinctive error value (-1L) if parsing fails
+     */
+    private fun convertDateToTimestamp(dateString: String): Long {
+        return try {
+            val parts = dateString.split("/")
+            if (parts.size == 3) {
+                val day = parts[0].toInt()
+                val month = parts[1].toInt() - 1 // Calendar months are 0-based
+                val year = parts[2].toInt()
+
+                val calendar = Calendar.getInstance()
+                calendar.set(year, month, day, 0, 0, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+                calendar.timeInMillis
+            } else {
+                -1L // Return an error value instead, which can then be checked on
+            }
+        } catch (e: Exception) {
+            -1L // Error value
+        }
     }
 
     companion object {

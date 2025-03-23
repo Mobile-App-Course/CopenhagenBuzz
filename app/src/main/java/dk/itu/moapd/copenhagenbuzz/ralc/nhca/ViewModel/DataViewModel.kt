@@ -60,13 +60,16 @@ class DataViewModel : ViewModel() {
         return withContext(Dispatchers.Default) {
             // Simulate generating a list of events
             val faker = Faker()
-            List(20) { _ ->
+            return@withContext List(20) { _ ->
+                val fakeDate = faker.date().birthday()
+                val timestamp = fakeDate.time
+
                 Event(
                     creatorUserId = faker.number().randomNumber().toString(),
                     eventName = faker.lorem().sentence(1),
                     eventLocation = faker.address().cityName(),
                     eventPhotoURL = "https://picsum.photos/300/200?random=${System.currentTimeMillis()}",
-                    eventDate = dateFormat.format(faker.date().birthday()),
+                    eventDate = timestamp,
                     eventType = faker.book().genre(),
                     eventDescription = faker.lorem().sentence(10)
                 )

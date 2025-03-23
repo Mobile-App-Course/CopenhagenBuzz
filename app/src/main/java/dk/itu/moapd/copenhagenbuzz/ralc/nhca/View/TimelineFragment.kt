@@ -60,7 +60,7 @@ class TimelineFragment : Fragment() {
         }
 
 
-        val databaseRef = Firebase.database(dotenv["DATABASE_URL"]).getReference("copenhagen_buzz/events")
+        val databaseRef = Firebase.database(dotenv["DATABASE_URL"]).getReference("Events")
         val query = databaseRef.orderByChild("eventDate")
 
         // Used to log if there is data retrieval or not
