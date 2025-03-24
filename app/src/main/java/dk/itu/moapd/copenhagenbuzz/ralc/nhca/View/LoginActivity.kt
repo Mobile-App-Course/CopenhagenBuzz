@@ -28,8 +28,7 @@ class LoginActivity : AppCompatActivity() {
             filename = "env"
         }
 
-        // Enable offline persistence for Firebase
-        Firebase.database(dotenv["DATABASE_URL"]).setPersistenceEnabled(true)
+
 
         val isAnonymousLogin = intent.getBooleanExtra("isAnonymousLogin", false)
         if (isAnonymousLogin) {

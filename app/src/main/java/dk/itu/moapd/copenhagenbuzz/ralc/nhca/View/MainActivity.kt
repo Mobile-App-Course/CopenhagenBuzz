@@ -34,6 +34,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.database
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ContentMainBinding
@@ -70,6 +72,9 @@ class MainActivity : AppCompatActivity() {
             directory = "./assets"  // Change from "/assets" to "./assets"
             filename = "env"
         }
+
+        // Enable offline persistence for Firebase
+        //com.google.firebase.Firebase.database(dotenv["DATABASE_URL"]).setPersistenceEnabled(true)
 
 
         // Apply dynamic colors if running on Android 12+
@@ -126,6 +131,7 @@ class MainActivity : AppCompatActivity() {
         // Conditionally show event row item buttons if logged in
         // Get this element @+id/edit_button
     }
+
 
     /**
      * Inflate the menu items for use in the action bar.
