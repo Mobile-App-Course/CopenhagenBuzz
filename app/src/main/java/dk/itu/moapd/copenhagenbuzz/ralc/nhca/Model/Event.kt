@@ -24,6 +24,9 @@ SOFTWARE.
 
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * Data class representing an event.
  *
@@ -34,23 +37,19 @@ package dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model
  * @property eventType The category of the event.
  * @property eventDescription A brief description of the event.
  */
-data class Event (
+@Parcelize
+data class Event(
     var creatorUserId: String,
     var eventName: String,
     var eventLocation: String,
     var eventPhotoURL: String,
     var eventDate: Long,
     var eventType: String,
-    var eventDescription: String) {
-
+    var eventDescription: String
+) : Parcelable {
     constructor() : this("", "", "", "", 0L, "", "")
-    /**
-     * Returns a string representation of the Event object.
-     *
-     * @return A string containing the event details.
-     */
+
     override fun toString(): String {
         return "Event(eventName='$eventName', eventLocation='$eventLocation', eventPhotoURL='$eventPhotoURL', eventDate='$eventDate', eventType='$eventType', eventDescription='$eventDescription')"
     }
-
 }

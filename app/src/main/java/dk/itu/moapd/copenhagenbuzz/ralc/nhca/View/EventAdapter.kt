@@ -3,9 +3,13 @@ package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 import android.content.Context
 import android.view.View
 import android.graphics.Color
+import android.os.Bundle
+import android.provider.Settings.Global.putString
+import androidx.fragment.app.FragmentActivity
 import com.firebase.ui.database.FirebaseListAdapter
 import com.firebase.ui.database.FirebaseListOptions
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.Query
 import com.squareup.picasso.Picasso
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
@@ -58,6 +62,18 @@ class EventAdapter(
 
             eventDescriptionTextView.text = event.eventDescription
 
+            // Show edit button only if the current user is the creator of the event
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            val isCreator = currentUser != null && event.creatorUserId == currentUser.uid
+
+            editButton.visibility = if (isLoggedIn && isCreator) View.VISIBLE else View.GONE
+
+            // Add click listener for the edit button
+            editButton.setOnClickListener { v ->
+                val eventKey = getRef(position).key ?: ""
+                showEditDialog(event, eventKey)
+            }
+
             // Conditionally render buttons
             buttonFavorite.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
             buttonShare.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
@@ -83,5 +99,18 @@ class EventAdapter(
     fun setFavoriteEvents(favoriteEvents: List<Event>) {
         this.favoriteEvents = favoriteEvents
         notifyDataSetChanged()
+    }
+
+    private fun showEditDialog(event: Event, eventKey: String) {
+        val bundle = Bundle().apply {
+            putParcelable("event", event)
+            putString("eventKey", eventKey)
+        }
+
+        val editEventFragment = EditEventFragment().apply {
+            arguments = bundle
+        }
+
+        editEventFragment.show((context as FragmentActivity).supportFragmentManager, "editEventFragment")
     }
 }
