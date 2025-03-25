@@ -19,9 +19,9 @@ class FavoriteAdapter(
     private val context: Context,
 ) : FirebaseRecyclerAdapter<Event, FavoriteAdapter.ViewHolder>(options) {
 
-    inner class ViewHolder(val binding: FavoriteRowItemBinding): RecyclerView.ViewHolder(binding.root)
+    inner class ViewHolder(val binding: FavoriteRowItemBinding) : RecyclerView.ViewHolder(binding.root)
 
-    companion object{
+    companion object {
         fun create(context: Context): FavoriteAdapter {
             val currentUser = FirebaseAuth.getInstance().currentUser
             val userId = currentUser?.uid ?: ""
@@ -32,13 +32,17 @@ class FavoriteAdapter(
                 filename = "env"
             }
 
-            // Create query for this user's favorites
-            val databaseRef = Firebase.database(dotenv["DATABASE_URL"])
-                .reference.child("favorites").child(userId)
+            // Create query to fetch events that are in the user's favorites
+            val database = Firebase.database(dotenv["DATABASE_URL"])
+            val favoritesRef = database.reference.child("Favorites").child(userId)
+            val eventsRef = database.reference.child("Events")
+
+            // Create a query that combines favorites with actual event data
+            val query = eventsRef.orderByChild("creatorUserId").equalTo(userId)
 
             // Configure FirebaseRecyclerOptions
             val options = FirebaseRecyclerOptions.Builder<Event>()
-                .setQuery(databaseRef, Event::class.java)
+                .setQuery(query, Event::class.java)
                 .build()
 
             return FavoriteAdapter(options, context)
@@ -55,12 +59,36 @@ class FavoriteAdapter(
             eventNameTextView.text = model.eventName
             eventTypeTextView.text = model.eventType
 
-            // Picasso used to load image
+            // Picasso to load image
             Picasso.get()
                 .load(model.eventPhotoURL)
                 .fit()
                 .centerCrop()
                 .into(eventPhotoImageView)
+
+            // Optional: Add a remove from favorites button
+            //removeFromFavoritesButton.setOnClickListener {
+            //    removeFromFavorites(model.eventId)
+            //}
         }
+    }
+
+    // Function to remove an event from favorites
+    private fun removeFromFavorites(eventId: String) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid ?: return
+
+        val database = Firebase.database
+        val favoritesRef = database.reference.child("Favorites").child(userId).child(eventId)
+
+        favoritesRef.removeValue()
+            .addOnSuccessListener {
+                // Optional: Show a toast or snackbar confirming removal
+                // Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                // Handle any errors
+                // Toast.makeText(context, "Failed to remove from favorites", Toast.LENGTH_SHORT).show()
+            }
     }
 }

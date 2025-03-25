@@ -7,9 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -161,14 +164,51 @@ class EditEventFragment : BottomSheetDialogFragment() {
     }
 
     private fun deleteEvent() {
-        database.child("Events").child(eventKey).removeValue()
-            .addOnSuccessListener {
-                showSnackbar("Event deleted successfully")
-                dismiss()
+        // Verify the current user is the event creator
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid
+
+        // This should never happen, but is there just in case
+        if (userId != event.creatorUserId) {
+            showSnackbar("You do not have permission to delete this event")
+            return
+        }
+
+        // Reference to the favorites node
+        val favoritesRef = database.child("Favorites")
+
+        // First, remove the event from all users' favorites
+        favoritesRef.get().addOnSuccessListener { favoritesSnapshot ->
+            val deletionTasks = mutableListOf<Task<Void>>()
+
+            // Iterate through all users' favorites
+            favoritesSnapshot.children.forEach { userFavorites ->
+                val userFavoritesRef = favoritesRef.child(userFavorites.key ?: "")
+
+                // Remove the specific event from this user's favorites
+                val deletionTask = userFavoritesRef.child(eventKey).removeValue()
+                deletionTasks.add(deletionTask)
             }
-            .addOnFailureListener { e ->
-                showSnackbar("Failed to delete event: ${e.message}")
-            }
+
+            // After removing from all favorites, delete the event itself
+            Tasks.whenAll(deletionTasks)
+                .addOnSuccessListener {
+                    // Now delete the event from the Events node
+                    database.child("Events").child(eventKey).removeValue()
+                        .addOnSuccessListener {
+                            showSnackbar("Event deleted successfully")
+                            dismiss()
+                        }
+                        .addOnFailureListener { e ->
+                            showSnackbar("Failed to delete event: ${e.message}")
+                        }
+                }
+                .addOnFailureListener { e ->
+                    showSnackbar("Failed to remove event from favorites: ${e.message}")
+                }
+        }.addOnFailureListener { e ->
+            showSnackbar("Error accessing favorites: ${e.message}")
+        }
     }
 
     private fun showCalendar(editText: TextInputEditText) {

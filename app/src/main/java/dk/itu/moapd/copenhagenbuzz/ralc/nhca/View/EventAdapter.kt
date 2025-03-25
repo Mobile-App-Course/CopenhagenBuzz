@@ -66,11 +66,8 @@ class EventAdapter(
             val currentUser = FirebaseAuth.getInstance().currentUser
             val userId = currentUser?.uid
 
-            // Show edit button only if the current user is the creator of the event
+            // Get boolean to check if the current user is the creator of the event
             val isCreator = userId != null && userId == event.creatorUserId
-
-            println("Is Creator: " + isCreator)
-
 
 
             // Add click listener for the edit button
@@ -82,6 +79,7 @@ class EventAdapter(
             // Conditionally render buttons
             buttonFavorite.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
             buttonShare.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
+            // Show edit button only if the current user is the creator of the event
             editButton.visibility = if (isCreator) View.VISIBLE else View.GONE
 
             // Change favorite icon color if the event is in the favoriteEvents list
