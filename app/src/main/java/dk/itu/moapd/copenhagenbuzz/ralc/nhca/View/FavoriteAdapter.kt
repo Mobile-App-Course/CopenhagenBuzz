@@ -32,17 +32,19 @@ class FavoriteAdapter(
                 filename = "env"
             }
 
-            // Create query to fetch events that are in the user's favorites
+            // Create database reference
             val database = Firebase.database(dotenv["DATABASE_URL"])
-            val favoritesRef = database.reference.child("Favorites").child(userId)
-            val eventsRef = database.reference.child("Events")
 
-            // Create a query that combines favorites with actual event data
-            val query = eventsRef.orderByChild("creatorUserId").equalTo(userId)
+            // Query directly to the user's favorites
+            val query = database.reference.child("Favorites").child(userId)
 
-            // Configure FirebaseRecyclerOptions
             val options = FirebaseRecyclerOptions.Builder<Event>()
-                .setQuery(query, Event::class.java)
+                .setIndexedQuery(
+                    query,                       // Query for favorite keys
+                    database.reference.child("Events"), // Location of actual events
+                    Event::class.java            // Data model class
+                )
+                .setLifecycleOwner(context as androidx.lifecycle.LifecycleOwner)
                 .build()
 
             return FavoriteAdapter(options, context)
@@ -69,12 +71,11 @@ class FavoriteAdapter(
             // Optional: Add a remove from favorites button
             //removeFromFavoritesButton.setOnClickListener {
             //    removeFromFavorites(model.eventId)
-            //}
         }
     }
 
     // Function to remove an event from favorites
-    private fun removeFromFavorites(eventId: String) {
+    /*private fun removeFromFavorites(eventId: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userId = currentUser?.uid ?: return
 
@@ -84,11 +85,11 @@ class FavoriteAdapter(
         favoritesRef.removeValue()
             .addOnSuccessListener {
                 // Optional: Show a toast or snackbar confirming removal
-                // Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {
                 // Handle any errors
-                // Toast.makeText(context, "Failed to remove from favorites", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Failed to remove from favorites", Toast.LENGTH_SHORT).show()
             }
-    }
+    }*/
 }

@@ -10,6 +10,7 @@ import com.firebase.ui.database.FirebaseListAdapter
 import com.firebase.ui.database.FirebaseListOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.squareup.picasso.Picasso
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
@@ -21,11 +22,12 @@ import java.util.*
 class EventAdapter(
     options: FirebaseListOptions<Event>,
     private val context: Context,
-    private val isLoggedIn: Boolean
+    private val isLoggedIn: Boolean,
 ) : FirebaseListAdapter<Event>(options) {
 
     private var favoriteEvents: List<Event> = emptyList()
     private class ViewHolder(val binding: EventRowItemBinding)
+    private lateinit var eventKey: String
 
     companion object {
         // Factory method to create the adapter with required FirebaseListOptions
@@ -90,7 +92,42 @@ class EventAdapter(
             }
 
             buttonFavorite.setOnClickListener { v ->
-                Snackbar.make(v, "Event Favorite!", Snackbar.LENGTH_SHORT).show()
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                val userId = currentUser?.uid
+
+                if (userId == null) {
+                    Snackbar.make(v, "You need to be logged in to favorite events", Snackbar.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // Get the event key for this specific event
+                val eventKey = getRef(position).key ?: return@setOnClickListener
+
+                val favoritesRef = FirebaseDatabase.getInstance().reference
+                    .child("Favorites")
+                    .child(userId)
+
+                // Toggle favorite status
+                favoritesRef.child(eventKey).get().addOnSuccessListener { snapshot ->
+                    if (snapshot.exists()) {
+                        // Already favorited, so remove
+                        favoritesRef.child(eventKey).removeValue()
+                            .addOnSuccessListener {
+                                buttonFavorite.icon.clearColorFilter()
+                                Snackbar.make(v, "Removed from favorites", Snackbar.LENGTH_SHORT).show()
+                            }
+                    } else {
+                        // Not favorited, so add (store true as the value under the eventKey)
+                        favoritesRef.child(eventKey).setValue(true)
+                            .addOnSuccessListener {
+                                buttonFavorite.icon.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN)
+                                Snackbar.make(v, "Added to favorites", Snackbar.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Snackbar.make(v, "Failed to add to favorites: ${e.message}", Snackbar.LENGTH_SHORT).show()
+                            }
+                    }
+                }
             }
 
             buttonShare.setOnClickListener { v ->
