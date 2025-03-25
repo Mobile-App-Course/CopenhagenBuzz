@@ -13,15 +13,21 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.database
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.FragmentAddEventBinding
+import io.github.cdimascio.dotenv.dotenv
 import java.util.Calendar
 
 class AddEventFragment : Fragment() {
 
     private lateinit var binding: FragmentAddEventBinding
-
+    private lateinit var database: DatabaseReference
+    
     // UI Elements
     private lateinit var eventName: EditText
     private lateinit var eventLocation: EditText
@@ -39,6 +45,14 @@ class AddEventFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAddEventBinding.inflate(inflater, container, false)
+
+        // Initialize Firebase Database reference
+        val dotenv = dotenv {
+            directory = "./assets"
+            filename = "env"
+        }
+        database = Firebase.database(dotenv["DATABASE_URL"]).reference
+        
         return binding.root
     }
 
@@ -76,26 +90,8 @@ class AddEventFragment : Fragment() {
 
         // Button click listener
         addEventButton.setOnClickListener {
-            if (eventName.text.toString().isNotEmpty() && eventLocation.text.toString().isNotEmpty()) {
-                event.eventName = eventName.text.toString().trim()
-                event.eventLocation = eventLocation.text.toString().trim()
-                event.eventPhotoURL = eventPhotoURL.text.toString().trim()
-
-
-
-                val dateString = eventDate.text.toString().trim()
-                val timestamp = convertDateToTimestamp(dateString)
-
-                if (timestamp == -1L) {
-                    // Show error to user
-                    Snackbar.make(binding.root, "Invalid date format. Please use DD/MM/YYYY format",
-                        Snackbar.LENGTH_LONG).show()
-                    return@setOnClickListener
-                }
-                event.eventDate = timestamp
-                event.eventType = eventType.text.toString().trim()
-                event.eventDescription = eventDescription.text.toString().trim()
-                showMessage()
+            if (validateInputs()) {
+                saveEventToFirebase()
             }
         }
 
@@ -113,6 +109,91 @@ class AddEventFragment : Fragment() {
         }
     }
 
+    /**
+     * Validates user inputs before saving to Firebase
+     * @return Boolean indicating if all inputs are valid
+     */
+    private fun validateInputs(): Boolean {
+        // Check if required fields are not empty
+        if (eventName.text.toString().trim().isEmpty()) {
+            showSnackbar("Event name cannot be empty")
+            return false
+        }
+
+        if (eventLocation.text.toString().trim().isEmpty()) {
+            showSnackbar("Event location cannot be empty")
+            return false
+        }
+
+        // Validate date format
+        val dateString = eventDate.text.toString().trim()
+        if (dateString.isEmpty()) {
+            showSnackbar("Please select a date")
+            return false
+        }
+
+        val timestamp = convertDateToTimestamp(dateString)
+        if (timestamp == -1L) {
+            showSnackbar("Invalid date format. Please use DD/MM/YYYY format")
+            return false
+        }
+
+        // Validate photo URL format - optional basic check
+        val photoUrl = eventPhotoURL.text.toString().trim()
+        if (photoUrl.isNotEmpty() && !photoUrl.startsWith("http")) {
+            showSnackbar("Photo URL should start with http:// or https://")
+            return false
+        }
+
+        return true
+    }
+
+
+
+    /**
+     * Saves the event data to Firebase Realtime Database
+     */
+    private fun saveEventToFirebase() {
+        // Get the current user ID
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid ?: "anonymous"
+
+        // Create the event object
+        val event = Event(
+            creatorUserId = userId,
+            eventName = eventName.text.toString().trim(),
+            eventLocation = eventLocation.text.toString().trim(),
+            eventPhotoURL = eventPhotoURL.text.toString().trim(),
+            eventDate = convertDateToTimestamp(eventDate.text.toString().trim()),
+            eventType = eventType.text.toString().trim(),
+            eventDescription = eventDescription.text.toString().trim()
+        )
+
+        // Saves to Firebase using push() that generates a unique key
+        val eventsRef = database.child("Events").push()
+
+        eventsRef.setValue(event)
+            .addOnSuccessListener {
+                showSnackbar("Event added successfully!")
+                clearForm()
+            }
+            .addOnFailureListener { e ->
+                showSnackbar("Failed to add event: ${e.message}")
+            }
+    }
+
+    /**
+     * Clears the form after successful submission
+     */
+    private fun clearForm() {
+        eventName.text?.clear()
+        eventLocation.text?.clear()
+        eventPhotoURL.text?.clear()
+        eventDate.text?.clear()
+        eventType.text?.clear()
+        eventDescription.text?.clear()
+    }
+    
     /**
      * The method saves the current state of the activity.
      *
@@ -167,6 +248,16 @@ class AddEventFragment : Fragment() {
             .show()
     }
 
+    /**
+     * Function to display a snackbar message
+     * @param message The message to display
+     */
+    private fun showSnackbar(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+            .setAnchorView(addEventButton)
+            .show()
+    }
+    
     /**
      * Converts a date string in format "DD/MM/YYYY" to a timestamp in milliseconds
      * Returns a distinctive error value (-1L) if parsing fails
