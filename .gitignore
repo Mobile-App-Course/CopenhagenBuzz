@@ -34,5 +34,7 @@ google-services.json
 
 app/src/main/assets/.env
 
+.env
+
 # Ignore environment file
 app/src/main/assets/env
