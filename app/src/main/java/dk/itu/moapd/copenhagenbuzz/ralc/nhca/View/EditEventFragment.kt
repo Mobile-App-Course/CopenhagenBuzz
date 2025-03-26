@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.DATABASE_URL
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.FragmentEditEventBinding
@@ -45,7 +46,7 @@ class EditEventFragment : BottomSheetDialogFragment() {
             directory = "./assets"
             filename = "env"
         }
-        database = Firebase.database(dotenv["DATABASE_URL"]).reference
+        database = Firebase.database(DATABASE_URL).reference
     }
 
     override fun onCreateView(

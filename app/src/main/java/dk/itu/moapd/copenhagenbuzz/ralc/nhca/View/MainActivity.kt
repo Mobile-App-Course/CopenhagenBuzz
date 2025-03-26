@@ -67,6 +67,8 @@ class MainActivity : AppCompatActivity() {
         androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
+
+
         // Load environment variables
         val dotenv = dotenv {
             directory = "./assets"  // Change from "/assets" to "./assets"
@@ -74,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Enable offline persistence for Firebase
-        //com.google.firebase.Firebase.database(dotenv["DATABASE_URL"]).setPersistenceEnabled(true)
+        // com.google.firebase.Firebase.database(dotenv["DATABASE_URL"]).setPersistenceEnabled(true)
 
 
         // Apply dynamic colors if running on Android 12+
