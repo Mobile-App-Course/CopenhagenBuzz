@@ -1,10 +1,15 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
+import android.Manifest
+import android.content.SharedPreferences
+
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -21,6 +26,7 @@ class MapsFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,22 +45,35 @@ class MapsFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MapsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MapsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
+
     }
+
+    /**
+     * This method checks if the user allows the application uses all location-aware resources to
+     * monitor the user's location.
+     *
+     * @return A boolean value with the user permission agreement.
+     */
+    private fun checkPermission() =
+        ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+    /**
+     * Create a set of dialogs to show to the users and ask them for permissions to get the device's
+     * resources.
+     */
+    private fun requestUserPermissions() {
+        if (!checkPermission())
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
+            )
+    }
+
+
+
 }
