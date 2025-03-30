@@ -1,7 +1,11 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
 import android.app.DatePickerDialog
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +14,6 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.Firebase
@@ -18,16 +21,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.EventLocation
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.FragmentAddEventBinding
 import io.github.cdimascio.dotenv.dotenv
+import java.io.IOException
 import java.util.Calendar
+import java.util.Locale
+import kotlin.concurrent.thread
+import kotlin.toString
 
 class AddEventFragment : Fragment() {
 
     private lateinit var binding: FragmentAddEventBinding
     private lateinit var database: DatabaseReference
-    
+    private lateinit var geocoder: Geocoder
+
     // UI Elements
     private lateinit var eventName: EditText
     private lateinit var eventLocation: EditText
@@ -37,8 +46,13 @@ class AddEventFragment : Fragment() {
     private lateinit var eventDescription: EditText
     private lateinit var addEventButton: Button
 
+    // Location coordinates
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+    private var hasValidCoordinates: Boolean = false
+
     // Event model
-    private val event: Event = Event("", "", "", "", 0L, "", "")
+    private val event: Event = Event("", "", EventLocation(0.0,0.0,""), "", 0L, "", "")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,7 +66,10 @@ class AddEventFragment : Fragment() {
             filename = "env"
         }
         database = Firebase.database(dotenv["DATABASE_URL"]).reference
-        
+
+        // Initialize Geocoder
+        geocoder = Geocoder(requireContext(), Locale.getDefault())
+
         return binding.root
     }
 
@@ -88,6 +105,22 @@ class AddEventFragment : Fragment() {
             eventTypeDropdown.showDropDown() // Show dropdown immediately
         }
 
+        // Add a text change listener to the location field for geocoding
+        eventLocation.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val locationText = s.toString().trim()
+                if (locationText.length > 3) { // Only geocode if there's enough text
+                    geocodeLocation(locationText)
+                } else {
+                    hasValidCoordinates = false
+                }
+            }
+        })
+
         // Button click listener
         addEventButton.setOnClickListener {
             if (validateInputs()) {
@@ -106,7 +139,86 @@ class AddEventFragment : Fragment() {
             eventDate.setText(it.getString(EVENT_DATE, ""))
             eventType.setText(it.getString(EVENT_TYPE, ""))
             eventDescription.setText(it.getString(EVENT_DESCRIPTION, ""))
+            latitude = it.getDouble(EVENT_LATITUDE, 0.0)
+            longitude = it.getDouble(EVENT_LONGITUDE, 0.0)
+            hasValidCoordinates = it.getBoolean(HAS_VALID_COORDINATES, false)
         }
+    }
+
+    /**
+     * Geocodes a location string to get latitude and longitude
+     * @param locationText The location text to geocode
+     */
+    private fun geocodeLocation(locationText: String) {
+        // Run geocoding in a background thread to avoid blocking UI
+        thread {
+            try {
+                val addressList = geocoder.getFromLocationName(locationText, 1)
+
+                if (!addressList.isNullOrEmpty()) {
+                    val address = addressList[0]
+                    latitude = address.latitude
+                    longitude = address.longitude
+                    hasValidCoordinates = true
+
+                    // Show success message on UI thread
+                    activity?.runOnUiThread {
+                        showSnackbar("Location found: ${address.getAddressLine(0)}")
+                    }
+                } else {
+                    hasValidCoordinates = false
+                    activity?.runOnUiThread {
+                        // Only show error if user has finished typing
+                        if (!eventLocation.isFocused) {
+                            showSnackbar("Couldn't find location. Please check the address.")
+                        }
+                    }
+                }
+            } catch (e: IOException) {
+                hasValidCoordinates = false
+                activity?.runOnUiThread {
+                    showSnackbar("Geocoding error: ${e.message}")
+                }
+            }
+        }
+    }
+
+    /**
+     * Reverse geocodes coordinates to get address details
+     * @param lat Latitude
+     * @param lng Longitude
+     * @return Address string or null if not found
+     */
+    private fun reverseGeocode(lat: Double, lng: Double): String? {
+        try {
+            val addresses = geocoder.getFromLocation(lat, lng, 1)
+            if (!addresses.isNullOrEmpty()) {
+                val address = addresses[0]
+                val addressLines = mutableListOf<String>()
+
+                // Get address components
+                val streetNumber = address.subThoroughfare ?: ""
+                val street = address.thoroughfare ?: ""
+                val city = address.locality ?: ""
+                val postalCode = address.postalCode ?: ""
+
+                // Build formatted address
+                if (street.isNotEmpty()) {
+                    addressLines.add("$street $streetNumber")
+                }
+                if (city.isNotEmpty()) {
+                    addressLines.add(city)
+                }
+                if (postalCode.isNotEmpty()) {
+                    addressLines.add(postalCode)
+                }
+
+                return addressLines.joinToString(", ")
+            }
+        } catch (e: IOException) {
+            // Handle exception
+        }
+        return null
     }
 
     /**
@@ -145,10 +257,14 @@ class AddEventFragment : Fragment() {
             return false
         }
 
+        // Check if we have valid coordinates
+        if (!hasValidCoordinates) {
+            showSnackbar("Location coordinates couldn't be determined. Please check the address.")
+            return false
+        }
+
         return true
     }
-
-
 
     /**
      * Saves the event data to Firebase Realtime Database
@@ -158,11 +274,14 @@ class AddEventFragment : Fragment() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userId = currentUser?.uid ?: "anonymous"
 
+        val locationText = eventLocation.text.toString().trim()
+        val eventLocation = EventLocation(latitude, longitude, locationText)
+
         // Create the event object
         val event = Event(
             creatorUserId = userId,
             eventName = eventName.text.toString().trim(),
-            eventLocation = eventLocation.text.toString().trim(),
+            eventLocation = eventLocation,
             eventPhotoURL = eventPhotoURL.text.toString().trim(),
             eventDate = convertDateToTimestamp(eventDate.text.toString().trim()),
             eventType = eventType.text.toString().trim(),
@@ -192,8 +311,11 @@ class AddEventFragment : Fragment() {
         eventDate.text?.clear()
         eventType.text?.clear()
         eventDescription.text?.clear()
+        latitude = 0.0
+        longitude = 0.0
+        hasValidCoordinates = false
     }
-    
+
     /**
      * The method saves the current state of the activity.
      *
@@ -210,6 +332,9 @@ class AddEventFragment : Fragment() {
         outState.putString(EVENT_DATE, eventDate.text.toString())
         outState.putString(EVENT_TYPE, eventType.text.toString())
         outState.putString(EVENT_DESCRIPTION, eventDescription.text.toString())
+        outState.putDouble(EVENT_LATITUDE, latitude)
+        outState.putDouble(EVENT_LONGITUDE, longitude)
+        outState.putBoolean(HAS_VALID_COORDINATES, hasValidCoordinates)
     }
 
     /**
@@ -257,7 +382,7 @@ class AddEventFragment : Fragment() {
             .setAnchorView(addEventButton)
             .show()
     }
-    
+
     /**
      * Converts a date string in format "DD/MM/YYYY" to a timestamp in milliseconds
      * Returns a distinctive error value (-1L) if parsing fails
@@ -289,5 +414,8 @@ class AddEventFragment : Fragment() {
         private const val EVENT_DATE = "EVENT_DATE"
         private const val EVENT_TYPE = "EVENT_TYPE"
         private const val EVENT_DESCRIPTION = "EVENT_DESCRIPTION"
+        private const val EVENT_LATITUDE = "EVENT_LATITUDE"
+        private const val EVENT_LONGITUDE = "EVENT_LONGITUDE"
+        private const val HAS_VALID_COORDINATES = "HAS_VALID_COORDINATES"
     }
 }

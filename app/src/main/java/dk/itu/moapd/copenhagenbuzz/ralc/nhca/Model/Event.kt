@@ -26,6 +26,7 @@ package dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
 /**
  * Data class representing an event.
@@ -41,13 +42,13 @@ import kotlinx.parcelize.Parcelize
 data class Event(
     var creatorUserId: String,
     var eventName: String,
-    var eventLocation: String,
+    var eventLocation: EventLocation,
     var eventPhotoURL: String,
     var eventDate: Long,
     var eventType: String,
     var eventDescription: String
 ) : Parcelable {
-    constructor() : this("", "", "", "", 0L, "", "")
+    constructor() : this("", "", EventLocation(), "", 0, "", "")
 
     override fun toString(): String {
         return "Event(eventName='$eventName', eventLocation='$eventLocation', eventPhotoURL='$eventPhotoURL', eventDate='$eventDate', eventType='$eventType', eventDescription='$eventDescription')"

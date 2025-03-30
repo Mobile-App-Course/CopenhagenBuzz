@@ -2,7 +2,10 @@ package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.location.Geocoder
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,12 +21,15 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.DATABASE_URL
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.EventLocation
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.FragmentEditEventBinding
 import io.github.cdimascio.dotenv.dotenv
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.concurrent.thread
 
 class EditEventFragment : BottomSheetDialogFragment() {
 
@@ -31,6 +37,12 @@ class EditEventFragment : BottomSheetDialogFragment() {
     private lateinit var database: DatabaseReference
     private lateinit var event: Event
     private lateinit var eventKey: String
+    private lateinit var geocoder: Geocoder
+
+    // Location coordinates
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+    private var hasValidCoordinates: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +59,14 @@ class EditEventFragment : BottomSheetDialogFragment() {
             filename = "env"
         }
         database = Firebase.database(DATABASE_URL).reference
+
+        // Initialize Geocoder
+        geocoder = Geocoder(requireContext(), Locale.getDefault())
+
+        // Initialize location data from event
+        latitude = event.eventLocation.latitude
+        longitude = event.eventLocation.longitude
+        hasValidCoordinates = (latitude != 0.0 || longitude != 0.0)
     }
 
     override fun onCreateView(
@@ -69,11 +89,14 @@ class EditEventFragment : BottomSheetDialogFragment() {
 
         // Setup listeners for buttons and date picker
         setupListeners()
+
+        // Add text change listener for location field
+        setupLocationListener()
     }
 
     private fun populateFormWithEventData() {
         binding.editTextEventName.setText(event.eventName)
-        binding.editTextEventLocation.setText(event.eventLocation)
+        binding.editTextEventLocation.setText(event.eventLocation.address)
         binding.editTextEventPhotoUrl.setText(event.eventPhotoURL)
 
         // Format date for display
@@ -108,6 +131,62 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
+    private fun setupLocationListener() {
+        // Add a text change listener to the location field for geocoding
+        binding.editTextEventLocation.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val locationText = s.toString().trim()
+                if (locationText.length > 3) { // Only geocode if there's enough text
+                    geocodeLocation(locationText)
+                } else {
+                    hasValidCoordinates = false
+                }
+            }
+        })
+    }
+
+    /**
+     * Geocodes a location string to get latitude and longitude
+     * @param locationText The location text to geocode
+     */
+    private fun geocodeLocation(locationText: String) {
+        // Run geocoding in a background thread to avoid blocking UI
+        thread {
+            try {
+                val addressList = geocoder.getFromLocationName(locationText, 1)
+
+                if (!addressList.isNullOrEmpty()) {
+                    val address = addressList[0]
+                    latitude = address.latitude
+                    longitude = address.longitude
+                    hasValidCoordinates = true
+
+                    // Show success message on UI thread
+                    activity?.runOnUiThread {
+                        showSnackbar("Location found: ${address.getAddressLine(0)}")
+                    }
+                } else {
+                    hasValidCoordinates = false
+                    activity?.runOnUiThread {
+                        // Only show error if user has finished typing
+                        if (!binding.editTextEventLocation.isFocused) {
+                            showSnackbar("Couldn't find location. Please check the address.")
+                        }
+                    }
+                }
+            } catch (e: IOException) {
+                hasValidCoordinates = false
+                activity?.runOnUiThread {
+                    showSnackbar("Geocoding error: ${e.message}")
+                }
+            }
+        }
+    }
+
     private fun validateInputs(): Boolean {
         // Add validation similar to AddEventFragment
         if (binding.editTextEventName.text.toString().trim().isEmpty()) {
@@ -132,13 +211,23 @@ class EditEventFragment : BottomSheetDialogFragment() {
             return false
         }
 
+        // Check if we have valid coordinates
+        if (!hasValidCoordinates) {
+            showSnackbar("Location coordinates couldn't be determined. Please check the address.")
+            return false
+        }
+
         return true
     }
 
     private fun saveChangesToFirebase() {
+        // Create an updated EventLocation object
+        val locationText = binding.editTextEventLocation.text.toString().trim()
+        val updatedEventLocation = EventLocation(latitude, longitude, locationText)
+
         // Update event object with new values
         event.eventName = binding.editTextEventName.text.toString().trim()
-        event.eventLocation = binding.editTextEventLocation.text.toString().trim()
+        event.eventLocation = updatedEventLocation
         event.eventPhotoURL = binding.editTextEventPhotoUrl.text.toString().trim()
         event.eventDate = convertDateToTimestamp(binding.editTextEventDate.text.toString().trim())
         event.eventType = binding.autoCompleteTextViewEventType.text.toString().trim()

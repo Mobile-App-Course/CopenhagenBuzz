@@ -31,9 +31,9 @@ class DataViewModel : ViewModel() {
     private val faker = Faker()
     val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
-    init {
+    /*init {
         fetchEvents()
-    }
+    }*/
 
     private fun generateRandomFavorites (events: List<Event>): List<Event> {
         val shuffledIndices = (events.indices).shuffled().take(10).sorted()
@@ -43,20 +43,20 @@ class DataViewModel : ViewModel() {
     /**
      * Generates and fetches the list of events asynchronously.
      */
-    private fun fetchEvents() {
+    /*private fun fetchEvents() {
         viewModelScope.launch {
             val eventList = generateEvents()
             _events.value = eventList
             _favoriteEvents.value = generateRandomFavorites(eventList)
         }
-    }
+    }*/
 
     /**
      * Generates a list of events.
      *
      * @return A list of Event objects.
      */
-    private suspend fun generateEvents(): List<Event> {
+    /*private suspend fun generateEvents(): List<Event> {
         return withContext(Dispatchers.Default) {
             // Simulate generating a list of events
             val faker = Faker()
@@ -75,7 +75,7 @@ class DataViewModel : ViewModel() {
                 )
             }
         }
-    }
+    }*/
 
 
 }

@@ -80,7 +80,10 @@ dependencies {
     implementation(platform(libs.firebase.bom))
 
     // Google Play Services Location
-    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation(libs.gms.play.services.location)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location.v2101)
+    implementation(libs.google.maps.services)
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
