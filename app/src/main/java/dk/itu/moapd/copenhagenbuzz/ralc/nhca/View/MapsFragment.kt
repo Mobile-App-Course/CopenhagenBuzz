@@ -12,6 +12,11 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import com.google.android.material.snackbar.Snackbar
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
+import android.content.Intent
+import android.content.IntentFilter
+import android.location.Location
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.LocationBroadcastReceiver
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.LocationService
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,12 +28,14 @@ private const val ARG_PARAM2 = "param2"
  * Use the [MapsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
     private lateinit var rootView: View
+    private var locationReceiver: LocationBroadcastReceiver? = null
+    private var currentLocation: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +43,9 @@ class MapsFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+        // Initializing location receiver
+        locationReceiver = LocationBroadcastReceiver(this)
     }
 
     override fun onCreateView(
@@ -56,9 +66,36 @@ class MapsFragment : Fragment() {
         } else {
           // Permission is granted, initialize the map
             initializeMap()
+            startLocationService()
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
 
+        // Registers broadcast receiver when the fragment is visible
+        context?.registerReceiver(
+            locationReceiver,
+            IntentFilter(LocationService.ACTION_LOCATION_BROADCAST),
+            android.content.Context.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // Unregisters broadcast receiver when the fragment is no longer visible
+        try {
+            context?.unregisterReceiver(locationReceiver)
+        } catch (e: Exception) {
+            // receiver not registered
+            e.printStackTrace()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopLocationService()
     }
 
     override fun onRequestPermissionsResult(
@@ -71,6 +108,7 @@ class MapsFragment : Fragment() {
                 // Permission is granted
                 Snackbar.make(rootView, "Location permission granted", Snackbar.LENGTH_SHORT).show()
                 initializeMap()
+                startLocationService()
             } else {
                 // Permission is denied
                 Snackbar.make(rootView, "Location permission denied, it is required to show your location on the map", Snackbar.LENGTH_SHORT).show()
@@ -80,6 +118,29 @@ class MapsFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+
+    override fun onLocationReceived(location: Location) {
+        currentLocation = location
+        // Update UI with new location
+        Snackbar.make(
+            rootView,
+            "Location: ${location.latitude}, ${location.longitude}",
+            Snackbar.LENGTH_SHORT
+        ).show()
+
+        // Update map with new location when implemented
+        updateMapWithLocation(location)
+    }
+
+    private fun startLocationService() {
+        val serviceIntent = Intent(requireContext(), LocationService::class.java)
+        requireContext().startForegroundService(serviceIntent)
+    }
+
+    private fun stopLocationService() {
+        val serviceIntent = Intent(requireContext(), LocationService::class.java)
+        requireContext().stopService(serviceIntent)
+    }
 
     /**
      * This method checks if the user allows the application uses all location-aware resources to
@@ -116,6 +177,10 @@ class MapsFragment : Fragment() {
 
     private fun initializeMap() {
         // Code will be implemented later here, to actually show the map
+    }
+
+    private fun updateMapWithLocation(location: Location) {
+        // Code will be implemented later to update the map with the current location
     }
 
     companion object {

@@ -79,6 +79,9 @@ dependencies {
     // Import the Firebase BoM
     implementation(platform(libs.firebase.bom))
 
+    // Google Play Services Location
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation(libs.firebase.auth.ktx)
