@@ -76,6 +76,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.dotenv.kotlin)
 
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+
     // Import the Firebase BoM
     implementation(platform(libs.firebase.bom))
 

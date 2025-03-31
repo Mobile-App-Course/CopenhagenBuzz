@@ -14,12 +14,14 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
 lifecycleViewmodelKtx = "2.8.7"
+loggingInterceptor = "4.11.0"
 material = "1.12.0"
 constraintlayout = "2.2.0"
 materialVersion = "1.11.0"
 navigationFragmentKtx = "2.8.7"
 navigationUiKtx = "2.8.7"
 activity = "1.10.0"
+okhttp = "4.11.0"
 picasso = "2.71828"
 playServicesLocation = "21.0.1"
 playServicesLocationVersion = "21.3.0"
@@ -47,12 +49,14 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 material-v1110 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 play-services-location-v2101 = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
