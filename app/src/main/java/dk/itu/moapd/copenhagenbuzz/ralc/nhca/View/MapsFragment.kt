@@ -15,34 +15,44 @@ import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.Location
+import androidx.appcompat.app.AlertDialog
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.Firebase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.database
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.LocationBroadcastReceiver
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.LocationService
+import io.github.cdimascio.dotenv.dotenv
+import java.text.SimpleDateFormat
+import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
  * Use the [MapsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var rootView: View
     private var locationReceiver: LocationBroadcastReceiver? = null
     private var currentLocation: Location? = null
+    private var googleMap: GoogleMap? = null
+    private val eventMarkers = mutableMapOf<Marker, Event>()
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
 
         // Initializing location receiver
         locationReceiver = LocationBroadcastReceiver(this)
@@ -176,11 +186,123 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener {
     }
 
     private fun initializeMap() {
-        // Code will be implemented later here, to actually show the map
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+        mapFragment?.getMapAsync(this)
+    }
+
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+
+        // Set up the map
+        with(googleMap!!) {
+            setOnMarkerClickListener(this@MapsFragment)
+            uiSettings.isZoomControlsEnabled = true
+
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                isMyLocationEnabled = true
+                uiSettings.isMyLocationButtonEnabled = true
+            }
+        }
+
+        currentLocation?.let { updateMapWithLocation(it) }
+
+        loadEventsFromFirebase()
     }
 
     private fun updateMapWithLocation(location: Location) {
-        // Code will be implemented later to update the map with the current location
+        googleMap?.let {
+            val currentLatLng = LatLng(location.latitude, location.longitude)
+            it.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 14f))
+        }
+    }
+
+    private fun loadEventsFromFirebase() {
+
+        val dotenv = dotenv {
+            directory = "./assets"
+            filename = "env"
+        }
+
+        // Get database reference
+        val database = Firebase.database(dotenv["DATABASE_URL"])
+        val eventsRef = database.getReference("Events")
+
+        eventsRef.addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                // Clears existing event markers
+                eventMarkers.keys.forEach { it.remove() }
+                eventMarkers.clear()
+
+                // Adds new event markers for each event in the database
+                for (eventSnapshot in snapshot.children) {
+                    val event = eventSnapshot.getValue(Event::class.java)
+                    event?.let {addEventMarker(it)}
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Snackbar.make(
+                    rootView,
+                    "Failed to load events: ${error.message}",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+        })
+
+    }
+
+    private fun addEventMarker(event: Event) {
+        val eventLocation = event.eventLocation
+        if (eventLocation.latitude != 0.0 || eventLocation.longitude != 0.0) {
+            val position = LatLng(eventLocation.latitude, eventLocation.longitude)
+            val marker = googleMap?.addMarker(
+                MarkerOptions()
+                    .position(position)
+                    .title(event.eventName)
+                    .snippet(event.eventType)
+            )
+
+            marker?.let {eventMarkers[it] = event}
+        }
+    }
+
+    override fun onMarkerClick(marker: Marker): Boolean {
+        val event = eventMarkers[marker] ?: return false
+
+        // Formats the for the event display
+        val date = Date(event.eventDate)
+        val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(date)
+
+        // Shows event details in a dialog
+        AlertDialog.Builder(requireContext())
+            .setTitle(event.eventName)
+            .setMessage(
+                "Date: $formattedDate\n" +
+                "Location: ${event.eventLocation}\n" +
+                "Type: ${event.eventType}\n" +
+                event.eventDescription
+            )
+            .setPositiveButton("Close", null)
+            .setNeutralButton("View Details") { _, _ ->
+                showEventDetails(event)
+            }
+            .show()
+        return true
+    }
+
+    private fun showEventDetails(event: Event) {
+        val fragment = EventDetailsFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable("event", event)
+            }
+        }
+
+        fragment.show(parentFragmentManager, "EventDetailsFragment")
     }
 
     companion object {
