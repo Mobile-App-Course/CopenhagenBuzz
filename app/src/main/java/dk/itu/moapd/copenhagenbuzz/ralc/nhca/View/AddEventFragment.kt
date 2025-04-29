@@ -1,9 +1,16 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
+import android.Manifest
+import android.app.Activity
 import android.app.DatePickerDialog
-import android.location.Address
+import android.content.ContentValues
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Geocoder
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -13,13 +20,19 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
+import com.google.firebase.storage.FirebaseStorage
+import com.squareup.picasso.Picasso
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.EventLocation
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
@@ -28,8 +41,8 @@ import io.github.cdimascio.dotenv.dotenv
 import java.io.IOException
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 import kotlin.concurrent.thread
-import kotlin.toString
 
 class AddEventFragment : Fragment() {
 
@@ -51,8 +64,65 @@ class AddEventFragment : Fragment() {
     private var longitude: Double = 0.0
     private var hasValidCoordinates: Boolean = false
 
+    // Image URL
+    private var imageUri: Uri? = null
+    private var tempImageUri: Uri? = null
+    private lateinit var cameraPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var galleryPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
+    private lateinit var galleryLauncher: ActivityResultLauncher<String>
+    private var downloadUrl: String = ""
+    private var geocodedLocation: EventLocation? = null
+    private var selectedDate: Long? = null
+
     // Event model
     private val event: Event = Event("", "", EventLocation(0.0,0.0,""), "", 0L, "", "")
+
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+
+        // Permissions launcher setup
+        cameraPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                openCamera()
+            } else {
+                showSnackbar("Camera permission denied, it is needed to take photos")
+            }
+        }
+        galleryPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                openGallery()
+            } else {
+                showSnackbar("Storage permission is needed to be able to select photos")
+            }
+        }
+
+        // Activity result launchers setup for camera and gallery
+        cameraLauncher = registerForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) { success ->
+            if (success) {
+                tempImageUri?.let {
+                    imageUri = it
+                    updateImagePreview()
+                }
+            }
+
+        }
+
+        galleryLauncher = registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+            uri?.let {
+                imageUri = it
+                updateImagePreview()
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,6 +154,15 @@ class AddEventFragment : Fragment() {
         eventType = binding.autoCompleteTextViewEventType
         eventDescription = binding.editTextEventDescription
         addEventButton = binding.addEventButton
+
+        // Photo buttons setup
+        binding.buttonCapturePhoto.setOnClickListener {
+            checkCameraPermissionAndOpenCamera()
+        }
+
+        binding.buttonSelectPhoto.setOnClickListener {
+            checkGalleryPermissionAndOpenGallery()
+        }
 
         // Setup AutoCompleteTextView
         val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference", "Lan party")
@@ -142,6 +221,117 @@ class AddEventFragment : Fragment() {
             latitude = it.getDouble(EVENT_LATITUDE, 0.0)
             longitude = it.getDouble(EVENT_LONGITUDE, 0.0)
             hasValidCoordinates = it.getBoolean(HAS_VALID_COORDINATES, false)
+            imageUri = it.getParcelable(IMAGE_URI)
+            updateImagePreview()
+        }
+    }
+
+    private fun checkCameraPermissionAndOpenCamera() {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                openCamera()
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
+                showPermissionRationaleDialog(
+                    "Camera Permission",
+                    "Camera permission is needed to take photos for events",
+                    Manifest.permission.CAMERA,
+                    cameraPermissionLauncher
+                )
+            }
+            else -> {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }
+    }
+
+    private fun checkGalleryPermissionAndOpenGallery() {
+        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_IMAGES
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                permission
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // Permission already granted, open gallery
+                openGallery()
+            }
+            shouldShowRequestPermissionRationale(permission) -> {
+                // Show dialog explaining why permission is needed
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Gallery Permission Required")
+                    .setMessage("Storage permission is needed to select images for your events.")
+                    .setPositiveButton("OK") { _, _ -> galleryPermissionLauncher.launch(permission) }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+            else -> {
+                // Request permission directly
+                galleryPermissionLauncher.launch(permission)
+            }
+        }
+    }
+
+    private fun showPermissionRationaleDialog(
+        title: String,
+        message: String,
+        permission: String,
+        permissionLauncher: ActivityResultLauncher<String>
+    ) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("Grant Permission") {_,_ ->
+                permissionLauncher.launch(permission)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun openCamera() {
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.TITLE, "New Event Photo")
+            put(MediaStore.Images.Media.DESCRIPTION, "From Copenhagen Buzz App")
+        }
+
+        tempImageUri = requireContext().contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
+        )
+
+        tempImageUri?.let {
+            cameraLauncher.launch(it)
+        } ?: showSnackbar("Failed to create image file")
+    }
+
+    private fun openGallery() {
+        galleryLauncher.launch("image/*")
+    }
+
+    private fun updateImagePreview() {
+        if (imageUri != null) {
+            // Show the image preview and hide the URL input
+            binding.imagePreview.visibility = View.VISIBLE
+            binding.textInputLayoutEventPhotoUrl.visibility = View.GONE
+
+            // Uses Picasso to load image
+            Picasso.get()
+                .load(imageUri)
+                .placeholder(R.drawable.baseline_firebase)
+                .into(binding.imagePreview)
+
+            // Removes previous entered url
+            eventPhotoURL.setText("")
+        } else {
+            // Show URL input and hide the image preview
+            binding.imagePreview.visibility = View.GONE
+            binding.textInputLayoutEventPhotoUrl.visibility = View.VISIBLE
         }
     }
 
@@ -270,33 +460,69 @@ class AddEventFragment : Fragment() {
      * Saves the event data to Firebase Realtime Database
      */
     private fun saveEventToFirebase() {
-        // Get the current user ID
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid ?: "anonymous"
+        binding.progressBar.visibility = View.VISIBLE
 
-        val locationText = eventLocation.text.toString().trim()
-        val eventLocation = EventLocation(latitude, longitude, locationText)
+        // Upload photo if available, then save event
+        if (imageUri != null) {
+            uploadPhotoAndSaveEvent()
+        } else {
+            // No photo to upload, just use photoUrl from EditText or empty string
+            val photoUrl = binding.editTextEventPhotoUrl.text.toString().trim()
+            saveEvent(photoUrl)
+        }
+    }
+    private fun uploadPhotoAndSaveEvent() {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val photoRef = storageRef.child("event_photos/${UUID.randomUUID()}")
 
-        // Create the event object
-        val event = Event(
-            creatorUserId = userId,
-            eventName = eventName.text.toString().trim(),
-            eventLocation = eventLocation,
-            eventPhotoURL = eventPhotoURL.text.toString().trim(),
-            eventDate = convertDateToTimestamp(eventDate.text.toString().trim()),
-            eventType = eventType.text.toString().trim(),
-            eventDescription = eventDescription.text.toString().trim()
-        )
+        photoRef.putFile(imageUri!!)
+            .addOnSuccessListener { taskSnapshot ->
+                photoRef.downloadUrl.addOnSuccessListener { uri ->
+                    downloadUrl = uri.toString()
+                    saveEvent(downloadUrl)
+                }
+            }
+            .addOnFailureListener { e ->
+                binding.progressBar.visibility = View.GONE
+                showSnackbar("Failed to upload image: ${e.message}")
+            }
+    }
 
-        // Saves to Firebase using push() that generates a unique key
-        val eventsRef = database.child("Events").push()
+    private fun saveEvent(photoUrl: String) {
+        // Get current user ID
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "anonymous"
 
-        eventsRef.setValue(event)
+        // Get values from form
+        val name = binding.editTextEventName.text.toString()
+        val locationText = binding.editTextEventLocation.text.toString()
+
+        // Use either geocoded location or default to Copenhagen coordinates
+        val eventLocation = geocodedLocation ?: EventLocation(55.671,12.5683,locationText)
+
+        val timestamp = selectedDate ?: System.currentTimeMillis()
+        val type = binding.autoCompleteTextViewEventType.text.toString()
+        val description = binding.editTextEventDescription.text.toString()
+
+        // Create event object
+        val event = Event(userId, name, eventLocation, photoUrl, timestamp, type, description)
+
+        // Save to Firebase - Fix dotenv initialization
+        val dotenv = dotenv {
+            directory = "./assets"
+            filename = "env"
+        }
+
+        val database = Firebase.database(dotenv["DATABASE_URL"])
+        val eventsRef = database.getReference("Events")
+
+        eventsRef.push().setValue(event)
             .addOnSuccessListener {
+                binding.progressBar.visibility = View.GONE
                 showSnackbar("Event added successfully!")
                 clearForm()
             }
             .addOnFailureListener { e ->
+                binding.progressBar.visibility = View.GONE
                 showSnackbar("Failed to add event: ${e.message}")
             }
     }
@@ -417,5 +643,9 @@ class AddEventFragment : Fragment() {
         private const val EVENT_LATITUDE = "EVENT_LATITUDE"
         private const val EVENT_LONGITUDE = "EVENT_LONGITUDE"
         private const val HAS_VALID_COORDINATES = "HAS_VALID_COORDINATES"
+
+        private const val IMAGE_URI = "image_uri"
+        private const val PICK_IMAGE_REQUEST = 1
+        private const val TAKE_PHOTO_REQUEST = 2
     }
 }

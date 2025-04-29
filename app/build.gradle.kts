@@ -97,6 +97,9 @@ dependencies {
     implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.ui.database)
     // Add the dependencies for any other desired Firebase products
+    implementation(libs.firebase.bom.v3380)
+    implementation(libs.firebase.ui.storage)
+    implementation(libs.google.firebase.storage.ktx)
     // https://firebase.google.com/docs/android/setup#available-libraries
 
 

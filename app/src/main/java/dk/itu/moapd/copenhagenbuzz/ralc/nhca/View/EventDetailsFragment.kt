@@ -22,6 +22,7 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentEventDetailsBinding
     private lateinit var event: Event
+    private var isLoggedIn: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +33,9 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
                 @Suppress("DEPRECATION")
                 it.getParcelable("event") ?: Event()
             }
+            isLoggedIn = it.getBoolean("isLoggedIn")
         }
+
     }
 
     override fun onCreateView(
@@ -67,15 +70,24 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
                     .into(eventPhoto)
             }
 
-            // Add favorite button functionality
-            favoriteButton.setOnClickListener {
-                toggleFavorite()
+            // Shows or hides favorite & share buttons based on login status
+            favoriteButton.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
+            shareButton.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
+
+            // Only activate listeners if the user is logged in
+            if (isLoggedIn){
+                // Add favorite button functionality
+                favoriteButton.setOnClickListener {
+                    toggleFavorite()
+                }
+
+                // Add share button functionality
+                shareButton.setOnClickListener {
+                    shareEvent()
+                }
             }
 
-            // Add share button functionality
-            shareButton.setOnClickListener {
-                shareEvent()
-            }
+
         }
     }
 
