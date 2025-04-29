@@ -274,24 +274,8 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
     override fun onMarkerClick(marker: Marker): Boolean {
         val event = eventMarkers[marker] ?: return false
 
-        // Formats the for the event display
-        val date = Date(event.eventDate)
-        val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(date)
+        showEventDetails(event)
 
-        // Shows event details in a dialog
-        AlertDialog.Builder(requireContext())
-            .setTitle(event.eventName)
-            .setMessage(
-                "Date: $formattedDate\n" +
-                "Location: ${event.eventLocation}\n" +
-                "Type: ${event.eventType}\n" +
-                event.eventDescription
-            )
-            .setPositiveButton("Close", null)
-            .setNeutralButton("View Details") { _, _ ->
-                showEventDetails(event)
-            }
-            .show()
         return true
     }
 
