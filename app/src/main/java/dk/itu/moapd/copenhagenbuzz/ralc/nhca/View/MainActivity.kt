@@ -57,6 +57,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var database: DatabaseReference
 
+    // Track login state
+    private var isLoggedIn = false
+
     /**
      * Called when the activity is first created. This inflates the different bindings with the necessary variables.
      * It also sets up the listeners for the different UI components.
@@ -98,8 +101,16 @@ class MainActivity : AppCompatActivity() {
             finish()
             return
         } else {
+            // Determine if user is properly logged in (not anonymous)
+            isLoggedIn = !currentUser.isAnonymous
+
             // Show Snackbar with authentication type
             showAuthTypeSnackbar(currentUser)
+        }
+
+        // Check for intent extras (for when coming from LoginActivity)
+        if (intent.hasExtra("isLoggedIn")) {
+            isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
         }
 
         // Inflate the layout for this activity
@@ -120,8 +131,14 @@ class MainActivity : AppCompatActivity() {
 
         contentMainBinding.bottomNavigation.setupWithNavController(navController)
 
-        // Conditionally show the add_event_fragment item
-        val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
+        // Set visibility based on login status
+        updateNavigationItemsVisibility()
+    }
+
+    /**
+     * Update the visibility of navigation items based on login status
+     */
+    private fun updateNavigationItemsVisibility() {
         val bottomNavigationMenu = contentMainBinding.bottomNavigation.menu
         val addEventMenuItem = bottomNavigationMenu.findItem(R.id.add_event_fragment)
         addEventMenuItem.isVisible = isLoggedIn
@@ -145,7 +162,6 @@ class MainActivity : AppCompatActivity() {
         if (menu != null) {
             menuProfile = menu.findItem(R.id.menu_profile)
             menuLogout = menu.findItem(R.id.menu_logout)
-            //addEventButton = menu.findItem(R.id.add_event_fragment)
         }
 
         setMenuListeners()
@@ -158,10 +174,8 @@ class MainActivity : AppCompatActivity() {
      * @return Boolean Return true for the menu to be displayed; if false, it will not be shown.
      */
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
         menuProfile.isVisible = isLoggedIn
         menuLogout.isVisible = !isLoggedIn
-        //addEventButton.isVisible = isLoggedIn
         return super.onPrepareOptionsMenu(menu)
     }
 
