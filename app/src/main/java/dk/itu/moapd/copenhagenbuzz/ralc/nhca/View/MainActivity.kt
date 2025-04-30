@@ -118,11 +118,11 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.fragment_container_view) as NavHostFragment
         val navController = navHostFragment.navController
 
-        activityMainBinding.bottomNavigation.setupWithNavController(navController)
+        contentMainBinding.bottomNavigation.setupWithNavController(navController)
 
         // Conditionally show the add_event_fragment item
         val isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
-        val bottomNavigationMenu = activityMainBinding.bottomNavigation.menu
+        val bottomNavigationMenu = contentMainBinding.bottomNavigation.menu
         val addEventMenuItem = bottomNavigationMenu.findItem(R.id.add_event_fragment)
         addEventMenuItem.isVisible = isLoggedIn
 
