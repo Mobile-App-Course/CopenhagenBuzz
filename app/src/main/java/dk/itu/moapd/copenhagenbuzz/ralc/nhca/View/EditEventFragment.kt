@@ -1,15 +1,27 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
+import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.ContentValues
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Geocoder
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -19,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.DATABASE_URL
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.EventLocation
@@ -27,8 +40,7 @@ import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.FragmentEditEventBindin
 import io.github.cdimascio.dotenv.dotenv
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 import kotlin.concurrent.thread
 
 class EditEventFragment : BottomSheetDialogFragment() {
@@ -38,11 +50,43 @@ class EditEventFragment : BottomSheetDialogFragment() {
     private lateinit var event: Event
     private lateinit var eventKey: String
     private lateinit var geocoder: Geocoder
+    private var imageUri: Uri? = null
+
+    // Add these fields to the EditEventFragment class
+    private lateinit var cameraPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var galleryPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
+    private lateinit var galleryLauncher: ActivityResultLauncher<String>
+    private var tempImageUri: Uri? = null
 
     // Location coordinates
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private var hasValidCoordinates: Boolean = false
+
+    // Activity result launcher for image selection
+    private val getContent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            data?.data?.let { uri ->
+                imageUri = uri
+                displaySelectedImage(uri)
+                // Store the URI string to the hidden field
+                binding.editTextEventPhotoUrl.setText(uri.toString())
+            }
+        }
+    }
+
+    // Permission request launcher
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            openImagePicker()
+        } else {
+            showSnackbar("Permission denied")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +111,48 @@ class EditEventFragment : BottomSheetDialogFragment() {
         latitude = event.eventLocation.latitude
         longitude = event.eventLocation.longitude
         hasValidCoordinates = (latitude != 0.0 || longitude != 0.0)
+
+        // Initialize permission launchers
+        cameraPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                openCamera()
+            } else {
+                showSnackbar("Camera permission denied, it is needed to take photos")
+            }
+        }
+
+        galleryPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                openGallery()
+            } else {
+                showSnackbar("Storage permission is needed to select photos")
+            }
+        }
+
+        // Initialize activity result launchers for camera and gallery
+        cameraLauncher = registerForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) { success ->
+            if (success) {
+                tempImageUri?.let {
+                    imageUri = it
+                    displaySelectedImage(it)
+                }
+            }
+        }
+
+        galleryLauncher = registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+            uri?.let {
+                imageUri = it
+                displaySelectedImage(it)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -92,6 +178,12 @@ class EditEventFragment : BottomSheetDialogFragment() {
 
         // Add text change listener for location field
         setupLocationListener()
+
+        // Setup image click listener
+        setupImageClickListener()
+
+        // Load existing image if available
+        loadExistingImageIfAvailable()
     }
 
     private fun populateFormWithEventData() {
@@ -129,6 +221,71 @@ class EditEventFragment : BottomSheetDialogFragment() {
         binding.deleteEventButton.setOnClickListener {
             showDeleteConfirmationDialog()
         }
+    }
+
+    private fun setupImageClickListener() {
+        binding.eventImageCard.setOnClickListener {
+            showImagePickerOptions()
+        }
+    }
+
+    private fun loadExistingImageIfAvailable() {
+        val existingImageUrl = binding.editTextEventPhotoUrl.text.toString()
+        if (existingImageUrl.isNotEmpty()) {
+            try {
+                // Check if it's a Uri or a URL
+                if (existingImageUrl.startsWith("http")) {
+                    // It's a web URL
+                    Glide.with(this)
+                        .load(existingImageUrl)
+                        .placeholder(R.drawable.ic_image_placeholder) // Add a placeholder drawable
+                        .error(R.drawable.ic_image_error) // Add an error drawable
+                        .into(binding.eventImageView)
+                } else {
+                    // It's likely a local URI
+                    val uri = Uri.parse(existingImageUrl)
+                    Glide.with(this)
+                        .load(uri)
+                        .placeholder(R.drawable.ic_image_placeholder) // Add a placeholder drawable
+                        .error(R.drawable.ic_image_error) // Add an error drawable
+                        .into(binding.eventImageView)
+                }
+            } catch (e: Exception) {
+                // Handle error loading image
+                binding.eventImageView.setImageResource(R.drawable.ic_image_placeholder) // Use your placeholder drawable
+            }
+        } else {
+            // No image, set a placeholder
+            binding.eventImageView.setImageResource(R.drawable.ic_image_placeholder) // Use your placeholder drawable
+        }
+    }
+
+    private fun showImagePickerOptions() {
+        val options = arrayOf("Take Photo", "Choose from Gallery", "Cancel")
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Select Option")
+            .setItems(options) { dialog, index ->
+                when (index) {
+                    0 -> checkCameraPermissionAndOpenCamera()
+                    1 -> checkGalleryPermissionAndOpenGallery()
+                    2 -> dialog.dismiss()
+                }
+            }
+            .show()
+    }
+
+    private fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        getContent.launch(intent)
+    }
+
+    private fun displaySelectedImage(uri: Uri) {
+        Glide.with(this)
+            .load(uri)
+            .placeholder(R.drawable.ic_image_placeholder) // Add a placeholder drawable
+            .error(R.drawable.ic_image_error) // Add an error drawable
+            .into(binding.eventImageView)
     }
 
     private fun setupLocationListener() {
@@ -221,6 +378,48 @@ class EditEventFragment : BottomSheetDialogFragment() {
     }
 
     private fun saveChangesToFirebase() {
+        binding.updateEventButton.isEnabled = false // Disable button during upload
+
+        // If there's a new image to upload
+        if (imageUri != null && !imageUri.toString().startsWith("http")) {
+            uploadPhotoAndSaveEvent()
+        } else {
+            // No new image, just save the existing URL
+            saveEventWithPhotoUrl(event.eventPhotoURL)
+        }
+    }
+
+    private fun uploadPhotoAndSaveEvent() {
+        val storageRef = FirebaseStorage.getInstance().reference
+
+        // Delete the old photo if it exists
+        val oldPhotoUrl = event.eventPhotoURL
+        if (oldPhotoUrl.isNotEmpty() && oldPhotoUrl.startsWith("https://")) {
+            val oldPhotoRef = storageRef.storage.getReferenceFromUrl(oldPhotoUrl)
+            oldPhotoRef.delete()
+                .addOnSuccessListener {
+                    showSnackbar("Old photo deleted successfully")
+                }
+                .addOnFailureListener { e ->
+                    showSnackbar("Failed to delete old photo: ${e.message}")
+                }
+        }
+
+        // Upload the new photo
+        val photoRef = storageRef.child("event_photos/${UUID.randomUUID()}")
+        photoRef.putFile(imageUri!!)
+            .addOnSuccessListener {
+                photoRef.downloadUrl.addOnSuccessListener { uri ->
+                    saveEventWithPhotoUrl(uri.toString())
+                }
+            }
+            .addOnFailureListener { e ->
+                binding.updateEventButton.isEnabled = true
+                showSnackbar("Failed to upload image: ${e.message}")
+            }
+    }
+
+    private fun saveEventWithPhotoUrl(photoUrl: String) {
         // Create an updated EventLocation object
         val locationText = binding.editTextEventLocation.text.toString().trim()
         val updatedEventLocation = EventLocation(latitude, longitude, locationText)
@@ -228,7 +427,7 @@ class EditEventFragment : BottomSheetDialogFragment() {
         // Update event object with new values
         event.eventName = binding.editTextEventName.text.toString().trim()
         event.eventLocation = updatedEventLocation
-        event.eventPhotoURL = binding.editTextEventPhotoUrl.text.toString().trim()
+        event.eventPhotoURL = photoUrl
         event.eventDate = convertDateToTimestamp(binding.editTextEventDate.text.toString().trim())
         event.eventType = binding.autoCompleteTextViewEventType.text.toString().trim()
         event.eventDescription = binding.editTextEventDescription.text.toString().trim()
@@ -236,10 +435,12 @@ class EditEventFragment : BottomSheetDialogFragment() {
         // Save to Firebase
         database.child("Events").child(eventKey).setValue(event)
             .addOnSuccessListener {
+                binding.updateEventButton.isEnabled = true
                 showSnackbar("Event updated successfully!")
                 dismiss()
             }
             .addOnFailureListener { e ->
+                binding.updateEventButton.isEnabled = true
                 showSnackbar("Failed to update event: ${e.message}")
             }
     }
@@ -356,5 +557,90 @@ class EditEventFragment : BottomSheetDialogFragment() {
 
     private fun showSnackbar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun checkCameraPermissionAndOpenCamera() {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                openCamera()
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
+                showPermissionRationaleDialog(
+                    "Camera Permission",
+                    "Camera permission is needed to take photos for events",
+                    Manifest.permission.CAMERA,
+                    cameraPermissionLauncher
+                )
+            }
+            else -> {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }
+    }
+
+    private fun checkGalleryPermissionAndOpenGallery() {
+        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_IMAGES
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                permission
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                openGallery()
+            }
+            shouldShowRequestPermissionRationale(permission) -> {
+                showPermissionRationaleDialog(
+                    "Gallery Permission",
+                    "Storage permission is needed to select images for your events.",
+                    permission,
+                    galleryPermissionLauncher
+                )
+            }
+            else -> {
+                galleryPermissionLauncher.launch(permission)
+            }
+        }
+    }
+
+    private fun showPermissionRationaleDialog(
+        title: String,
+        message: String,
+        permission: String,
+        permissionLauncher: ActivityResultLauncher<String>
+    ) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("Grant Permission") { _, _ ->
+                permissionLauncher.launch(permission)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun openCamera() {
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.TITLE, "New Event Photo")
+            put(MediaStore.Images.Media.DESCRIPTION, "From Copenhagen Buzz App")
+        }
+
+        tempImageUri = requireContext().contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
+        )
+
+        tempImageUri?.let {
+            cameraLauncher.launch(it)
+        } ?: showSnackbar("Failed to create image file")
+    }
+
+    private fun openGallery() {
+        galleryLauncher.launch("image/*")
     }
 }

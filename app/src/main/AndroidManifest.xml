@@ -15,6 +15,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
