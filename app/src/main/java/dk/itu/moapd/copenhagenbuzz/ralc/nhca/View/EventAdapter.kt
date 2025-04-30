@@ -59,7 +59,7 @@ class EventAdapter(
             // Format the timestamp into a readable date string
             val date = Date(event.eventDate)
             val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(date)
-            eventSubtitleTextView.text = context.getString(R.string.event_subtitle, formattedDate, event.eventLocation, event.eventType)
+            eventSubtitleTextView.text = context.getString(R.string.event_subtitle, formattedDate, event.eventLocation.address, event.eventType)
 
 
             eventDescriptionTextView.text = event.eventDescription
