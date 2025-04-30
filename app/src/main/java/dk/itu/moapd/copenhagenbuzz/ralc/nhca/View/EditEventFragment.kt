@@ -391,10 +391,24 @@ class EditEventFragment : BottomSheetDialogFragment() {
 
     private fun uploadPhotoAndSaveEvent() {
         val storageRef = FirebaseStorage.getInstance().reference
-        val photoRef = storageRef.child("event_photos/${UUID.randomUUID()}")
 
+        // Delete the old photo if it exists
+        val oldPhotoUrl = event.eventPhotoURL
+        if (oldPhotoUrl.isNotEmpty() && oldPhotoUrl.startsWith("https://")) {
+            val oldPhotoRef = storageRef.storage.getReferenceFromUrl(oldPhotoUrl)
+            oldPhotoRef.delete()
+                .addOnSuccessListener {
+                    showSnackbar("Old photo deleted successfully")
+                }
+                .addOnFailureListener { e ->
+                    showSnackbar("Failed to delete old photo: ${e.message}")
+                }
+        }
+
+        // Upload the new photo
+        val photoRef = storageRef.child("event_photos/${UUID.randomUUID()}")
         photoRef.putFile(imageUri!!)
-            .addOnSuccessListener { taskSnapshot ->
+            .addOnSuccessListener {
                 photoRef.downloadUrl.addOnSuccessListener { uri ->
                     saveEventWithPhotoUrl(uri.toString())
                 }
