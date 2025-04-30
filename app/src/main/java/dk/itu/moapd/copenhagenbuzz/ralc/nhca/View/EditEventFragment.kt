@@ -1,15 +1,24 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
+import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -38,11 +47,36 @@ class EditEventFragment : BottomSheetDialogFragment() {
     private lateinit var event: Event
     private lateinit var eventKey: String
     private lateinit var geocoder: Geocoder
+    private var imageUri: Uri? = null
 
     // Location coordinates
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private var hasValidCoordinates: Boolean = false
+
+    // Activity result launcher for image selection
+    private val getContent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            data?.data?.let { uri ->
+                imageUri = uri
+                displaySelectedImage(uri)
+                // Store the URI string to the hidden field
+                binding.editTextEventPhotoUrl.setText(uri.toString())
+            }
+        }
+    }
+
+    // Permission request launcher
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            openImagePicker()
+        } else {
+            showSnackbar("Permission denied")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +126,12 @@ class EditEventFragment : BottomSheetDialogFragment() {
 
         // Add text change listener for location field
         setupLocationListener()
+
+        // Setup image click listener
+        setupImageClickListener()
+
+        // Load existing image if available
+        loadExistingImageIfAvailable()
     }
 
     private fun populateFormWithEventData() {
@@ -129,6 +169,97 @@ class EditEventFragment : BottomSheetDialogFragment() {
         binding.deleteEventButton.setOnClickListener {
             showDeleteConfirmationDialog()
         }
+    }
+
+    private fun setupImageClickListener() {
+        binding.eventImageCard.setOnClickListener {
+            showImagePickerOptions()
+        }
+    }
+
+    private fun loadExistingImageIfAvailable() {
+        val existingImageUrl = binding.editTextEventPhotoUrl.text.toString()
+        if (existingImageUrl.isNotEmpty()) {
+            try {
+                // Check if it's a Uri or a URL
+                if (existingImageUrl.startsWith("http")) {
+                    // It's a web URL
+                    Glide.with(this)
+                        .load(existingImageUrl)
+                        .placeholder(R.drawable.ic_image_placeholder) // Add a placeholder drawable
+                        .error(R.drawable.ic_image_error) // Add an error drawable
+                        .into(binding.eventImageView)
+                } else {
+                    // It's likely a local URI
+                    val uri = Uri.parse(existingImageUrl)
+                    Glide.with(this)
+                        .load(uri)
+                        .placeholder(R.drawable.ic_image_placeholder) // Add a placeholder drawable
+                        .error(R.drawable.ic_image_error) // Add an error drawable
+                        .into(binding.eventImageView)
+                }
+            } catch (e: Exception) {
+                // Handle error loading image
+                binding.eventImageView.setImageResource(R.drawable.ic_image_placeholder) // Use your placeholder drawable
+            }
+        } else {
+            // No image, set a placeholder
+            binding.eventImageView.setImageResource(R.drawable.ic_image_placeholder) // Use your placeholder drawable
+        }
+    }
+
+    private fun showImagePickerOptions() {
+        val options = arrayOf("Choose from Gallery", "Cancel")
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Select Option")
+            .setItems(options) { dialog, index ->
+                when (index) {
+                    0 -> checkGalleryPermission()
+                    1 -> dialog.dismiss()
+                }
+            }
+            .show()
+    }
+
+    private fun checkGalleryPermission() {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // Permission is already granted, proceed with gallery
+                openImagePicker()
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) -> {
+                // Explain why the permission is needed
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Storage Permission Required")
+                    .setMessage("We need storage access to select photos for your event")
+                    .setPositiveButton("OK") { _, _ ->
+                        requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+            else -> {
+                // Request the permission
+                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
+    }
+
+    private fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        getContent.launch(intent)
+    }
+
+    private fun displaySelectedImage(uri: Uri) {
+        Glide.with(this)
+            .load(uri)
+            .placeholder(R.drawable.ic_image_placeholder) // Add a placeholder drawable
+            .error(R.drawable.ic_image_error) // Add an error drawable
+            .into(binding.eventImageView)
     }
 
     private fun setupLocationListener() {

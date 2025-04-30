@@ -76,6 +76,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.dotenv.kotlin)
 
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
 
