@@ -4,7 +4,9 @@ import android.content.Context
 import android.view.View
 import android.graphics.Color
 import android.os.Bundle
-import android.provider.Settings.Global.putString
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.BaseAdapter
 import androidx.fragment.app.FragmentActivity
 import com.firebase.ui.database.FirebaseListAdapter
 import com.firebase.ui.database.FirebaseListOptions
@@ -19,18 +21,20 @@ import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.EventRowItemBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
-class EventAdapter(
-    options: FirebaseListOptions<Event>,
-    private val context: Context,
-    private val isLoggedIn: Boolean,
-) : FirebaseListAdapter<Event>(options) {
-
+class EventAdapter : BaseAdapter {
     private var favoriteEvents: List<Event> = emptyList()
+    private val context: Context
+    private val isLoggedIn: Boolean
     private class ViewHolder(val binding: EventRowItemBinding)
-    private lateinit var eventKey: String
+
+    // For Firebase query-based adapter
+    private var firebaseAdapter: FirebaseListAdapter<Event>? = null
+
+    // For custom sorted list-based adapter
+    private var sortedEvents: List<Pair<String, Event>>? = null
 
     companion object {
-        // Factory method to create the adapter with required FirebaseListOptions
+        // Factory method to create the adapter with Firebase query
         fun create(query: Query, context: Context, isLoggedIn: Boolean): EventAdapter {
             val options = FirebaseListOptions.Builder<Event>()
                 .setQuery(query, Event::class.java)
@@ -40,10 +44,50 @@ class EventAdapter(
 
             return EventAdapter(options, context, isLoggedIn)
         }
+
+        // Factory method to create the adapter with pre-sorted events
+        fun createWithSortedEvents(
+            sortedEvents: List<Pair<String, Event>>,
+            context: Context,
+            isLoggedIn: Boolean
+        ): EventAdapter {
+            return EventAdapter(sortedEvents, context, isLoggedIn)
+        }
     }
 
-    override fun populateView(view: View, event: Event, position: Int) {
+    // Constructor for Firebase query-based adapter
+    constructor(options: FirebaseListOptions<Event>, context: Context, isLoggedIn: Boolean) {
+        this.context = context
+        this.isLoggedIn = isLoggedIn
+        this.firebaseAdapter = object : FirebaseListAdapter<Event>(options) {
+            override fun populateView(view: View, event: Event, position: Int) {
+                this@EventAdapter.populateView(view, event, getRef(position).key ?: "")
+            }
+        }
+    }
+
+    // Constructor for pre-sorted events list
+    constructor(sortedEvents: List<Pair<String, Event>>, context: Context, isLoggedIn: Boolean) {
+        this.context = context
+        this.isLoggedIn = isLoggedIn
+        this.sortedEvents = sortedEvents
+    }
+
+    override fun getCount(): Int {
+        return sortedEvents?.size ?: firebaseAdapter?.count ?: 0
+    }
+
+    override fun getItem(position: Int): Event {
+        return sortedEvents?.get(position)?.second ?: firebaseAdapter?.getItem(position) ?: Event()
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val binding: EventRowItemBinding
+        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.event_row_item, parent, false)
 
         if (view.tag == null) {
             binding = EventRowItemBinding.bind(view)
@@ -52,7 +96,23 @@ class EventAdapter(
             binding = (view.tag as ViewHolder).binding
         }
 
-        // Directly populate the view here instead of calling another method
+        val event = getItem(position)
+        val eventKey = sortedEvents?.get(position)?.first ?: ""
+
+        populateView(view, event, eventKey)
+
+        return view
+    }
+
+    private fun populateView(view: View, event: Event, eventKey: String) {
+        val binding = if (view.tag == null) {
+            val newBinding = EventRowItemBinding.bind(view)
+            view.tag = ViewHolder(newBinding)
+            newBinding
+        } else {
+            (view.tag as ViewHolder).binding
+        }
+
         with(binding) {
             Picasso.get().load(event.eventPhotoURL).into(eventPhotoImageView)
             eventNameTextView.text = event.eventName
@@ -60,7 +120,6 @@ class EventAdapter(
             val date = Date(event.eventDate)
             val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(date)
             eventSubtitleTextView.text = context.getString(R.string.event_subtitle, formattedDate, event.eventLocation.address, event.eventType)
-
 
             eventDescriptionTextView.text = event.eventDescription
 
@@ -71,10 +130,8 @@ class EventAdapter(
             // Get boolean to check if the current user is the creator of the event
             val isCreator = userId != null && userId == event.creatorUserId
 
-
             // Add click listener for the edit button
             editButton.setOnClickListener { v ->
-                val eventKey = getRef(position).key ?: ""
                 showEditDialog(event, eventKey)
             }
 
@@ -99,9 +156,6 @@ class EventAdapter(
                     Snackbar.make(v, "You need to be logged in to favorite events", Snackbar.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-
-                // Get the event key for this specific event
-                val eventKey = getRef(position).key ?: return@setOnClickListener
 
                 val favoritesRef = FirebaseDatabase.getInstance().reference
                     .child("Favorites")
@@ -152,5 +206,13 @@ class EventAdapter(
         }
 
         editEventFragment.show((context as FragmentActivity).supportFragmentManager, "editEventFragment")
+    }
+
+    fun startListening() {
+        firebaseAdapter?.startListening()
+    }
+
+    fun stopListening() {
+        firebaseAdapter?.stopListening()
     }
 }
