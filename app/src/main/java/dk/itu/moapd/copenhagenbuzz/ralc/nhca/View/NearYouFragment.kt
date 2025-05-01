@@ -19,15 +19,9 @@ import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
 import io.github.cdimascio.dotenv.dotenv
-import kotlin.getValue
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
- * A simple [Fragment] subclass.
+ * A fragment that displays events sorted by distance from the user's location.
  * Use the [NearYouFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
@@ -77,7 +71,7 @@ class NearYouFragment : Fragment() {
         databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    Log.d("TimelineFragment", "Data retrieved: ${snapshot.childrenCount} events")
+                    Log.d("NearYouFragment", "Data retrieved: ${snapshot.childrenCount} events")
 
                     // Create a list to hold events with their keys
                     val eventsList = mutableListOf<Pair<String, Event>>()
@@ -88,7 +82,7 @@ class NearYouFragment : Fragment() {
                         val key = eventSnapshot.key
                         if (event != null && key != null) {
                             eventsList.add(Pair(key, event))
-                            Log.d("TimelineFragment", "Event: $event")
+                            Log.d("NearYouFragment", "Event: $event")
                         }
                     }
 
@@ -100,11 +94,12 @@ class NearYouFragment : Fragment() {
                         )
                     }
 
-                    // Create and set adapter with sorted events
+                    // Create and set adapter with sorted events, using the nearby_event_row_item layout
                     eventAdapter = EventAdapter.createWithSortedEvents(
                         eventsList,
                         requireContext(),
-                        isLoggedIn
+                        isLoggedIn,
+                        R.layout.nearby_event_row_item  // Specifying the custom layout for nearby events
                     )
                     listView.adapter = eventAdapter
 
@@ -113,7 +108,7 @@ class NearYouFragment : Fragment() {
                         (listView.adapter as? EventAdapter)?.setFavoriteEvents(favoriteEvents)
                     })
                 } else {
-                    Log.d("TimelineFragment", "No data found")
+                    Log.d("NearYouFragment", "No data found")
                     // Create empty adapter
                     eventAdapter = EventAdapter.create(databaseRef, requireContext(), isLoggedIn)
                     listView.adapter = eventAdapter
@@ -121,7 +116,7 @@ class NearYouFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("TimelineFragment", "Database error: ${error.message}")
+                Log.e("NearYouFragment", "Database error: ${error.message}")
             }
         })
     }
@@ -138,7 +133,7 @@ class NearYouFragment : Fragment() {
     companion object {
         /**
          * Factory method to create a new instance of this fragment.
-         * @return A new instance of fragment CalendarFragment.
+         * @return A new instance of fragment NearYouFragment.
          */
         @JvmStatic
         fun newInstance() = NearYouFragment()
