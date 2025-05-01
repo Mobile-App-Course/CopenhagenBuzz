@@ -26,6 +26,8 @@ class TimelineFragment : Fragment() {
 
     private lateinit var eventAdapter: EventAdapter
     private val dataViewModel: DataViewModel by activityViewModels()
+    private lateinit var listView: ListView
+    private var isLoggedIn: Boolean = false
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -50,30 +52,73 @@ class TimelineFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val listView: ListView = view.findViewById(R.id.event_list_view)
-        val isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
+        listView = view.findViewById(R.id.event_list_view)
+        isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
 
+        // Load data on first creation
+        loadEventsData()
+
+        // Observe favorite events
+        dataViewModel.favoriteEvents.observe(viewLifecycleOwner, Observer { favoriteEvents ->
+            (listView.adapter as? EventAdapter)?.setFavoriteEvents(favoriteEvents)
+        })
+    }
+
+    /**
+     * Load events from Firebase and setup the adapter
+     */
+    private fun loadEventsData() {
         // Load environment variables
         val dotenv = dotenv {
-            directory = "./assets"  // Change from "/assets" to "./assets"
+            directory = "./assets"
             filename = "env"
         }
 
-
         val databaseRef = Firebase.database(dotenv["DATABASE_URL"]).getReference("Events")
-        val query = databaseRef.orderByChild("eventDate")
 
-        // Used to log if there is data retrieval or not
-        query.addValueEventListener(object : ValueEventListener {
+        // Retrieve all events and sort them by date
+        databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     Log.d("TimelineFragment", "Data retrieved: ${snapshot.childrenCount} events")
+
+                    // Create a list to hold events with their keys
+                    val eventsList = mutableListOf<Pair<String, Event>>()
+
+                    // Populate the list
                     for (eventSnapshot in snapshot.children) {
                         val event = eventSnapshot.getValue(Event::class.java)
-                        Log.d("TimelineFragment", "Event: $event")
+                        val key = eventSnapshot.key
+                        if (event != null && key != null) {
+                            eventsList.add(Pair(key, event))
+                            Log.d("TimelineFragment", "Event: $event")
+                        }
+                    }
+
+                    // Sort events by date
+                    eventsList.sortBy { (_, event) -> event.eventDate }
+
+                    // Create and set adapter with sorted events
+                    eventAdapter = EventAdapter.createWithSortedEvents(
+                        eventsList,
+                        requireContext(),
+                        isLoggedIn
+                    )
+                    listView.adapter = eventAdapter
+
+                    // Update favorites if we have them
+                    dataViewModel.favoriteEvents.value?.let { favorites ->
+                        eventAdapter.setFavoriteEvents(favorites)
                     }
                 } else {
                     Log.d("TimelineFragment", "No data found")
+                    // Create empty adapter
+                    eventAdapter = EventAdapter.createWithSortedEvents(
+                        emptyList(),
+                        requireContext(),
+                        isLoggedIn
+                    )
+                    listView.adapter = eventAdapter
                 }
             }
 
@@ -81,17 +126,18 @@ class TimelineFragment : Fragment() {
                 Log.e("TimelineFragment", "Database error: ${error.message}")
             }
         })
-
-        eventAdapter = EventAdapter.create(query, requireContext(), isLoggedIn)
-        listView.adapter = eventAdapter
-
-        dataViewModel.favoriteEvents.observe(viewLifecycleOwner, Observer { favoriteEvents ->
-            (listView.adapter as? EventAdapter)?.setFavoriteEvents(favoriteEvents)
-        })
-
     }
 
-
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     */
+    override fun onResume() {
+        super.onResume()
+        // Refresh data when coming back to this fragment
+        if (::listView.isInitialized) {
+            loadEventsData()
+        }
+    }
 
     companion object {
         /**
