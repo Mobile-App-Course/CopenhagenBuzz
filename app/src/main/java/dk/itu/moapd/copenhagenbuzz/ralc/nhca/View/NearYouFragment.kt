@@ -28,10 +28,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [CalendarFragment.newInstance] factory method to
+ * Use the [NearYouFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CalendarFragment : Fragment() {
+class NearYouFragment : Fragment() {
     private lateinit var eventAdapter: EventAdapter
     private val dataViewModel: DataViewModel by activityViewModels()
 
@@ -51,7 +51,7 @@ class CalendarFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calendar, container, false)
+        return inflater.inflate(R.layout.fragment_nearyou, container, false)
     }
 
     /**
@@ -141,6 +141,6 @@ class CalendarFragment : Fragment() {
          * @return A new instance of fragment CalendarFragment.
          */
         @JvmStatic
-        fun newInstance() = CalendarFragment()
+        fun newInstance() = NearYouFragment()
     }
 }

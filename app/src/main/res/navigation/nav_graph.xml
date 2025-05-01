@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/timeline_fragment">
+
     <fragment
         android:id="@+id/timeline_fragment"
         android:name="dk.itu.moapd.copenhagenbuzz.ralc.nhca.View.TimelineFragment"
@@ -12,7 +13,6 @@
         <action
             android:id="@+id/action_timeline_fragment_to_favorites_fragment"
             app:destination="@id/favorites_fragment" />
-
         <action
             android:id="@+id/action_timeline_fragment_to_maps_fragment"
             app:destination="@id/maps_fragment" />
@@ -20,9 +20,10 @@
             android:id="@+id/action_timeline_fragment_to_add_event_fragment"
             app:destination="@id/add_event_fragment" />
         <action
-            android:id="@+id/action_timeline_fragment_to_calendarFragment"
-            app:destination="@id/calendar_fragment" />
+            android:id="@+id/action_timeline_fragment_to_nearyou_fragment"
+            app:destination="@id/nearyou_fragment" />
     </fragment>
+
     <fragment
         android:id="@+id/maps_fragment"
         android:name="dk.itu.moapd.copenhagenbuzz.ralc.nhca.View.MapsFragment"
@@ -38,9 +39,10 @@
             android:id="@+id/action_maps_fragment_to_add_event_fragment"
             app:destination="@id/add_event_fragment" />
         <action
-            android:id="@+id/action_maps_fragment_to_calendarFragment"
-            app:destination="@id/calendar_fragment" />
+            android:id="@+id/action_maps_fragment_to_nearyou_fragment"
+            app:destination="@id/nearyou_fragment" />
     </fragment>
+
     <fragment
         android:id="@+id/favorites_fragment"
         android:name="dk.itu.moapd.copenhagenbuzz.ralc.nhca.View.FavoritesFragment"
@@ -56,9 +58,10 @@
             android:id="@+id/action_favorites_fragment_to_add_event_fragment"
             app:destination="@id/add_event_fragment" />
         <action
-            android:id="@+id/action_favorites_fragment_to_calendarFragment"
-            app:destination="@id/calendar_fragment" />
+            android:id="@+id/action_favorites_fragment_to_nearyou_fragment"
+            app:destination="@id/nearyou_fragment" />
     </fragment>
+
     <fragment
         android:id="@+id/add_event_fragment"
         android:name="dk.itu.moapd.copenhagenbuzz.ralc.nhca.View.AddEventFragment"
@@ -74,25 +77,27 @@
             android:id="@+id/action_addEventFragment_to_maps_fragment"
             app:destination="@id/maps_fragment" />
         <action
-            android:id="@+id/action_add_event_fragment_to_calendarFragment"
-            app:destination="@id/calendar_fragment" />
+            android:id="@+id/action_add_event_fragment_to_nearyou_fragment"
+            app:destination="@id/nearyou_fragment" />
     </fragment>
+
     <fragment
-        android:id="@+id/calendar_fragment"
-        android:name="dk.itu.moapd.copenhagenbuzz.ralc.nhca.View.CalendarFragment"
-        android:label="fragment_calendar"
-        tools:layout="@layout/fragment_calendar" >
+        android:id="@+id/nearyou_fragment"
+        android:name="dk.itu.moapd.copenhagenbuzz.ralc.nhca.View.NearYouFragment"
+        android:label="fragment_nearyou"
+        tools:layout="@layout/fragment_nearyou">
         <action
-            android:id="@+id/action_calendarFragment_to_timeline_fragment"
+            android:id="@+id/action_nearyou_fragment_to_timeline_fragment"
             app:destination="@id/timeline_fragment" />
         <action
-            android:id="@+id/action_calendarFragment_to_favorites_fragment"
+            android:id="@+id/action_nearyou_fragment_to_favorites_fragment"
             app:destination="@id/favorites_fragment" />
         <action
-            android:id="@+id/action_calendarFragment_to_maps_fragment"
+            android:id="@+id/action_nearyou_fragment_to_maps_fragment"
             app:destination="@id/maps_fragment" />
         <action
-            android:id="@+id/action_calendarFragment_to_add_event_fragment"
+            android:id="@+id/action_nearyou_fragment_to_add_event_fragment"
             app:destination="@id/add_event_fragment" />
     </fragment>
+
 </navigation>

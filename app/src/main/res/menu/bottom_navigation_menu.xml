@@ -28,7 +28,7 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/calendar_fragment"
+        android:id="@+id/nearyou_fragment"
         android:icon="@drawable/calendar_icon"
         android:title="@string/fragment_calendar_text"
         app:showAsAction="ifRoom" />
