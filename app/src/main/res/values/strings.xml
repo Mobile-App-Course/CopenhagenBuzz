@@ -18,6 +18,7 @@
     <string name="add_event_text">Add event</string>
     <string name="content_description_card">This is a description</string>
     <string name="event_subtitle">Date: %1$s\nLocation: %2$s\nType: %3$s</string>
+    <string name="event_distance">Distance to you: %1$s</string>
     <string name="material_button_favorite_description">Favorite</string>
     <string name="material_button_share_description">Share</string>
     <string name="button_info_text">Info</string>

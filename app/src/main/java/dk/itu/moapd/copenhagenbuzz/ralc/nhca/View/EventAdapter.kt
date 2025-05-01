@@ -55,7 +55,7 @@ class EventAdapter : BaseAdapter {
             sortedEvents: List<Pair<String, Event>>,
             context: Context,
             isLoggedIn: Boolean,
-            layoutResId: Int = R.layout.nearby_event_row_item // Default to a new layout for nearby events
+            layoutResId: Int = R.layout.event_row_item
         ): EventAdapter {
             return EventAdapter(sortedEvents, context, isLoggedIn, layoutResId)
         }
@@ -184,6 +184,8 @@ class EventAdapter : BaseAdapter {
             val date = Date(event.eventDate)
             val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(date)
             eventSubtitleTextView.text = context.getString(R.string.event_subtitle, formattedDate, event.eventLocation.address, event.eventType)
+
+            eventDistanceTextView.text = context.getString(R.string.event_distance, "2km")//event.eventLocation.distance)
 
             eventDescriptionTextView.text = event.eventDescription
 
