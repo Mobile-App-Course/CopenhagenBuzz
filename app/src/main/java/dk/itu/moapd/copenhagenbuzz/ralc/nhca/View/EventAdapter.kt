@@ -185,7 +185,14 @@ class EventAdapter : BaseAdapter {
             val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(date)
             eventSubtitleTextView.text = context.getString(R.string.event_subtitle, formattedDate, event.eventLocation.address, event.eventType)
 
-            eventDistanceTextView.text = context.getString(R.string.event_distance, "2km")//event.eventLocation.distance)
+            // Format distance - convert meters to kilometers if distance is over 1000m
+            val distance = event.eventLocation.distance
+            val formattedDistance = when {
+                distance < 1000 -> String.format("%.0f m", distance)
+                else -> String.format("%.1f km", distance / 1000)
+            }
+
+            eventDistanceTextView.text = context.getString(R.string.event_distance, formattedDistance)
 
             eventDescriptionTextView.text = event.eventDescription
 

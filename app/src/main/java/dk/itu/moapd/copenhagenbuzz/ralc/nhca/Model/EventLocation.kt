@@ -8,11 +8,12 @@ import kotlinx.parcelize.Parcelize
 data class EventLocation(
     var latitude: Double,
     var longitude: Double,
-    var address: String
+    var address: String,
+    var distance: Float = 0f  // Distance in meters from user's location
 ) : Parcelable {
-    constructor() : this(0.0, 0.0, "")
+    constructor() : this(0.0, 0.0, "", 0f)
 
     override fun toString(): String {
-        return "EventLocation(latitude='$latitude', longitude='$longitude', address='$address')"
+        return "EventLocation(latitude='$latitude', longitude='$longitude', address='$address', distance='$distance')"
     }
 }
