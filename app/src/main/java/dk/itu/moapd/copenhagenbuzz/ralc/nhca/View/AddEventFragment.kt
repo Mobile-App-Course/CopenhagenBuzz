@@ -53,6 +53,7 @@ class AddEventFragment : Fragment() {
     // UI Elements
     private lateinit var eventName: EditText
     private lateinit var eventLocation: EditText
+    private lateinit var geocodeButton: Button
     private lateinit var eventPhotoURL: EditText
     private lateinit var eventDate: TextInputEditText
     private lateinit var eventType: AutoCompleteTextView
@@ -149,11 +150,21 @@ class AddEventFragment : Fragment() {
         // Bind UI Elements
         eventName = binding.editTextEventName
         eventLocation = binding.editTextEventLocation
+        geocodeButton = binding.geocodeButton
         eventPhotoURL = binding.editTextEventPhotoUrl
         eventDate = binding.editTextEventDate
         eventType = binding.autoCompleteTextViewEventType
         eventDescription = binding.editTextEventDescription
         addEventButton = binding.addEventButton
+
+        geocodeButton.setOnClickListener{
+            val locationText = eventLocation.text.toString().trim()
+            if (locationText.isNotEmpty()) {
+                geocodeLocation(locationText)
+            } else {
+                showSnackbar("Please enter a location to geocode")
+            }
+        }
 
         // Photo buttons setup
         binding.buttonCapturePhoto.setOnClickListener {
@@ -183,22 +194,6 @@ class AddEventFragment : Fragment() {
             eventTypeDropdown.requestFocus() // Ensure it gets focus
             eventTypeDropdown.showDropDown() // Show dropdown immediately
         }
-
-        // Add a text change listener to the location field for geocoding
-        eventLocation.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                val locationText = s.toString().trim()
-                if (locationText.length > 3) { // Only geocode if there's enough text
-                    geocodeLocation(locationText)
-                } else {
-                    hasValidCoordinates = false
-                }
-            }
-        })
 
         // Button click listener
         addEventButton.setOnClickListener {

@@ -60,6 +60,17 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/geocode_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text="Locate"
+                app:icon="@android:drawable/ic_menu_search"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_field_event_location"
+                app:layout_constraintBottom_toBottomOf="@+id/text_field_event_location" />
+
         <!-- Photo capture and selection section -->
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/photo_capture_section"
