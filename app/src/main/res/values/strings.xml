@@ -27,4 +27,6 @@
     <string name="fragment_maps_name">Maps Fragment</string>
     <string name="favorite_event_image">Image of the favorite event</string>
     <string name="button_edit_event">Edit Event</string>
+    <string name="button_geocode">Locate address on map</string>
+    <string name="dropdown_event_type">Dropdown list of event types</string>
 </resources>

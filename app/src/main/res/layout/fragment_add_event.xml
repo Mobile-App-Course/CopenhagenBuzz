@@ -62,11 +62,14 @@
 
         <com.google.android.material.button.MaterialButton
                 android:id="@+id/geocode_button"
-                android:layout_width="wrap_content"
+                android:layout_width="48dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:text="Locate"
+                android:layout_marginEnd="25dp"
+                android:contentDescription="@string/button_geocode"
                 app:icon="@android:drawable/ic_menu_search"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/text_field_event_location"
                 app:layout_constraintBottom_toBottomOf="@+id/text_field_event_location" />
@@ -188,6 +191,7 @@
             <AutoCompleteTextView
                     android:id="@+id/auto_complete_text_view_event_type"
                     android:layout_width="match_parent"
+                    android:contentDescription="@string/dropdown_event_type"
                     android:layout_height="wrap_content"
                     android:inputType="none" />
 
