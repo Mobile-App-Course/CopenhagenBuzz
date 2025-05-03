@@ -9,11 +9,17 @@ plugins {
     // Add the Google Maps services Gradle plugin
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
 }
 
 android {
     namespace = "dk.itu.moapd.copenhagenbuzz.ralc.nhca"
     compileSdk = 35
+
+    buildFeatures {
+        compose = true
+    }
+
 
     defaultConfig {
         applicationId = "dk.itu.moapd.copenhagenbuzz.ralc.nhca"
@@ -104,5 +110,17 @@ dependencies {
     implementation(libs.google.firebase.storage.ktx)
     // https://firebase.google.com/docs/android/setup#available-libraries
 
+    // Jetpack Compose Dependencies
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.material)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.runtime)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.coil.compose)
+
+    // Compose but Coil (picasso of Compose)
+    implementation(libs.coil.compose)
 
 }
