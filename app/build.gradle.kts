@@ -9,7 +9,7 @@ plugins {
     // Add the Google Maps services Gradle plugin
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+    alias(libs.plugins.compose.compiler)
 }
 
 android {

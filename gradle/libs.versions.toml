@@ -37,7 +37,6 @@ runtime = "1.5.4"
 secretsGradlePlugin = "2.0.1"
 ui = "1.5.4"
 
-
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
@@ -85,4 +84,4 @@ secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.se
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
