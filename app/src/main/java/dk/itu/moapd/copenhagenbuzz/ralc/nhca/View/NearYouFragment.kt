@@ -1,0 +1,278 @@
+package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
+
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
+import android.os.Bundle
+import android.util.Log
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ListView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.EventLocation
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
+import io.github.cdimascio.dotenv.dotenv
+
+/**
+ * A fragment that displays events sorted by distance from the user's location.
+ * Use the [NearYouFragment.newInstance] factory method to
+ * create an instance of this fragment.
+ */
+class NearYouFragment : Fragment() {
+    private lateinit var eventAdapter: EventAdapter
+    private val dataViewModel: DataViewModel by activityViewModels()
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    // User's current location coordinates (default to Copenhagen)
+    private var userLatitude = 55.676098
+    private var userLongitude = 12.568337
+    private var locationPermissionGranted = false
+
+    // Store events with calculated distances
+    private val eventsWithDistance = mutableListOf<Pair<String, Event>>()
+
+    // Permission request launcher
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.entries.all { it.value }
+        locationPermissionGranted = allGranted
+
+        if (allGranted) {
+            // Permissions granted, get location
+            getLastLocation()
+        } else {
+            // Permissions denied, use default location
+            Toast.makeText(
+                requireContext(),
+                "Location permission denied. Using default location for distance calculations.",
+                Toast.LENGTH_LONG
+            ).show()
+            // Load events with default location
+            loadEvents()
+        }
+    }
+
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
+     */
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_nearyou, container, false)
+    }
+
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     * @param view The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize FusedLocationProviderClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        // Request location permissions
+        requestLocationPermission()
+    }
+
+    /**
+     * Request location permissions from the user
+     */
+    private fun requestLocationPermission() {
+        when {
+            // Check if permissions are already granted
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED -> {
+                // Permissions already granted
+                locationPermissionGranted = true
+                getLastLocation()
+            }
+            // Should show rationale
+            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                Toast.makeText(
+                    requireContext(),
+                    "Location permission is needed to calculate distance to events",
+                    Toast.LENGTH_LONG
+                ).show()
+                // Request permissions
+                requestPermissions()
+            }
+            else -> {
+                // Request permissions directly
+                requestPermissions()
+            }
+        }
+    }
+
+    /**
+     * Launch permission request
+     */
+    private fun requestPermissions() {
+        requestPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+
+    /**
+     * Get the user's last known location
+     */
+    private fun getLastLocation() {
+        try {
+            if (locationPermissionGranted) {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        // Update user location
+                        userLatitude = location.latitude
+                        userLongitude = location.longitude
+                        Log.d("NearYouFragment", "User location: $userLatitude, $userLongitude")
+                    } else {
+                        Log.d("NearYouFragment", "Location is null, using default")
+                    }
+                    // Load events with user location
+                    loadEvents()
+                }.addOnFailureListener { e ->
+                    Log.e("NearYouFragment", "Error getting location: ${e.message}")
+                    // Load events with default location
+                    loadEvents()
+                }
+            } else {
+                // Permissions not granted, use default location
+                loadEvents()
+            }
+        } catch (e: SecurityException) {
+            Log.e("NearYouFragment", "Security exception: ${e.message}")
+            // Load events with default location
+            loadEvents()
+        }
+    }
+
+    /**
+     * Load events from Firebase and sort by distance
+     */
+    private fun loadEvents() {
+        val listView: ListView? = view?.findViewById(R.id.event_list_view)
+        if (listView == null) {
+            Log.e("NearYouFragment", "ListView not found")
+            return
+        }
+
+        val isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
+
+        // Load environment variables
+        val dotenv = dotenv {
+            directory = "./assets"
+            filename = "env"
+        }
+
+        val databaseRef = Firebase.database(dotenv["DATABASE_URL"]).getReference("Events")
+
+        // Retrieve all events and sort them by distance
+        databaseRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    Log.d("NearYouFragment", "Data retrieved: ${snapshot.childrenCount} events")
+
+                    // Clear previous list
+                    eventsWithDistance.clear()
+
+                    // Populate the list and calculate distances
+                    for (eventSnapshot in snapshot.children) {
+                        val event = eventSnapshot.getValue(Event::class.java)
+                        val key = eventSnapshot.key
+                        if (event != null && key != null) {
+                            // Calculate distance from user to event
+                            val distance = calculateDistance(
+                                userLatitude, userLongitude,
+                                event.eventLocation.latitude, event.eventLocation.longitude
+                            )
+
+                            // Store distance in the event object
+                            // We'll add a distance field to EventLocation in a moment
+                            event.eventLocation.distance = distance
+
+                            eventsWithDistance.add(Pair(key, event))
+                            Log.d("NearYouFragment", "Event: ${event.eventName}, Distance: ${distance/1000}km")
+                        }
+                    }
+
+                    // Sort events by distance
+                    eventsWithDistance.sortBy { (_, event) -> event.eventLocation.distance }
+
+                    // Create and set adapter with sorted events, using the nearby_event_row_item layout
+                    eventAdapter = EventAdapter.createWithSortedEvents(
+                        eventsWithDistance,
+                        requireContext(),
+                        isLoggedIn,
+                        R.layout.nearby_event_row_item
+                    )
+                    listView.adapter = eventAdapter
+
+                    // Observe favorite events
+                    dataViewModel.favoriteEvents.observe(viewLifecycleOwner, Observer { favoriteEvents ->
+                        (listView.adapter as? EventAdapter)?.setFavoriteEvents(favoriteEvents)
+                    })
+                } else {
+                    Log.d("NearYouFragment", "No data found")
+                    // Create empty adapter
+                    eventAdapter = EventAdapter.create(databaseRef, requireContext(), isLoggedIn)
+                    listView.adapter = eventAdapter
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("NearYouFragment", "Database error: ${error.message}")
+            }
+        })
+    }
+
+    /**
+     * Calculate distance between two geographic coordinates using Android's Location API
+     * @return Distance in meters
+     */
+    private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
+        val results = FloatArray(1)
+        Location.distanceBetween(lat1, lon1, lat2, lon2, results)
+        return results[0]
+    }
+
+    companion object {
+        /**
+         * Factory method to create a new instance of this fragment.
+         * @return A new instance of fragment NearYouFragment.
+         */
+        @JvmStatic
+        fun newInstance() = NearYouFragment()
+    }
+}

@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/nearyou_fragment"
+        android:icon="@drawable/baseline_near_me_24"
+        android:title="@string/fragment_calendar_text"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/add_event_fragment"
         android:icon="@drawable/add_event_icon"
         android:visible="false"
@@ -25,12 +31,6 @@
         android:id="@+id/favorites_fragment"
         android:icon="@drawable/favorite_icon"
         android:title="@string/fragment_favorites_text"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/calendar_fragment"
-        android:icon="@drawable/calendar_icon"
-        android:title="@string/fragment_calendar_text"
         app:showAsAction="ifRoom" />
 
 </menu>

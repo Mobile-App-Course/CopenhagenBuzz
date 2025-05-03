@@ -98,11 +98,12 @@ class TimelineFragment : Fragment() {
                     // Sort events by date
                     eventsList.sortBy { (_, event) -> event.eventDate }
 
-                    // Create and set adapter with sorted events
+                    // Create and set adapter with sorted events, using the standard event_row_item layout
                     eventAdapter = EventAdapter.createWithSortedEvents(
                         eventsList,
                         requireContext(),
-                        isLoggedIn
+                        isLoggedIn,
+                        R.layout.event_row_item  // Explicitly use the standard layout
                     )
                     listView.adapter = eventAdapter
 
@@ -116,7 +117,8 @@ class TimelineFragment : Fragment() {
                     eventAdapter = EventAdapter.createWithSortedEvents(
                         emptyList(),
                         requireContext(),
-                        isLoggedIn
+                        isLoggedIn,
+                        R.layout.event_row_item  // Explicitly use the standard layout
                     )
                     listView.adapter = eventAdapter
                 }
