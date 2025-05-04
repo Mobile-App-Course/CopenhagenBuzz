@@ -1,16 +1,27 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
-import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
+import coil.compose.rememberAsyncImagePainter
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 
 
 /**
@@ -32,24 +43,26 @@ class FavoritesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorites, container, false)
-    }
-
-    /**
-     * Called immediately after onCreateView() has returned, but before any saved state has been restored in to the view.
-     * @param view The View returned by onCreateView().
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
-     */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val recyclerView: RecyclerView = view.findViewById(R.id.favorites_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        // Creates and set the Firebase adapter
+        // Creates and sets the adapter
         adapter = FavoriteAdapter.create(requireContext())
-        recyclerView.adapter = adapter
+
+        // Return a ComposeView (which replaced the inflation of the XML layout we did before)
+        return ComposeView(requireContext()).apply {
+            // When fragment is stopped, the composition will still be active
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                MaterialTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colors.background
+                    ) {
+                        FavoritesScreen(adapter)
+                    }
+                }
+            }
+        }
+
     }
 
     companion object {
@@ -77,5 +90,84 @@ class FavoritesFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         adapter.stopListening()
+    }
+}
+
+@Composable
+fun FavoritesScreen(adapter: FavoriteAdapter) {
+    // Collect the events from the adapter
+    val events = remember { mutableStateListOf<Event>() }
+
+    // Effect which updates the events when the data in the adapter changes
+    DisposableEffect(adapter) {
+        val listener = object : FavoriteAdapter.DataChangedListener {
+            override fun onDataChanged(newEvents: List<Event>) {
+                events.clear()
+                events.addAll(newEvents)
+            }
+        }
+        adapter.addDataChangedListener(listener)
+
+        onDispose {
+            adapter.removeDataChangedListener(listener)
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(8.dp)
+    ) {
+        items(events) { event ->
+            FavoriteEventCard(event)
+        }
+    }
+
+
+}
+
+@Composable
+fun FavoriteEventCard(event: Event) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(8.dp),
+        elevation = 2.dp,
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Row(modifier = Modifier.fillMaxSize()) {
+
+            Column(
+                modifier = Modifier
+                    .weight(0.65f)
+                    .fillMaxHeight()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = event.eventName,
+                    style = MaterialTheme.typography.h6,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = event.eventType,
+                    style = MaterialTheme.typography.body2,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Image(
+                painter = rememberAsyncImagePainter(model = event.eventPhotoURL),
+                contentDescription = "Event Photo",
+                modifier = Modifier
+                    .weight(0.35f)
+                    . fillMaxHeight(),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
 }
