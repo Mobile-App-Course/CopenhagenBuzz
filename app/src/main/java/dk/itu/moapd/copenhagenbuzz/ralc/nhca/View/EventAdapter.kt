@@ -26,8 +26,9 @@ import java.util.*
 class EventAdapter : BaseAdapter {
     private var favoriteEvents: List<Event> = emptyList()
     private val context: Context
-    private val isLoggedIn: Boolean
+    private var isLoggedIn: Boolean
     private val layoutResId: Int
+    private val auth = FirebaseAuth.getInstance()  // Add FirebaseAuth instance
 
     private class ViewHolder(val binding: ViewBinding)
 
@@ -39,7 +40,7 @@ class EventAdapter : BaseAdapter {
 
     companion object {
         // Factory method to create the adapter with Firebase query
-        fun create(query: Query, context: Context, isLoggedIn: Boolean): EventAdapter {
+        fun create(query: Query, context: Context, isLoggedIn: Boolean = false): EventAdapter {
             val options = FirebaseListOptions.Builder<Event>()
                 .setQuery(query, Event::class.java)
                 .setLayout(R.layout.event_row_item)
@@ -50,11 +51,10 @@ class EventAdapter : BaseAdapter {
         }
 
         // Factory method to create the adapter with pre-sorted events
-        // Now with an optional layout parameter
         fun createWithSortedEvents(
             sortedEvents: List<Pair<String, Event>>,
             context: Context,
-            isLoggedIn: Boolean,
+            isLoggedIn: Boolean = false,
             layoutResId: Int = R.layout.event_row_item
         ): EventAdapter {
             return EventAdapter(sortedEvents, context, isLoggedIn, layoutResId)
@@ -94,6 +94,9 @@ class EventAdapter : BaseAdapter {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        // Check authentication status before rendering view
+        updateLoginStatus()
+
         val view = convertView ?: LayoutInflater.from(context).inflate(layoutResId, parent, false)
         val binding: ViewBinding
 
@@ -113,6 +116,17 @@ class EventAdapter : BaseAdapter {
         populateView(view, event, eventKey)
 
         return view
+    }
+
+    // Method to update login status
+    private fun updateLoginStatus() {
+        isLoggedIn = auth.currentUser != null
+    }
+
+    // Public method to force update login status
+    fun refreshLoginStatus() {
+        updateLoginStatus()
+        notifyDataSetChanged()
     }
 
     private fun populateView(view: View, event: Event, eventKey: String) {
@@ -141,7 +155,7 @@ class EventAdapter : BaseAdapter {
             eventDescriptionTextView.text = event.eventDescription
 
             // Get current user ID
-            val currentUser = FirebaseAuth.getInstance().currentUser
+            val currentUser = auth.currentUser
             val userId = currentUser?.uid
 
             // Get boolean to check if the current user is the creator of the event
@@ -197,7 +211,7 @@ class EventAdapter : BaseAdapter {
             eventDescriptionTextView.text = event.eventDescription
 
             // Get current user ID
-            val currentUser = FirebaseAuth.getInstance().currentUser
+            val currentUser = auth.currentUser
             val userId = currentUser?.uid
 
             // Get boolean to check if the current user is the creator of the event
@@ -232,7 +246,7 @@ class EventAdapter : BaseAdapter {
     }
 
     private fun toggleFavorite(v: View, eventKey: String) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
+        val currentUser = auth.currentUser
         val userId = currentUser?.uid
 
         if (userId == null) {
