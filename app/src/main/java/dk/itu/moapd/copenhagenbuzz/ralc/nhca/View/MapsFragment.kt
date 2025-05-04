@@ -16,6 +16,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.location.Location
 import androidx.appcompat.app.AlertDialog
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -49,6 +50,7 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
     private var currentLocation: Location? = null
     private var googleMap: GoogleMap? = null
     private val eventMarkers = mutableMapOf<Marker, Event>()
+    private var doneInitialZoom = false
 
 
 
@@ -206,18 +208,39 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
             ) {
                 isMyLocationEnabled = true
                 uiSettings.isMyLocationButtonEnabled = true
+
+                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    location?.let {
+                        zoomToLocation(it)
+                        doneInitialZoom = true
+                    }
+                }
             }
         }
 
-        currentLocation?.let { updateMapWithLocation(it) }
+        currentLocation?.let {
+            if(!doneInitialZoom){
+                zoomToLocation(it)
+                doneInitialZoom = true
+            }
+        }
 
         loadEventsFromFirebase()
     }
 
-    private fun updateMapWithLocation(location: Location) {
+    private fun zoomToLocation(location: Location){
         googleMap?.let {
             val currentLatLng = LatLng(location.latitude, location.longitude)
             it.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 14f))
+        }
+    }
+
+    private fun updateMapWithLocation(location: Location) {
+        // Update the camera position if initial zoom hasn't happened yet
+        if (!doneInitialZoom) {
+            zoomToLocation(location)
+            doneInitialZoom = true
         }
     }
 
