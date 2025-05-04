@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -280,9 +281,14 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
     }
 
     private fun showEventDetails(event: Event) {
+        // Checks if the user is logged in or not
+        val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
+
+
         val fragment = EventDetailsFragment().apply {
             arguments = Bundle().apply {
                 putParcelable("event", event)
+                putBoolean("isLoggedIn", isLoggedIn) // Pass the login status to the fragment
             }
         }
 
