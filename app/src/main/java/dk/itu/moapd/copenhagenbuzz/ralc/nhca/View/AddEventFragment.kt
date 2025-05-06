@@ -346,7 +346,9 @@ class AddEventFragment : Fragment() {
                     longitude = address.longitude
                     hasValidCoordinates = true
 
-                    geocodedLocation = EventLocation(latitude, longitude, locationText)
+                    val formattedAddress = address.getAddressLine(0) ?: locationText
+
+                    geocodedLocation = EventLocation(latitude, longitude, formattedAddress)
 
                     // Show success message on UI thread
                     activity?.runOnUiThread {
