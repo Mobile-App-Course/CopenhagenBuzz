@@ -6,4 +6,5 @@
     <dimen name="margin_large">24dp</dimen>
     <dimen name="margin_xlarge">48dp</dimen>
     <dimen name="margin_extra_large">120dp</dimen>
+    <dimen name="margin_extra_extra_large">160dp</dimen>
 </resources>

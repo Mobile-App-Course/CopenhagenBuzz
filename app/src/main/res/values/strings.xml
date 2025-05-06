@@ -29,5 +29,8 @@
     <string name="favorite_event_image">Image of the favorite event</string>
     <string name="button_edit_event">Edit Event</string>
     <string name="button_geocode">Locate address on map</string>
-    <string name="dropdown_event_type">Dropdown list of event types</string>
+    <string name="dropdown_event_type">Select the type of event from the dropdown menu you would prefer</string>
+    <string name="event_image_preview">Event Image Preview</string>
+    <string name="event_take_photo">Take a photo</string>
+    <string name="event_image_gallery">Gallery</string>
 </resources>
