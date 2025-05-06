@@ -82,11 +82,6 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
                 favoriteButton.setOnClickListener {
                     toggleFavorite()
                 }
-
-                // Add share button functionality
-                shareButton.setOnClickListener {
-                    shareEvent()
-                }
             }
 
 
@@ -106,21 +101,21 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
         val favoritesRef = database.getReference("Favorites").child(userId)
 
         // Check if this event is already a favorite
-        favoritesRef.child(event.eventName).get().addOnSuccessListener { dataSnapshot ->
+        favoritesRef.child(eventKey).get().addOnSuccessListener { dataSnapshot ->
             if (dataSnapshot.exists()) {
                 // Event is already favorited, so remove it
-                removeFromFavorites(userId, favoritesRef)
+                removeFromFavorites(favoritesRef)
             } else {
                 // Event is not favorited, so add it
-                addToFavorites(userId, favoritesRef)
+                addToFavorites(favoritesRef)
             }
         }.addOnFailureListener { e ->
             showSnackbar("Error accessing favorites: ${e.message}")
         }
     }
 
-    private fun addToFavorites(userId: String, favoritesRef: DatabaseReference) {
-        favoritesRef.child(event.eventName).setValue(event)
+    private fun addToFavorites(favoritesRef: DatabaseReference) {
+        favoritesRef.child(eventKey).setValue(true)
             .addOnSuccessListener {
                 showSnackbar("Added to favorites")
             }
@@ -129,42 +124,14 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
             }
     }
 
-    private fun removeFromFavorites(userId: String, favoritesRef: DatabaseReference) {
-        favoritesRef.child(event.eventName).removeValue()
+    private fun removeFromFavorites(favoritesRef: DatabaseReference) {
+        favoritesRef.child(eventKey).removeValue()
             .addOnSuccessListener {
                 showSnackbar("Removed from favorites")
             }
             .addOnFailureListener { e ->
                 showSnackbar("Failed to remove event from favorites: ${e.message}")
             }
-    }
-
-    private fun shareEvent() {
-        // Format date for sharing
-        val date = Date(event.eventDate)
-        val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(date)
-
-        // Create share text
-        val shareText = """
-            Check out this event in Copenhagen!
-            
-            ${event.eventName}
-            Date: $formattedDate
-            Location: ${event.eventLocation.address}
-            Type: ${event.eventType}
-            
-            ${event.eventDescription}
-        """.trimIndent()
-
-        // Create share intent
-        val sendIntent = android.content.Intent().apply {
-            action = android.content.Intent.ACTION_SEND
-            putExtra(android.content.Intent.EXTRA_TEXT, shareText)
-            type = "text/plain"
-        }
-
-        val shareIntent = android.content.Intent.createChooser(sendIntent, null)
-        startActivity(shareIntent)
     }
 
     private fun showSnackbar(message: String) {
