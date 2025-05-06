@@ -49,8 +49,9 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
     private var locationReceiver: LocationBroadcastReceiver? = null
     private var currentLocation: Location? = null
     private var googleMap: GoogleMap? = null
-    private val eventMarkers = mutableMapOf<Marker, Event>()
     private var doneInitialZoom = false
+    private val eventMarkers = mutableMapOf<Marker, Event>()
+    private val eventKeys = mutableMapOf<Event, String>()
 
 
 
@@ -257,15 +258,19 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
 
         eventsRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-
-                // Clears existing event markers
+                // Clear existing event markers and keys
                 eventMarkers.keys.forEach { it.remove() }
                 eventMarkers.clear()
+                eventKeys.clear()
 
-                // Adds new event markers for each event in the database
+                // Add new event markers for each event in the database
                 for (eventSnapshot in snapshot.children) {
                     val event = eventSnapshot.getValue(Event::class.java)
-                    event?.let {addEventMarker(it)}
+                    val key = eventSnapshot.key
+                    if (event != null && key != null) {
+                        addEventMarker(event)
+                        eventKeys[event] = key
+                    }
                 }
             }
 
@@ -307,11 +312,14 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         // Checks if the user is logged in or not
         val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
 
+        // Get the event key from our map
+        val eventKey = eventKeys[event] ?: ""
 
         val fragment = EventDetailsFragment().apply {
             arguments = Bundle().apply {
                 putParcelable("event", event)
-                putBoolean("isLoggedIn", isLoggedIn) // Pass the login status to the fragment
+                putBoolean("isLoggedIn", isLoggedIn)
+                putString("eventKey", eventKey) // Add the event key
             }
         }
 
