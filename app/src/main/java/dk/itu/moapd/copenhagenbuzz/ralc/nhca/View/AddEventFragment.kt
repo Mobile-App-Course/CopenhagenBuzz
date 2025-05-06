@@ -346,12 +346,15 @@ class AddEventFragment : Fragment() {
                     longitude = address.longitude
                     hasValidCoordinates = true
 
+                    geocodedLocation = EventLocation(latitude, longitude, locationText)
+
                     // Show success message on UI thread
                     activity?.runOnUiThread {
                         showSnackbar("Location found: ${address.getAddressLine(0)}")
                     }
                 } else {
                     hasValidCoordinates = false
+                    geocodedLocation = null // reset if not found
                     activity?.runOnUiThread {
                         // Only show error if user has finished typing
                         if (!eventLocation.isFocused) {
@@ -361,6 +364,7 @@ class AddEventFragment : Fragment() {
                 }
             } catch (e: IOException) {
                 hasValidCoordinates = false
+                geocodedLocation = null // reset if not found
                 activity?.runOnUiThread {
                     showSnackbar("Geocoding error: ${e.message}")
                 }
@@ -535,6 +539,7 @@ class AddEventFragment : Fragment() {
         latitude = 0.0
         longitude = 0.0
         hasValidCoordinates = false
+        geocodedLocation = null
     }
 
     /**
