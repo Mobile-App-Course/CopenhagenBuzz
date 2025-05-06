@@ -310,7 +310,8 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
 
     private fun showEventDetails(event: Event) {
         // Checks if the user is logged in or not
-        val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val isLoggedIn = currentUser != null && !currentUser.isAnonymous
 
         // Get the event key from our map
         val eventKey = eventKeys[event] ?: ""

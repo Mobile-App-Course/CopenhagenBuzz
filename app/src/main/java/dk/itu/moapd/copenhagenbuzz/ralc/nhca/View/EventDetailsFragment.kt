@@ -35,7 +35,7 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
                 it.getParcelable("event") ?: Event()
             }
             eventKey = it.getString("eventKey","")
-            isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
+            isLoggedIn = it.getBoolean("isLoggedIn", false)
         }
 
     }
