@@ -33,4 +33,8 @@
     <string name="event_image_preview">Event Image Preview</string>
     <string name="event_take_photo">Take a photo</string>
     <string name="event_image_gallery">Gallery</string>
+    <string name="event_photo_text">Event Photo:</string>
+    <string name="event_image_text">Event Image:</string>
+    <string name="event_image_change_text">Tap to change image</string>
+    <string name="event_delete_button_text">Delete</string>
 </resources>
