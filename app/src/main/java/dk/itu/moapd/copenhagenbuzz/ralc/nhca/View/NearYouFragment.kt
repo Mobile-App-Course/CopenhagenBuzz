@@ -17,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -228,7 +229,8 @@ class NearYouFragment : Fragment() {
             return
         }
 
-        val isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val isLoggedIn = currentUser != null && !currentUser.isAnonymous
 
         // Remove any existing listener before adding a new one
         removeEventListener()
