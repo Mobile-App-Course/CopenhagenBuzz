@@ -19,6 +19,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -37,6 +38,10 @@ class NearYouFragment : Fragment() {
     private lateinit var eventAdapter: EventAdapter
     private val dataViewModel: DataViewModel by activityViewModels()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var databaseRef: DatabaseReference
+
+    // Save reference to the ValueEventListener to remove it later
+    private var valueEventListener: ValueEventListener? = null
 
     // User's current location coordinates (default to Copenhagen)
     private var userLatitude = 55.676098
@@ -94,8 +99,27 @@ class NearYouFragment : Fragment() {
         // Initialize FusedLocationProviderClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
+        // Load environment variables
+        val dotenv = dotenv {
+            directory = "./assets"
+            filename = "env"
+        }
+
+        // Initialize Firebase reference once
+        databaseRef = Firebase.database(dotenv["DATABASE_URL"]).getReference("Events")
+
         // Request location permissions
         requestLocationPermission()
+    }
+
+    /**
+     * Called when the fragment is no longer in use. This is called
+     * after onStop() and before onDetach().
+     */
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Remove the Firebase event listener when the fragment view is destroyed
+        removeEventListener()
     }
 
     /**
@@ -179,28 +203,45 @@ class NearYouFragment : Fragment() {
     }
 
     /**
+     * Remove event listener from Firebase
+     */
+    private fun removeEventListener() {
+        valueEventListener?.let {
+            databaseRef.removeEventListener(it)
+            valueEventListener = null
+            Log.d("NearYouFragment", "ValueEventListener removed")
+        }
+    }
+
+    /**
      * Load events from Firebase and sort by distance
      */
     private fun loadEvents() {
-        val listView: ListView? = view?.findViewById(R.id.event_list_view)
-        if (listView == null) {
+        // First, check if fragment is still attached to avoid crashes
+        if (!isAdded) {
+            Log.d("NearYouFragment", "Fragment not attached, skipping loadEvents")
+            return
+        }
+
+        val listView: ListView = view?.findViewById(R.id.event_list_view) ?: run {
             Log.e("NearYouFragment", "ListView not found")
             return
         }
 
         val isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
 
-        // Load environment variables
-        val dotenv = dotenv {
-            directory = "./assets"
-            filename = "env"
-        }
+        // Remove any existing listener before adding a new one
+        removeEventListener()
 
-        val databaseRef = Firebase.database(dotenv["DATABASE_URL"]).getReference("Events")
-
-        // Retrieve all events and sort them by distance
-        databaseRef.addValueEventListener(object : ValueEventListener {
+        // Create a new listener and store the reference
+        valueEventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                // Check if fragment is still attached
+                if (!isAdded) {
+                    Log.d("NearYouFragment", "Fragment not attached during callback, ignoring data")
+                    return
+                }
+
                 if (snapshot.exists()) {
                     Log.d("NearYouFragment", "Data retrieved: ${snapshot.childrenCount} events")
 
@@ -219,7 +260,6 @@ class NearYouFragment : Fragment() {
                             )
 
                             // Store distance in the event object
-                            // We'll add a distance field to EventLocation in a moment
                             event.eventLocation.distance = distance
 
                             eventsWithDistance.add(Pair(key, event))
@@ -241,7 +281,9 @@ class NearYouFragment : Fragment() {
 
                     // Observe favorite events
                     dataViewModel.favoriteEvents.observe(viewLifecycleOwner, Observer { favoriteEvents ->
-                        (listView.adapter as? EventAdapter)?.setFavoriteEvents(favoriteEvents)
+                        if (isAdded) {
+                            (listView.adapter as? EventAdapter)?.setFavoriteEvents(favoriteEvents)
+                        }
                     })
                 } else {
                     Log.d("NearYouFragment", "No data found")
@@ -254,7 +296,9 @@ class NearYouFragment : Fragment() {
             override fun onCancelled(error: DatabaseError) {
                 Log.e("NearYouFragment", "Database error: ${error.message}")
             }
-        })
+        }
+
+        databaseRef.addValueEventListener(valueEventListener!!)
     }
 
     /**
