@@ -95,7 +95,7 @@ class EventAdapter : BaseAdapter {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         // Check authentication status before rendering view
-        updateLoginStatus()
+        // updateLoginStatus()
 
         val view = convertView ?: LayoutInflater.from(context).inflate(layoutResId, parent, false)
         val binding: ViewBinding
@@ -119,15 +119,9 @@ class EventAdapter : BaseAdapter {
     }
 
     // Method to update login status
-    private fun updateLoginStatus() {
+    /*private fun updateLoginStatus() {
         isLoggedIn = auth.currentUser != null
-    }
-
-    // Public method to force update login status
-    fun refreshLoginStatus() {
-        updateLoginStatus()
-        notifyDataSetChanged()
-    }
+    }*/
 
     private fun populateView(view: View, event: Event, eventKey: String) {
         val binding = (view.tag as ViewHolder).binding

@@ -33,7 +33,7 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
                 @Suppress("DEPRECATION")
                 it.getParcelable("event") ?: Event()
             }
-            isLoggedIn = it.getBoolean("isLoggedIn")
+            isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
         }
 
     }
