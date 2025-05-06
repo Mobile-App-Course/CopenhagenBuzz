@@ -9,7 +9,7 @@
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/margin_standard"
             android:backgroundTint="?attr/colorSurfaceContainer">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -70,9 +70,9 @@
             <com.google.android.material.button.MaterialButton
                     style="?attr/borderlessButtonStyle"
                     android:id="@+id/favorite_button"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_width="@dimen/margin_xlarge"
+                    android:layout_height="@dimen/margin_xlarge"
+                    android:layout_marginEnd="@dimen/margin_small"
                     android:contentDescription="@string/material_button_favorite_description"
                     app:icon="@drawable/favorite_icon"
                     app:iconSize="24dp"
@@ -87,7 +87,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_marginTop="@dimen/margin_small"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="@dimen/margin_standard"
                     android:layout_marginBottom="@dimen/margin_standard"
                     android:contentDescription="@string/material_button_share_description"
                     app:icon="@drawable/share"
