@@ -11,7 +11,7 @@
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/margin_standard"
         android:backgroundTint="?attr/colorSurfaceContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,7 +25,7 @@
             <ImageView
                 android:id="@+id/event_photo_image_view"
                 android:layout_width="match_parent"
-                android:layout_height="194dp"
+                android:layout_height="@dimen/margin_huge"
                 android:contentDescription="@string/content_description_card"
                 android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -79,7 +79,7 @@
             <com.google.android.material.button.MaterialButton
                 style="?attr/borderlessButtonStyle"
                 android:id="@+id/button_favorite"
-                android:layout_width="48dp"
+                android:layout_width="@dimen/margin_xlarge"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:contentDescription="@string/material_button_favorite_description"
@@ -92,7 +92,7 @@
             <com.google.android.material.button.MaterialButton
                 style="?attr/borderlessButtonStyle"
                 android:id="@+id/button_share"
-                android:layout_width="48dp"
+                android:layout_width="@dimen/margin_xlarge"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_standard"
                 android:layout_marginEnd="@dimen/margin_standard"
@@ -107,8 +107,8 @@
                 android:id="@+id/info_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp" android:layout_marginBottom="8dp"
+                android:layout_marginStart="@dimen/margin_standard"
+                android:layout_marginTop="@dimen/margin_small" android:layout_marginBottom="@dimen/margin_standard"
                 android:text="@string/button_info_text" app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@+id/event_description_text_view"/>
             <Button
@@ -116,7 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                android:layout_marginStart="8dp" android:layout_marginBottom="8dp"
+                android:layout_marginStart="@dimen/margin_standard" android:layout_marginBottom="@dimen/margin_standard"
                 android:text="@string/button_edit_text" app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/info_button"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
