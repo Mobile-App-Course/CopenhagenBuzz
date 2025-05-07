@@ -18,6 +18,7 @@ import io.github.cdimascio.dotenv.dotenv
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
+import com.google.firebase.auth.FirebaseAuth
 
 /**
  * A simple [Fragment] subclass that displays a timeline of events.
@@ -53,7 +54,8 @@ class TimelineFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         listView = view.findViewById(R.id.event_list_view)
-        isLoggedIn = requireActivity().intent.getBooleanExtra("isLoggedIn", false)
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        isLoggedIn = currentUser != null && !currentUser.isAnonymous
 
         // Load data on first creation
         loadEventsData()
