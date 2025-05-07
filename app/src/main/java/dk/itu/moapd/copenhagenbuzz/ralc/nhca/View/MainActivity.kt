@@ -44,7 +44,8 @@ import com.google.firebase.ktx.Firebase
 import io.github.cdimascio.dotenv.dotenv
 
 /**
- * The MainActivity class represents the main screen of the application, and also allows the user to input event details and add them to the event list.
+ * The MainActivity class represents the main screen of the application, allowing users to input event details
+ * and add them to the event list. It also manages navigation and user authentication states.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -77,10 +78,6 @@ class MainActivity : AppCompatActivity() {
             directory = "./assets"  // Change from "/assets" to "./assets"
             filename = "env"
         }
-
-        // Enable offline persistence for Firebase
-        // com.google.firebase.Firebase.database(dotenv["DATABASE_URL"]).setPersistenceEnabled(true)
-
 
         // Apply dynamic colors if running on Android 12+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -200,6 +197,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Displays a Snackbar with the user's authentication type.
+     *
+     * @param user The currently authenticated Firebase user.
+     */
     private fun showAuthTypeSnackbar(user: FirebaseUser) {
         val authType = when {
             user.isAnonymous -> "Anonymous"
