@@ -124,7 +124,8 @@ class NearYouFragment : Fragment() {
     }
 
     /**
-     * Request location permissions from the user
+     * Requests location permissions from the user.
+     * If permissions are already granted, retrieves the user's last known location.
      */
     private fun requestLocationPermission() {
         when {
@@ -171,7 +172,9 @@ class NearYouFragment : Fragment() {
     }
 
     /**
-     * Get the user's last known location
+     * Retrieves the user's last known location.
+     * If location permissions are granted, updates the user's location and loads events.
+     * If permissions are not granted or an error occurs, uses the default location.
      */
     private fun getLastLocation() {
         try {
@@ -215,7 +218,8 @@ class NearYouFragment : Fragment() {
     }
 
     /**
-     * Load events from Firebase and sort by distance
+     * Loads events from Firebase, calculates their distances from the user's location,
+     * and displays them in a sorted list.
      */
     private fun loadEvents() {
         // First, check if fragment is still attached to avoid crashes
@@ -304,8 +308,13 @@ class NearYouFragment : Fragment() {
     }
 
     /**
-     * Calculate distance between two geographic coordinates using Android's Location API
-     * @return Distance in meters
+     * Calculates the distance between two geographic coordinates using Android's Location API.
+     *
+     * @param lat1 Latitude of the first location.
+     * @param lon1 Longitude of the first location.
+     * @param lat2 Latitude of the second location.
+     * @param lon2 Longitude of the second location.
+     * @return The distance in meters between the two locations.
      */
     private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
         val results = FloatArray(1)
