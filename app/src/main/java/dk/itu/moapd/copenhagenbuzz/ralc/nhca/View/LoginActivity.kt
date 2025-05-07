@@ -14,11 +14,26 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import io.github.cdimascio.dotenv.dotenv
 
+/**
+ * Activity for handling user login and authentication.
+ *
+ * This activity provides functionality for both anonymous and standard user login
+ * using Firebase Authentication. It supports multiple authentication providers
+ * (Email, Google, and Anonymous) and redirects the user to the main activity upon
+ * successful login.
+ */
 class LoginActivity : AppCompatActivity() {
 
     private val signInLauncher = registerForActivityResult(FirebaseAuthUIActivityResultContract()) { result -> onSignInResult(result) }
 
-
+    /**
+     * Called when the activity is created.
+     *
+     * This method initializes the activity, loads environment variables, and determines
+     * whether to initiate an anonymous login or display the sign-in UI.
+     *
+     * @param savedInstanceState The saved instance state of the activity.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -38,6 +53,13 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Initiates an anonymous sign-in process.
+     *
+     * This method uses Firebase Authentication to log in the user anonymously.
+     * If the login is successful, the user is redirected to the main activity.
+     * Otherwise, an error message is displayed.
+     */
     private fun createAnonymousSignInIntent() {
         FirebaseAuth.getInstance().signInAnonymously()
             .addOnCompleteListener(this) { task ->
@@ -50,6 +72,12 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Creates and launches the Firebase sign-in intent.
+     *
+     * This method configures the Firebase Authentication UI with available providers
+     * (Email, Google, and Anonymous) and launches the sign-in activity.
+     */
     private fun createSignInIntent() {
         // Choose authentication providers.
         val providers = arrayListOf(
@@ -75,6 +103,15 @@ class LoginActivity : AppCompatActivity() {
         signInLauncher.launch(signInIntent)
     }
 
+    /**
+     * Handles the result of the Firebase authentication process.
+     *
+     * This method is called when the Firebase authentication UI returns a result.
+     * It checks the result code and redirects the user to the main activity if the
+     * login is successful. Otherwise, it displays an error message.
+     *
+     * @param result The result of the Firebase authentication process.
+     */
     private fun onSignInResult(
         result: FirebaseAuthUIAuthenticationResult
     ) {
@@ -96,6 +133,15 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+
+    /**
+     * Starts the main activity.
+     *
+     * This method redirects the user to the main activity and passes a flag
+     * indicating whether the user is logged in anonymously.
+     *
+     * @param anonymous A flag indicating whether the user is logged in anonymously.
+     */
     private fun startMainActivity(anonymous: Boolean = false) {
         val intent = Intent(this, MainActivity::class.java)
 
@@ -104,6 +150,11 @@ class LoginActivity : AppCompatActivity() {
         finish()
     }
 
+    /**
+     * Displays a snackbar with the provided message.
+     *
+     * @param message The message to display in the snackbar.
+     */
     private fun showSnackBar(message: String) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
     }
