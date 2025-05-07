@@ -43,6 +43,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.thread
 
+/**
+ * Creates a notification for the foreground service.
+ *
+ * This method builds a notification with a title, text, and a small icon. It also
+ * includes a pending intent that opens the `MainActivity` when the notification is clicked.
+ *
+ * @return The created `Notification` object.
+ */
 class EditEventFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentEditEventBinding
@@ -64,7 +72,10 @@ class EditEventFragment : BottomSheetDialogFragment() {
     private var longitude: Double = 0.0
     private var hasValidCoordinates: Boolean = false
 
-    // Activity result launcher for image selection
+    /**
+     * Activity result launcher for selecting an image from the gallery.
+     * Updates the `imageUri` and displays the selected image.
+     */
     private val getContent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
@@ -77,17 +88,12 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
-    // Permission request launcher
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            openImagePicker()
-        } else {
-            showSnackbar("Permission denied")
-        }
-    }
-
+    /**
+     * Called when the fragment is created.
+     * Initializes event data, Firebase database reference, geocoder, and permission launchers.
+     *
+     * @param savedInstanceState The saved state of the fragment.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -155,6 +161,14 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Called to create the view hierarchy of the fragment.
+     *
+     * @param inflater The `LayoutInflater` used to inflate the layout.
+     * @param container The parent view that the fragment's UI will be attached to.
+     * @param savedInstanceState The saved state of the fragment.
+     * @return The root view of the fragment's layout.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -164,6 +178,13 @@ class EditEventFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    /**
+     * Called after the view hierarchy has been created.
+     * Sets up the UI components and listeners.
+     *
+     * @param view The root view of the fragment.
+     * @param savedInstanceState The saved state of the fragment.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -186,6 +207,9 @@ class EditEventFragment : BottomSheetDialogFragment() {
         loadExistingImageIfAvailable()
     }
 
+    /**
+     * Populates the form fields with the existing event data.
+     */
     private fun populateFormWithEventData() {
         binding.editTextEventName.setText(event.eventName)
         binding.editTextEventLocation.setText(event.eventLocation.address)
@@ -200,12 +224,18 @@ class EditEventFragment : BottomSheetDialogFragment() {
         binding.editTextEventDescription.setText(event.eventDescription)
     }
 
+    /**
+     * Sets up the dropdown menu for selecting event types.
+     */
     private fun setupEventTypeDropdown() {
         val eventTypes = arrayOf("Festival", "Meetup", "Workshop", "Seminar", "Conference", "Lan party")
         val adapter = ArrayAdapter(requireContext(), R.layout.custom_dropdown_item, eventTypes)
         binding.autoCompleteTextViewEventType.setAdapter(adapter)
     }
 
+    /**
+     * Sets up listeners for various UI components, such as buttons and the date picker.
+     */
     private fun setupListeners() {
         // Date picker
         binding.editTextEventDate.setOnClickListener { showCalendar(binding.editTextEventDate) }
@@ -223,12 +253,18 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Sets up a click listener for the image card to show image picker options.
+     */
     private fun setupImageClickListener() {
         binding.eventImageCard.setOnClickListener {
             showImagePickerOptions()
         }
     }
 
+    /**
+     * Loads the existing event image into the image view, if available.
+     */
     private fun loadExistingImageIfAvailable() {
         val existingImageUrl = binding.editTextEventPhotoUrl.text.toString()
         if (existingImageUrl.isNotEmpty()) {
@@ -260,6 +296,9 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Displays a dialog with options to take a photo or choose one from the gallery.
+     */
     private fun showImagePickerOptions() {
         val options = arrayOf("Take Photo", "Choose from Gallery", "Cancel")
 
@@ -275,11 +314,11 @@ class EditEventFragment : BottomSheetDialogFragment() {
             .show()
     }
 
-    private fun openImagePicker() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        getContent.launch(intent)
-    }
-
+    /**
+     * Displays the selected image in the image view.
+     *
+     * @param uri The URI of the selected image.
+     */
     private fun displaySelectedImage(uri: Uri) {
         Glide.with(this)
             .load(uri)
@@ -288,6 +327,9 @@ class EditEventFragment : BottomSheetDialogFragment() {
             .into(binding.eventImageView)
     }
 
+    /**
+     * Sets up a text change listener for the location field to perform geocoding.
+     */
     private fun setupLocationListener() {
         // Add a text change listener to the location field for geocoding
         binding.editTextEventLocation.addTextChangedListener(object : TextWatcher {
@@ -307,8 +349,14 @@ class EditEventFragment : BottomSheetDialogFragment() {
     }
 
     /**
-     * Geocodes a location string to get latitude and longitude
-     * @param locationText The location text to geocode
+     * Geocodes a location string to get latitude and longitude.
+     *
+     * This method uses the `Geocoder` to convert a location name into geographic coordinates.
+     * It runs the geocoding process in a background thread to avoid blocking the UI thread.
+     * If the geocoding is successful, the latitude and longitude are updated, and a success
+     * message is displayed. Otherwise, an error message is shown.
+     *
+     * @param locationText The location text to geocode.
      */
     private fun geocodeLocation(locationText: String) {
         // Run geocoding in a background thread to avoid blocking UI
@@ -344,6 +392,15 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Validates the input fields for the event form.
+     *
+     * This method checks if the event name, location, and date fields are filled in correctly.
+     * It also validates the date format and ensures that the location coordinates are valid.
+     * If any validation fails, an appropriate error message is displayed.
+     *
+     * @return `true` if all inputs are valid, `false` otherwise.
+     */
     private fun validateInputs(): Boolean {
         // Add validation similar to AddEventFragment
         if (binding.editTextEventName.text.toString().trim().isEmpty()) {
@@ -377,6 +434,13 @@ class EditEventFragment : BottomSheetDialogFragment() {
         return true
     }
 
+    /**
+     * Saves the changes made to the event in Firebase.
+     *
+     * This method disables the update button during the upload process. If a new image is selected,
+     * it uploads the image to Firebase Storage before saving the event. Otherwise, it directly
+     * updates the event with the existing image URL.
+     */
     private fun saveChangesToFirebase() {
         binding.updateEventButton.isEnabled = false // Disable button during upload
 
@@ -389,6 +453,13 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Uploads a new photo to Firebase Storage and saves the event.
+     *
+     * This method deletes the old photo from Firebase Storage (if it exists) and uploads the
+     * new photo. Once the upload is successful, it retrieves the download URL and saves the
+     * event with the new photo URL.
+     */
     private fun uploadPhotoAndSaveEvent() {
         val storageRef = FirebaseStorage.getInstance().reference
 
@@ -419,6 +490,14 @@ class EditEventFragment : BottomSheetDialogFragment() {
             }
     }
 
+    /**
+     * Saves the event with the provided photo URL to Firebase.
+     *
+     * This method updates the event object with the new values from the form fields and saves
+     * it to the Firebase Realtime Database.
+     *
+     * @param photoUrl The URL of the photo to associate with the event.
+     */
     private fun saveEventWithPhotoUrl(photoUrl: String) {
         // Create an updated EventLocation object
         val locationText = binding.editTextEventLocation.text.toString().trim()
@@ -445,6 +524,12 @@ class EditEventFragment : BottomSheetDialogFragment() {
             }
     }
 
+    /**
+     * Displays a confirmation dialog for deleting the event.
+     *
+     * This method shows a dialog with options to confirm or cancel the deletion of the event.
+     * If confirmed, the event is deleted from Firebase.
+     */
     private fun showDeleteConfirmationDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle("Delete Event")
@@ -454,6 +539,13 @@ class EditEventFragment : BottomSheetDialogFragment() {
             .show()
     }
 
+    /**
+     * Deletes the event from Firebase.
+     *
+     * This method verifies that the current user is the creator of the event before deleting it.
+     * It removes the event from all users' favorites and then deletes the event itself from
+     * the Firebase Realtime Database.
+     */
     private fun deleteEvent() {
         // Verify the current user is the event creator
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -502,6 +594,15 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Displays a calendar dialog for selecting a date.
+     *
+     * This method initializes a `DatePickerDialog` with the current date or a previously set date
+     * (if available in the provided `editText`). The selected date is formatted as `DD/MM/YYYY`
+     * and set in the `editText`.
+     *
+     * @param editText The `TextInputEditText` where the selected date will be displayed.
+     */
     private fun showCalendar(editText: TextInputEditText) {
         val calendar = Calendar.getInstance()
 
@@ -535,6 +636,15 @@ class EditEventFragment : BottomSheetDialogFragment() {
         ).show()
     }
 
+    /**
+     * Converts a date string in `DD/MM/YYYY` format to a timestamp.
+     *
+     * This method parses the provided date string and converts it into a timestamp in milliseconds.
+     * If the date string is invalid, it returns `-1L`.
+     *
+     * @param dateString The date string to convert.
+     * @return The timestamp in milliseconds, or `-1L` if the conversion fails.
+     */
     private fun convertDateToTimestamp(dateString: String): Long {
         return try {
             val parts = dateString.split("/")
@@ -555,10 +665,23 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Displays a snackbar with the provided message.
+     *
+     * This method shows a `Snackbar` at the bottom of the screen with the given message.
+     *
+     * @param message The message to display in the snackbar.
+     */
     private fun showSnackbar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 
+    /**
+     * Checks for camera permission and opens the camera if granted.
+     *
+     * This method checks if the camera permission is granted. If not, it either shows a rationale
+     * dialog or directly requests the permission. If the permission is granted, the camera is opened.
+     */
     private fun checkCameraPermissionAndOpenCamera() {
         when {
             ContextCompat.checkSelfPermission(
@@ -581,6 +704,12 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Checks for gallery permission and opens the gallery if granted.
+     *
+     * This method checks if the gallery permission is granted. If not, it either shows a rationale
+     * dialog or directly requests the permission. If the permission is granted, the gallery is opened.
+     */
     private fun checkGalleryPermissionAndOpenGallery() {
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Manifest.permission.READ_MEDIA_IMAGES
@@ -609,6 +738,17 @@ class EditEventFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Displays a permission rationale dialog.
+     *
+     * This method shows a dialog explaining why a specific permission is needed. The user can
+     * either grant the permission or cancel the request.
+     *
+     * @param title The title of the dialog.
+     * @param message The message explaining why the permission is needed.
+     * @param permission The permission being requested.
+     * @param permissionLauncher The launcher to request the permission.
+     */
     private fun showPermissionRationaleDialog(
         title: String,
         message: String,
@@ -625,6 +765,12 @@ class EditEventFragment : BottomSheetDialogFragment() {
             .show()
     }
 
+    /**
+     * Opens the camera for taking a photo.
+     *
+     * This method creates a new image file in the media store and launches the camera app
+     * to capture a photo. If the file creation fails, a snackbar is displayed.
+     */
     private fun openCamera() {
         val contentValues = ContentValues().apply {
             put(MediaStore.Images.Media.TITLE, "New Event Photo")
@@ -640,6 +786,11 @@ class EditEventFragment : BottomSheetDialogFragment() {
         } ?: showSnackbar("Failed to create image file")
     }
 
+    /**
+     * Opens the gallery for selecting an image.
+     *
+     * This method launches the gallery app to allow the user to select an image.
+     */
     private fun openGallery() {
         galleryLauncher.launch("image/*")
     }
