@@ -38,7 +38,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.database
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ActivityMainBinding
-import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.ContentMainBinding
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import io.github.cdimascio.dotenv.dotenv
@@ -49,9 +48,8 @@ import io.github.cdimascio.dotenv.dotenv
  */
 class MainActivity : AppCompatActivity() {
 
-    // Binding objects for the activity and content layouts
-    private lateinit var activityMainBinding: ActivityMainBinding
-    private lateinit var contentMainBinding: ContentMainBinding
+    // Single binding object for the activity layout
+    private lateinit var binding: ActivityMainBinding
 
     private lateinit var menuProfile: MenuItem
     private lateinit var menuLogout: MenuItem
@@ -62,7 +60,7 @@ class MainActivity : AppCompatActivity() {
     private var isLoggedIn = false
 
     /**
-     * Called when the activity is first created. This inflates the different bindings with the necessary variables.
+     * Called when the activity is first created. This inflates the binding with the necessary variables.
      * It also sets up the listeners for the different UI components.
      * @param savedInstanceState Saves the latest state of the activity, if it has been shut down.
      *
@@ -71,11 +69,9 @@ class MainActivity : AppCompatActivity() {
         androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
 
-
-
         // Load environment variables
         val dotenv = dotenv {
-            directory = "./assets"  // Change from "/assets" to "./assets"
+            directory = "./assets"
             filename = "env"
         }
 
@@ -83,7 +79,6 @@ class MainActivity : AppCompatActivity() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             DynamicColors.applyToActivityIfAvailable(this)
         }
-
 
         database = Firebase.database(dotenv["DATABASE_URL"]).reference
         database.keepSynced(true)
@@ -110,23 +105,22 @@ class MainActivity : AppCompatActivity() {
             isLoggedIn = intent.getBooleanExtra("isLoggedIn", false)
         }
 
-        // Inflate the layout for this activity
-        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
-        // Set the content view of the activity
-        setContentView(activityMainBinding.root)
+        // Inflate the layout for this activity and set as content view
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Bind the content layout
-        contentMainBinding = ContentMainBinding.bind(activityMainBinding.root.findViewById(R.id.content_main))
+        with(binding) {
+            // Set up toolbar and navigation using the content_main elements
+            contentMain.let {
+                setSupportActionBar(it.toolbar)
 
-        // Set the toolbar as the action bar
-        setSupportActionBar(contentMainBinding.toolbar)
+                val navHostFragment = supportFragmentManager
+                    .findFragmentById(R.id.fragment_container_view) as NavHostFragment
+                val navController = navHostFragment.navController
 
-
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.fragment_container_view) as NavHostFragment
-        val navController = navHostFragment.navController
-
-        contentMainBinding.bottomNavigation.setupWithNavController(navController)
+                it.bottomNavigation.setupWithNavController(navController)
+            }
+        }
 
         // Set visibility based on login status
         updateNavigationItemsVisibility()
@@ -136,18 +130,14 @@ class MainActivity : AppCompatActivity() {
      * Update the visibility of navigation items based on login status
      */
     private fun updateNavigationItemsVisibility() {
-        val bottomNavigationMenu = contentMainBinding.bottomNavigation.menu
+        val bottomNavigationMenu = binding.contentMain.bottomNavigation.menu
         val addEventMenuItem = bottomNavigationMenu.findItem(R.id.add_event_fragment)
         addEventMenuItem.isVisible = isLoggedIn
 
         // Conditionally show the favorites_fragment item
         val favoritesMenuItem = bottomNavigationMenu.findItem(R.id.favorites_fragment)
         favoritesMenuItem.isVisible = isLoggedIn
-
-        // Conditionally show event row item buttons if logged in
-        // Get this element @+id/edit_button
     }
-
 
     /**
      * Inflate the menu items for use in the action bar.
