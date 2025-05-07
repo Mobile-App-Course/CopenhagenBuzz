@@ -18,6 +18,13 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+/**
+ * A fragment that displays the details of an event.
+ *
+ * This class extends `BottomSheetDialogFragment` and is responsible for showing
+ * event details such as name, date, location, type, description, and photo. It also
+ * provides functionality to add or remove the event from the user's favorites.
+ */
 class EventDetailsFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentEventDetailsBinding
@@ -25,6 +32,12 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
     private var eventKey: String = ""
     private var isLoggedIn: Boolean = false
 
+    /**
+     * Called when the fragment is created.
+     * Initializes the event data and login status from the arguments.
+     *
+     * @param savedInstanceState The saved state of the fragment.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -40,6 +53,12 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
 
     }
 
+    /**
+     * Called when the fragment is created.
+     * Initializes the event data and login status from the arguments.
+     *
+     * @param savedInstanceState The saved state of the fragment.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -49,6 +68,13 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    /**
+     * Called after the view hierarchy has been created.
+     * Populates the UI with event details and sets up listeners for user interactions.
+     *
+     * @param view The root view of the fragment.
+     * @param savedInstanceState The saved state of the fragment.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -88,6 +114,12 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Toggles the favorite status of the event.
+     *
+     * This method checks if the event is already in the user's favorites. If it is,
+     * it removes the event from the favorites. Otherwise, it adds the event to the favorites.
+     */
     private fun toggleFavorite() {
         val currentUser = FirebaseAuth.getInstance().currentUser
 
@@ -114,6 +146,11 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Adds the event to the user's favorites.
+     *
+     * @param favoritesRef The database reference to the user's favorites.
+     */
     private fun addToFavorites(favoritesRef: DatabaseReference) {
         favoritesRef.child(eventKey).setValue(true)
             .addOnSuccessListener {
@@ -124,6 +161,11 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
             }
     }
 
+    /**
+     * Removes the event from the user's favorites.
+     *
+     * @param favoritesRef The database reference to the user's favorites.
+     */
     private fun removeFromFavorites(favoritesRef: DatabaseReference) {
         favoritesRef.child(eventKey).removeValue()
             .addOnSuccessListener {
@@ -134,27 +176,13 @@ class EventDetailsFragment : BottomSheetDialogFragment() {
             }
     }
 
+    /**
+     * Displays a snackbar with the provided message.
+     *
+     * @param message The message to display in the snackbar.
+     */
     private fun showSnackbar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 
-    private fun convertDateToTimestamp(dateString: String): Long {
-        return try {
-            val parts = dateString.split("/")
-            if (parts.size == 3) {
-                val day = parts[0].toInt()
-                val month = parts[1].toInt() - 1 // Calendar months are 0-based
-                val year = parts[2].toInt()
-
-                val calendar = Calendar.getInstance()
-                calendar.set(year, month, day, 0, 0, 0)
-                calendar.set(Calendar.MILLISECOND, 0)
-                calendar.timeInMillis
-            } else {
-                -1L
-            }
-        } catch (e: Exception) {
-            -1L
-        }
-    }
 }
