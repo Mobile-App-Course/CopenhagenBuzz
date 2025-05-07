@@ -44,9 +44,9 @@ class NearYouFragment : Fragment() {
     // Save reference to the ValueEventListener to remove it later
     private var valueEventListener: ValueEventListener? = null
 
-    // User's current location coordinates (default to Copenhagen)
-    private var userLatitude = 55.676098
-    private var userLongitude = 12.568337
+    // User's current location coordinates (null by default)
+    private var userLatitude: Double? = null
+    private var userLongitude: Double? = null
     private var locationPermissionGranted = false
 
     // Store events with calculated distances
@@ -63,13 +63,13 @@ class NearYouFragment : Fragment() {
             // Permissions granted, get location
             getLastLocation()
         } else {
-            // Permissions denied, use default location
+            // Permissions denied, load events without location
             Toast.makeText(
                 requireContext(),
-                "Location permission denied. Using default location for distance calculations.",
+                "Location permission denied. Distances will be shown as N/A.",
                 Toast.LENGTH_LONG
             ).show()
-            // Load events with default location
+            // Load events without user location
             loadEvents()
         }
     }
@@ -174,7 +174,7 @@ class NearYouFragment : Fragment() {
     /**
      * Retrieves the user's last known location.
      * If location permissions are granted, updates the user's location and loads events.
-     * If permissions are not granted or an error occurs, uses the default location.
+     * If permissions are not granted or an error occurs, loads events without location.
      */
     private fun getLastLocation() {
         try {
@@ -186,22 +186,23 @@ class NearYouFragment : Fragment() {
                         userLongitude = location.longitude
                         Log.d("NearYouFragment", "User location: $userLatitude, $userLongitude")
                     } else {
-                        Log.d("NearYouFragment", "Location is null, using default")
+                        Log.d("NearYouFragment", "Location is null, will show N/A for distances")
+                        // Keep userLatitude and userLongitude as null
                     }
-                    // Load events with user location
+                    // Load events with user location (or null)
                     loadEvents()
                 }.addOnFailureListener { e ->
                     Log.e("NearYouFragment", "Error getting location: ${e.message}")
-                    // Load events with default location
+                    // Load events without location
                     loadEvents()
                 }
             } else {
-                // Permissions not granted, use default location
+                // Permissions not granted, load events without location
                 loadEvents()
             }
         } catch (e: SecurityException) {
             Log.e("NearYouFragment", "Security exception: ${e.message}")
-            // Load events with default location
+            // Load events without location
             loadEvents()
         }
     }
@@ -218,8 +219,8 @@ class NearYouFragment : Fragment() {
     }
 
     /**
-     * Loads events from Firebase, calculates their distances from the user's location,
-     * and displays them in a sorted list.
+     * Loads events from Firebase, calculates their distances from the user's location if available,
+     * otherwise marks distances as unavailable.
      */
     private fun loadEvents() {
         // First, check if fragment is still attached to avoid crashes
@@ -254,27 +255,38 @@ class NearYouFragment : Fragment() {
                     // Clear previous list
                     eventsWithDistance.clear()
 
-                    // Populate the list and calculate distances
+                    // Populate the list and calculate distances if location is available
                     for (eventSnapshot in snapshot.children) {
                         val event = eventSnapshot.getValue(Event::class.java)
                         val key = eventSnapshot.key
                         if (event != null && key != null) {
-                            // Calculate distance from user to event
-                            val distance = calculateDistance(
-                                userLatitude, userLongitude,
-                                event.eventLocation.latitude, event.eventLocation.longitude
-                            )
-
-                            // Store distance in the event object
-                            event.eventLocation.distance = distance
+                            // Only calculate distance if user location is available
+                            if (userLatitude != null && userLongitude != null) {
+                                // Calculate distance from user to event
+                                val distance = calculateDistance(
+                                    userLatitude!!, userLongitude!!,
+                                    event.eventLocation.latitude, event.eventLocation.longitude
+                                )
+                                // Store distance in the event object
+                                event.eventLocation.distance = distance
+                                Log.d("NearYouFragment", "Event: ${event.eventName}, Distance: ${distance/1000}km")
+                            } else {
+                                // Set distance to -1 to indicate "N/A"
+                                event.eventLocation.distance = -1f
+                                Log.d("NearYouFragment", "Event: ${event.eventName}, Distance: N/A")
+                            }
 
                             eventsWithDistance.add(Pair(key, event))
-                            Log.d("NearYouFragment", "Event: ${event.eventName}, Distance: ${distance/1000}km")
                         }
                     }
 
-                    // Sort events by distance
-                    eventsWithDistance.sortBy { (_, event) -> event.eventLocation.distance }
+                    // Sort events by distance if location is available, otherwise by name
+                    if (userLatitude != null && userLongitude != null) {
+                        eventsWithDistance.sortBy { (_, event) -> event.eventLocation.distance }
+                    } else {
+                        // Sort by event name if location not available
+                        eventsWithDistance.sortBy { (_, event) -> event.eventName }
+                    }
 
                     // Create and set adapter with sorted events, using the nearby_event_row_item layout
                     eventAdapter = EventAdapter.createWithSortedEvents(
@@ -283,6 +295,10 @@ class NearYouFragment : Fragment() {
                         isLoggedIn,
                         R.layout.nearby_event_row_item
                     )
+
+                    // Set a flag to indicate whether location is available
+                    eventAdapter.setLocationAvailable(userLatitude != null && userLongitude != null)
+
                     listView.adapter = eventAdapter
 
                     // Observe favorite events
@@ -295,6 +311,7 @@ class NearYouFragment : Fragment() {
                     Log.d("NearYouFragment", "No data found")
                     // Create empty adapter
                     eventAdapter = EventAdapter.create(databaseRef, requireContext(), isLoggedIn)
+                    eventAdapter.setLocationAvailable(userLatitude != null && userLongitude != null)
                     listView.adapter = eventAdapter
                 }
             }
