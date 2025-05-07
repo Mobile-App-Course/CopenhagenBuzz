@@ -26,6 +26,8 @@ import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 
 /**
  * A simple [Fragment] subclass to display favorite events in a RecyclerView.
+ * This fragment uses Jetpack Compose to render the UI and integrates with a Firebase-based adapter
+ * to fetch and display the user's favorite events.
  * Use the [FavoritesFragment.newInstance] factory method to create an instance of this fragment.
  */
 class FavoritesFragment : Fragment() {
@@ -93,6 +95,11 @@ class FavoritesFragment : Fragment() {
     }
 }
 
+/**
+ * Composable function to display the list of favorite events.
+ *
+ * @param adapter The adapter used to fetch and manage the list of favorite events.
+ */
 @Composable
 fun FavoritesScreen(adapter: FavoriteAdapter) {
     // Collect the events from the adapter
@@ -125,6 +132,11 @@ fun FavoritesScreen(adapter: FavoriteAdapter) {
 
 }
 
+/**
+ * Composable function to display a card for a single favorite event.
+ *
+ * @param event The event to display in the card.
+ */
 @Composable
 fun FavoriteEventCard(event: Event) {
     Card(
