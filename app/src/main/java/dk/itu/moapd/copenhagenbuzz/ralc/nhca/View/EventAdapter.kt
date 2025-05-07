@@ -37,6 +37,7 @@ import java.util.*
  * @property auth The FirebaseAuth instance for user authentication.
  * @property firebaseAdapter The FirebaseListAdapter for query-based event loading.
  * @property sortedEvents A list of pre-sorted events with their keys.
+ * @property locationAvailable Indicates if user location is available for distance calculation.
  */
 class EventAdapter : BaseAdapter {
     private var favoriteEvents: List<Event> = emptyList()
@@ -44,6 +45,9 @@ class EventAdapter : BaseAdapter {
     private var isLoggedIn: Boolean
     private val layoutResId: Int
     private val auth = FirebaseAuth.getInstance()  // Add FirebaseAuth instance
+
+    // Flag to indicate if user location is available
+    private var locationAvailable: Boolean = true
 
     /**
      * ViewHolder class for holding view bindings.
@@ -283,14 +287,19 @@ class EventAdapter : BaseAdapter {
             val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(date)
             eventSubtitleTextView.text = context.getString(R.string.event_subtitle, formattedDate, event.eventLocation.address, event.eventType)
 
-            // Format distance - convert meters to kilometers if distance is over 1000m
-            val distance = event.eventLocation.distance
-            val formattedDistance = when {
-                distance < 1000 -> String.format("%.0f m", distance)
-                else -> String.format("%.1f km", distance / 1000)
+            // Display distance based on availability and validity
+            if (locationAvailable && event.eventLocation.distance >= 0) {
+                // Format distance - convert meters to kilometers if distance is over 1000m
+                val distance = event.eventLocation.distance
+                val formattedDistance = when {
+                    distance < 1000 -> String.format("%.0f m", distance)
+                    else -> String.format("%.1f km", distance / 1000)
+                }
+                eventDistanceTextView.text = context.getString(R.string.event_distance, formattedDistance)
+            } else {
+                // Display N/A if location is not available or distance is invalid
+                eventDistanceTextView.text = context.getString(R.string.event_distance, "N/A")
             }
-
-            eventDistanceTextView.text = context.getString(R.string.event_distance, formattedDistance)
 
             eventDescriptionTextView.text = event.eventDescription
 
@@ -327,6 +336,17 @@ class EventAdapter : BaseAdapter {
                 Snackbar.make(v, "Event Shared!", Snackbar.LENGTH_SHORT).show()
             }
         }
+    }
+
+    /**
+     * Sets whether location is available for distance calculation.
+     * When set to false, distances will be displayed as "N/A".
+     *
+     * @param available True if location is available, false otherwise.
+     */
+    fun setLocationAvailable(available: Boolean) {
+        this.locationAvailable = available
+        notifyDataSetChanged()
     }
 
     /**
