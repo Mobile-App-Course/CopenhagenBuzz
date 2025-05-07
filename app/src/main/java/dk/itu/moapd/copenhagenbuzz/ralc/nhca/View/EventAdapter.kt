@@ -23,6 +23,21 @@ import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.NearbyEventRowItemBindi
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Adapter for displaying events in a list or grid view.
+ *
+ * This adapter supports two modes:
+ * - Firebase query-based adapter for dynamically loading events from Firebase.
+ * - Pre-sorted list-based adapter for displaying a static list of events.
+ *
+ * @property favoriteEvents A list of favorite events to highlight in the UI.
+ * @property context The context in which the adapter is used.
+ * @property isLoggedIn A flag indicating whether the user is logged in.
+ * @property layoutResId The resource ID of the layout used for each item.
+ * @property auth The FirebaseAuth instance for user authentication.
+ * @property firebaseAdapter The FirebaseListAdapter for query-based event loading.
+ * @property sortedEvents A list of pre-sorted events with their keys.
+ */
 class EventAdapter : BaseAdapter {
     private var favoriteEvents: List<Event> = emptyList()
     private val context: Context
@@ -30,6 +45,11 @@ class EventAdapter : BaseAdapter {
     private val layoutResId: Int
     private val auth = FirebaseAuth.getInstance()  // Add FirebaseAuth instance
 
+    /**
+     * ViewHolder class for holding view bindings.
+     *
+     * @property binding The view binding for the item layout.
+     */
     private class ViewHolder(val binding: ViewBinding)
 
     // For Firebase query-based adapter
@@ -39,7 +59,14 @@ class EventAdapter : BaseAdapter {
     private var sortedEvents: List<Pair<String, Event>>? = null
 
     companion object {
-        // Factory method to create the adapter with Firebase query
+        /**
+         * Factory method to create the adapter with a Firebase query.
+         *
+         * @param query The Firebase query for loading events.
+         * @param context The context in which the adapter is used.
+         * @param isLoggedIn A flag indicating whether the user is logged in.
+         * @return An instance of `EventAdapter`.
+         */
         fun create(query: Query, context: Context, isLoggedIn: Boolean = false): EventAdapter {
             val options = FirebaseListOptions.Builder<Event>()
                 .setQuery(query, Event::class.java)
@@ -50,7 +77,15 @@ class EventAdapter : BaseAdapter {
             return EventAdapter(options, context, isLoggedIn, R.layout.event_row_item)
         }
 
-        // Factory method to create the adapter with pre-sorted events
+        /**
+         * Factory method to create the adapter with a pre-sorted list of events.
+         *
+         * @param sortedEvents A list of event keys and their corresponding events.
+         * @param context The context in which the adapter is used.
+         * @param isLoggedIn A flag indicating whether the user is logged in.
+         * @param layoutResId The resource ID of the layout used for each item.
+         * @return An instance of `EventAdapter`.
+         */
         fun createWithSortedEvents(
             sortedEvents: List<Pair<String, Event>>,
             context: Context,
@@ -61,7 +96,14 @@ class EventAdapter : BaseAdapter {
         }
     }
 
-    // Constructor for Firebase query-based adapter
+    /**
+     * Constructor for Firebase query-based adapter.
+     *
+     * @param options The FirebaseListOptions for configuring the adapter.
+     * @param context The context in which the adapter is used.
+     * @param isLoggedIn A flag indicating whether the user is logged in.
+     * @param layoutResId The resource ID of the layout used for each item.
+     */
     constructor(options: FirebaseListOptions<Event>, context: Context, isLoggedIn: Boolean, layoutResId: Int) {
         this.context = context
         this.isLoggedIn = isLoggedIn
@@ -73,7 +115,14 @@ class EventAdapter : BaseAdapter {
         }
     }
 
-    // Constructor for pre-sorted events list
+    /**
+     * Constructor for pre-sorted events list.
+     *
+     * @param sortedEvents A list of event keys and their corresponding events.
+     * @param context The context in which the adapter is used.
+     * @param isLoggedIn A flag indicating whether the user is logged in.
+     * @param layoutResId The resource ID of the layout used for each item.
+     */
     constructor(sortedEvents: List<Pair<String, Event>>, context: Context, isLoggedIn: Boolean, layoutResId: Int) {
         this.context = context
         this.isLoggedIn = isLoggedIn
@@ -81,18 +130,43 @@ class EventAdapter : BaseAdapter {
         this.layoutResId = layoutResId
     }
 
+    /**
+     * Returns the number of items in the adapter.
+     *
+     * @return The number of items.
+     */
     override fun getCount(): Int {
         return sortedEvents?.size ?: firebaseAdapter?.count ?: 0
     }
 
+    /**
+     * Returns the event at the specified position.
+     *
+     * @param position The position of the item.
+     * @return The event at the specified position.
+     */
     override fun getItem(position: Int): Event {
         return sortedEvents?.get(position)?.second ?: firebaseAdapter?.getItem(position) ?: Event()
     }
 
+    /**
+     * Returns the ID of the item at the specified position.
+     *
+     * @param position The position of the item.
+     * @return The ID of the item.
+     */
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
 
+    /**
+     * Returns the view for the item at the specified position.
+     *
+     * @param position The position of the item.
+     * @param convertView The recycled view, if available.
+     * @param parent The parent view group.
+     * @return The view for the item.
+     */
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         // Check authentication status before rendering view
         // updateLoginStatus()
@@ -118,11 +192,13 @@ class EventAdapter : BaseAdapter {
         return view
     }
 
-    // Method to update login status
-    /*private fun updateLoginStatus() {
-        isLoggedIn = auth.currentUser != null
-    }*/
-
+    /**
+     * Populates the view for an event.
+     *
+     * @param view The view to populate.
+     * @param event The event to display.
+     * @param eventKey The key of the event.
+     */
     private fun populateView(view: View, event: Event, eventKey: String) {
         val binding = (view.tag as ViewHolder).binding
 
@@ -136,6 +212,13 @@ class EventAdapter : BaseAdapter {
         }
     }
 
+    /**
+     * Populates the standard event view.
+     *
+     * @param binding The binding for the standard event layout.
+     * @param event The event to display.
+     * @param eventKey The key of the event.
+     */
     private fun populateStandardEventView(binding: EventRowItemBinding, event: Event, eventKey: String) {
         with(binding) {
             Picasso.get().load(event.eventPhotoURL).into(eventPhotoImageView)
@@ -183,6 +266,13 @@ class EventAdapter : BaseAdapter {
         }
     }
 
+    /**
+     * Populates the nearby event view.
+     *
+     * @param binding The binding for the nearby event layout.
+     * @param event The event to display.
+     * @param eventKey The key of the event.
+     */
     private fun populateNearbyEventView(binding: NearbyEventRowItemBinding, event: Event, eventKey: String) {
         with(binding) {
             Picasso.get().load(event.eventPhotoURL).into(eventPhotoImageView)
@@ -239,6 +329,12 @@ class EventAdapter : BaseAdapter {
         }
     }
 
+    /**
+     * Toggles the favorite status of an event.
+     *
+     * @param v The view that triggered the action.
+     * @param eventKey The key of the event.
+     */
     private fun toggleFavorite(v: View, eventKey: String) {
         val currentUser = auth.currentUser
         val userId = currentUser?.uid
@@ -275,11 +371,22 @@ class EventAdapter : BaseAdapter {
         }
     }
 
+    /**
+     * Sets the list of favorite events.
+     *
+     * @param favoriteEvents The list of favorite events.
+     */
     fun setFavoriteEvents(favoriteEvents: List<Event>) {
         this.favoriteEvents = favoriteEvents
         notifyDataSetChanged()
     }
 
+    /**
+     * Displays the edit dialog for an event.
+     *
+     * @param event The event to edit.
+     * @param eventKey The key of the event.
+     */
     private fun showEditDialog(event: Event, eventKey: String) {
         val bundle = Bundle().apply {
             putParcelable("event", event)
@@ -293,10 +400,16 @@ class EventAdapter : BaseAdapter {
         editEventFragment.show((context as FragmentActivity).supportFragmentManager, "editEventFragment")
     }
 
+    /**
+     * Starts listening for Firebase data changes.
+     */
     fun startListening() {
         firebaseAdapter?.startListening()
     }
 
+    /**
+     * Stops listening for Firebase data changes.
+     */
     fun stopListening() {
         firebaseAdapter?.stopListening()
     }

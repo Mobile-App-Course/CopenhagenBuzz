@@ -22,6 +22,8 @@ import com.google.firebase.auth.FirebaseAuth
 
 /**
  * A simple [Fragment] subclass that displays a timeline of events.
+ * This fragment retrieves event data from Firebase, sorts it by date, and displays it in a ListView.
+ * It also observes favorite events and updates the UI accordingly.
  */
 class TimelineFragment : Fragment() {
 
@@ -46,7 +48,10 @@ class TimelineFragment : Fragment() {
     }
 
     /**
-     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     * Called immediately after onCreateView has returned, but before any saved state has been restored into the view.
+     * Initializes the ListView, determines the user's login state, and loads event data.
+     * Observes changes to favorite events and updates the adapter accordingly.
+     *
      * @param view The View returned by onCreateView.
      * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
      */
@@ -67,7 +72,8 @@ class TimelineFragment : Fragment() {
     }
 
     /**
-     * Load events from Firebase and setup the adapter
+     * Loads events from Firebase, sorts them by date, and sets up the adapter for the ListView.
+     * Updates the adapter with favorite events if available.
      */
     private fun loadEventsData() {
         // Load environment variables
@@ -134,6 +140,7 @@ class TimelineFragment : Fragment() {
 
     /**
      * Called when the fragment is visible to the user and actively running.
+     * Refreshes the event data when returning to this fragment.
      */
     override fun onResume() {
         super.onResume()

@@ -9,9 +9,8 @@ import io.github.cdimascio.dotenv.dotenv
 /**
  * Firebase Realtime Database URL.
  *
- * IMPORTANT: This is a sensitive information and should not be hardcoded in the source code. You
- * must create a `env` file in the `/app/src/main/assets` directory and add the following line:
- * DATABASE_URL=https://xxxxxxxxxx-default-rtdb.europe-west1.firebasedatabase.app
+ * This class is used to set up application-wide configurations such as enabling Firebase Realtime
+ * Database disk persistence and applying dynamic colors to activities.
  */
 val DATABASE_URL: String = dotenv {
     directory = "./assets"
@@ -21,7 +20,10 @@ val DATABASE_URL: String = dotenv {
 class MyApplication: Application() {
 
 
-
+    /**
+     * Called when the application is starting, before any other application objects have been created.
+     * This is where you should initialize global configurations.
+     */
     override fun onCreate() {
         super.onCreate()
 

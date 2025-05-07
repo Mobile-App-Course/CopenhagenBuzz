@@ -44,6 +44,10 @@ import java.util.Locale
 import java.util.UUID
 import kotlin.concurrent.thread
 
+/**
+ * Fragment for adding a new event.
+ * Handles user input, geocoding, image selection, and saving event data to Firebase.
+ */
 class AddEventFragment : Fragment() {
 
     private lateinit var binding: FragmentAddEventBinding
@@ -79,6 +83,10 @@ class AddEventFragment : Fragment() {
     // Event model
     private val event: Event = Event("", "", EventLocation(0.0,0.0,""), "", 0L, "", "")
 
+    /**
+     * Called when the fragment is created.
+     * Initializes permission launchers and activity result launchers for camera and gallery.
+     */
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
 
@@ -125,6 +133,10 @@ class AddEventFragment : Fragment() {
         }
     }
 
+    /**
+     * Called to create the view hierarchy for the fragment.
+     * Initializes Firebase database reference and geocoder.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -144,6 +156,10 @@ class AddEventFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Called after the view hierarchy has been created.
+     * Binds UI elements, sets up event listeners, and restores saved state.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -221,6 +237,10 @@ class AddEventFragment : Fragment() {
         }
     }
 
+    /**
+     * Checks for camera permission and opens the camera if granted.
+     * Shows a rationale dialog if permission is denied.
+     */
     private fun checkCameraPermissionAndOpenCamera() {
         when {
             ContextCompat.checkSelfPermission(
@@ -243,6 +263,10 @@ class AddEventFragment : Fragment() {
         }
     }
 
+    /**
+     * Checks for gallery permission and opens the gallery if granted.
+     * Shows a rationale dialog if permission is denied.
+     */
     private fun checkGalleryPermissionAndOpenGallery() {
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Manifest.permission.READ_MEDIA_IMAGES
@@ -274,6 +298,13 @@ class AddEventFragment : Fragment() {
         }
     }
 
+    /**
+     * Shows a dialog explaining why a permission is needed.
+     * @param title The title of the dialog.
+     * @param message The message explaining the permission.
+     * @param permission The permission being requested.
+     * @param permissionLauncher The launcher to request the permission.
+     */
     private fun showPermissionRationaleDialog(
         title: String,
         message: String,
@@ -290,6 +321,10 @@ class AddEventFragment : Fragment() {
             .show()
     }
 
+    /**
+     * Opens the camera to capture a photo.
+     * Creates a temporary URI for the photo.
+     */
     private fun openCamera() {
         val contentValues = ContentValues().apply {
             put(MediaStore.Images.Media.TITLE, "New Event Photo")
@@ -305,10 +340,17 @@ class AddEventFragment : Fragment() {
         } ?: showSnackbar("Failed to create image file")
     }
 
+    /**
+     * Opens the gallery to select an image.
+     */
     private fun openGallery() {
         galleryLauncher.launch("image/*")
     }
 
+    /**
+     * Updates the image preview with the selected or captured image.
+     * Hides the photo URL input if an image is selected.
+     */
     private fun updateImagePreview() {
         if (imageUri != null) {
             // Show the image preview and hide the URL input
@@ -331,8 +373,9 @@ class AddEventFragment : Fragment() {
     }
 
     /**
-     * Geocodes a location string to get latitude and longitude
-     * @param locationText The location text to geocode
+     * Geocodes a location string to get latitude and longitude.
+     * Updates the UI with the geocoded location or shows an error message.
+     * @param locationText The location text to geocode.
      */
     private fun geocodeLocation(locationText: String) {
         // Run geocoding in a background thread to avoid blocking UI
@@ -472,6 +515,9 @@ class AddEventFragment : Fragment() {
             saveEvent(photoUrl)
         }
     }
+    /**
+     * Uploads the selected photo to Firebase Storage and saves the event.
+     */
     private fun uploadPhotoAndSaveEvent() {
         val storageRef = FirebaseStorage.getInstance().reference
         val photoRef = storageRef.child("event_photos/${UUID.randomUUID()}")
@@ -489,6 +535,10 @@ class AddEventFragment : Fragment() {
             }
     }
 
+    /**
+     * Saves the event data to Firebase Realtime Database.
+     * @param photoUrl The URL of the event photo.
+     */
     private fun saveEvent(photoUrl: String) {
         // Get current user ID
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "anonymous"
@@ -566,8 +616,11 @@ class AddEventFragment : Fragment() {
     }
 
     /**
-     * Function to show the calendar and allow the user to pick a date.
-     * @param editText The TextInputEditText where the selected date will be displayed.
+     * Displays a calendar dialog to allow the user to pick a date.
+     *
+     * The selected date is formatted as "DD/MM/YYYY" and displayed in the provided `TextInputEditText`.
+     *
+     * @param editText The `TextInputEditText` where the selected date will be displayed.
      */
     private fun showCalendar(editText: TextInputEditText) {
         // Values used to get the current date
@@ -592,18 +645,11 @@ class AddEventFragment : Fragment() {
     }
 
     /**
-     * Function to log the event details.
-     */
-    private fun showMessage() {
-        val message = "Event Added: " + event.toString()
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
-            .setAnchorView(addEventButton)
-            .show()
-    }
-
-    /**
-     * Function to display a snackbar message
-     * @param message The message to display
+     * Displays a `Snackbar` message.
+     *
+     * This method is used to show a brief message to the user at the bottom of the screen.
+     *
+     * @param message The message to display in the `Snackbar`.
      */
     private fun showSnackbar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
@@ -612,8 +658,13 @@ class AddEventFragment : Fragment() {
     }
 
     /**
-     * Converts a date string in format "DD/MM/YYYY" to a timestamp in milliseconds
-     * Returns a distinctive error value (-1L) if parsing fails
+     * Converts a date string in the format "DD/MM/YYYY" to a timestamp in milliseconds.
+     *
+     * This method parses the provided date string and converts it into a timestamp. If the
+     * parsing fails, it returns a distinctive error value (-1L).
+     *
+     * @param dateString The date string to convert, in the format "DD/MM/YYYY".
+     * @return The timestamp in milliseconds, or -1L if parsing fails.
      */
     private fun convertDateToTimestamp(dateString: String): Long {
         return try {
@@ -635,6 +686,9 @@ class AddEventFragment : Fragment() {
         }
     }
 
+    /**
+     * Companion object containing constants used in the fragment.
+     */
     companion object {
         private const val EVENT_NAME = "EVENT_NAME"
         private const val EVENT_LOCATION = "EVENT_LOCATION"
