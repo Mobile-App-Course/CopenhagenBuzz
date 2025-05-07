@@ -39,9 +39,11 @@ import java.util.*
 
 
 /**
- * A simple [Fragment] subclass.
- * Use the [MapsFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * A fragment that displays a map and handles location-based functionality.
+ *
+ * This fragment integrates with Google Maps to display a map, show the user's current location,
+ * and load event markers from Firebase. It also listens for location updates and handles user
+ * interactions with map markers.
  */
 class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -54,7 +56,12 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
     private val eventKeys = mutableMapOf<Event, String>()
 
 
-
+    /**
+     * Called when the fragment is created.
+     * Initializes the location receiver.
+     *
+     * @param savedInstanceState The saved state of the fragment.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -62,6 +69,14 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         locationReceiver = LocationBroadcastReceiver(this)
     }
 
+    /**
+     * Called to create the view hierarchy of the fragment.
+     *
+     * @param inflater The LayoutInflater used to inflate the layout.
+     * @param container The parent view that the fragment's UI will be attached to.
+     * @param savedInstanceState The saved state of the fragment.
+     * @return The root view of the fragment's layout.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -71,6 +86,13 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         return rootView
     }
 
+    /**
+     * Called after the view hierarchy has been created.
+     * Checks for location permissions and initializes the map if permissions are granted.
+     *
+     * @param view The root view of the fragment.
+     * @param savedInstanceState The saved state of the fragment.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -84,6 +106,10 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         }
     }
 
+    /**
+     * Called when the fragment becomes visible to the user.
+     * Registers the location broadcast receiver.
+     */
     override fun onResume() {
         super.onResume()
 
@@ -95,6 +121,10 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         )
     }
 
+    /**
+     * Called when the fragment is no longer visible to the user.
+     * Unregisters the location broadcast receiver.
+     */
     override fun onPause() {
         super.onPause()
 
@@ -107,11 +137,22 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         }
     }
 
+    /**
+     * Called when the fragment is destroyed.
+     * Stops the location service.
+     */
     override fun onDestroy() {
         super.onDestroy()
         stopLocationService()
     }
 
+    /**
+     * Handles the result of a permission request.
+     *
+     * @param requestCode The request code passed in the permission request.
+     * @param permissions The requested permissions.
+     * @param grantResults The grant results for the requested permissions.
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -132,7 +173,12 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-
+    /**
+     * Called when a new location is received.
+     * Updates the current location and the map.
+     *
+     * @param location The new location.
+     */
     override fun onLocationReceived(location: Location) {
         currentLocation = location
         // Update UI with new location
@@ -146,21 +192,26 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         updateMapWithLocation(location)
     }
 
+    /**
+     * Starts the location service to receive location updates.
+     */
     private fun startLocationService() {
         val serviceIntent = Intent(requireContext(), LocationService::class.java)
         requireContext().startForegroundService(serviceIntent)
     }
 
+    /**
+     * Stops the location service.
+     */
     private fun stopLocationService() {
         val serviceIntent = Intent(requireContext(), LocationService::class.java)
         requireContext().stopService(serviceIntent)
     }
 
     /**
-     * This method checks if the user allows the application uses all location-aware resources to
-     * monitor the user's location.
+     * Checks if the app has the required location permission.
      *
-     * @return A boolean value with the user permission agreement.
+     * @return True if the permission is granted, false otherwise.
      */
     private fun checkPermission() =
         ActivityCompat.checkSelfPermission(
@@ -169,8 +220,8 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         ) == PackageManager.PERMISSION_GRANTED
 
     /**
-     * Create a set of dialogs to show to the users and ask them for permissions to get the device's
-     * resources.
+     * Requests the user to grant location permissions.
+     * Displays a rationale if necessary.
      */
     private fun requestUserPermissions() {
         if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -189,11 +240,20 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         }
     }
 
+    /**
+     * Initializes the Google Map by setting up the map fragment and requesting the map asynchronously.
+     */
     private fun initializeMap() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
     }
 
+    /**
+     * Called when the Google Map is ready to be used.
+     * Configures the map and loads event markers from Firebase.
+     *
+     * @param map The Google Map instance.
+     */
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
 
@@ -230,6 +290,11 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         loadEventsFromFirebase()
     }
 
+    /**
+     * Zooms the map to the specified location.
+     *
+     * @param location The location to zoom to.
+     */
     private fun zoomToLocation(location: Location){
         googleMap?.let {
             val currentLatLng = LatLng(location.latitude, location.longitude)
@@ -237,6 +302,12 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         }
     }
 
+    /**
+     * Updates the map with the specified location.
+     * Performs an initial zoom if it hasn't been done yet.
+     *
+     * @param location The location to update the map with.
+     */
     private fun updateMapWithLocation(location: Location) {
         // Update the camera position if initial zoom hasn't happened yet
         if (!doneInitialZoom) {
@@ -245,6 +316,9 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         }
     }
 
+    /**
+     * Loads event markers from Firebase and adds them to the map.
+     */
     private fun loadEventsFromFirebase() {
 
         val dotenv = dotenv {
@@ -285,6 +359,11 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
 
     }
 
+    /**
+     * Adds a marker for the specified event to the map.
+     *
+     * @param event The event to add a marker for.
+     */
     private fun addEventMarker(event: Event) {
         val eventLocation = event.eventLocation
         if (eventLocation.latitude != 0.0 || eventLocation.longitude != 0.0) {
@@ -300,6 +379,13 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         }
     }
 
+    /**
+     * Called when a marker on the map is clicked.
+     * Displays the details of the associated event.
+     *
+     * @param marker The marker that was clicked.
+     * @return True if the click was handled, false otherwise.
+     */
     override fun onMarkerClick(marker: Marker): Boolean {
         val event = eventMarkers[marker] ?: return false
 
@@ -308,6 +394,11 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         return true
     }
 
+    /**
+     * Displays the details of the specified event in a dialog.
+     *
+     * @param event The event to display details for.
+     */
     private fun showEventDetails(event: Event) {
         // Checks if the user is logged in or not
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -327,11 +418,14 @@ class MapsFragment : Fragment(), LocationBroadcastReceiver.LocationListener, OnM
         fragment.show(parentFragmentManager, "EventDetailsFragment")
     }
 
+
     companion object {
         const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
 
         /**
          * Factory method to create a new instance of this fragment.
+         *
+         * @return A new instance of MapsFragment.
          */
         @JvmStatic
         fun newInstance() = MapsFragment()
