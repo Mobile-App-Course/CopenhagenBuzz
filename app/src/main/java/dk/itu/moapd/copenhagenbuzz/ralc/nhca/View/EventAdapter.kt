@@ -302,7 +302,6 @@ class EventAdapter : BaseAdapter {
 
             // Conditionally render buttons
             buttonFavorite.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
-            buttonShare.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
             // Show edit button only if the current user is the creator of the event
             editButton.visibility = if (isCreator) View.VISIBLE else View.GONE
 
@@ -375,7 +374,6 @@ class EventAdapter : BaseAdapter {
 
             // Conditionally render buttons
             buttonFavorite.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
-            buttonShare.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
             // Show edit button only if the current user is the creator of the event
             editButton.visibility = if (isCreator) View.VISIBLE else View.GONE
 
