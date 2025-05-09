@@ -1,6 +1,7 @@
 package dk.itu.moapd.copenhagenbuzz.ralc.nhca.View
 
 import android.content.Context
+import android.graphics.BlendModeColorFilter
 import android.view.View
 import android.graphics.Color
 import android.os.Bundle
@@ -255,7 +256,9 @@ class EventAdapter : BaseAdapter {
 
             // Change favorite icon color if the event is in the favoriteEvents list
             if (favoriteEvents.contains(event)) {
-                buttonFavorite.icon.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    buttonFavorite.icon.colorFilter = BlendModeColorFilter(Color.RED, android.graphics.BlendMode.SRC_IN)
+                }
             } else {
                 buttonFavorite.icon.clearColorFilter()
             }
@@ -323,7 +326,9 @@ class EventAdapter : BaseAdapter {
 
             // Change favorite icon color if the event is in the favoriteEvents list
             if (favoriteEvents.contains(event)) {
-                buttonFavorite.icon.setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    buttonFavorite.icon.colorFilter = BlendModeColorFilter(Color.RED, android.graphics.BlendMode.SRC_IN)
+                }
             } else {
                 buttonFavorite.icon.clearColorFilter()
             }
