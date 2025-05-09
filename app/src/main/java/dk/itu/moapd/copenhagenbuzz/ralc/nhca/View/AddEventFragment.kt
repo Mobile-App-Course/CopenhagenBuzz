@@ -36,6 +36,8 @@ import com.squareup.picasso.Picasso
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.EventLocation
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.Resource
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.databinding.FragmentAddEventBinding
 import io.github.cdimascio.dotenv.dotenv
 import java.io.IOException
@@ -43,6 +45,7 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
 import kotlin.concurrent.thread
+import kotlin.jvm.java
 
 /**
  * Fragment for adding a new event.
@@ -52,6 +55,7 @@ class AddEventFragment : Fragment() {
 
     private lateinit var binding: FragmentAddEventBinding
     private lateinit var database: DatabaseReference
+    private lateinit var viewModel: DataViewModel
     private lateinit var geocoder: Geocoder
 
     // UI Elements
@@ -76,7 +80,6 @@ class AddEventFragment : Fragment() {
     private lateinit var galleryPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
     private lateinit var galleryLauncher: ActivityResultLauncher<String>
-    private var downloadUrl: String = ""
     private var geocodedLocation: EventLocation? = null
     private var selectedDate: Long? = null
 
@@ -89,6 +92,7 @@ class AddEventFragment : Fragment() {
      */
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
+        viewModel = androidx.lifecycle.ViewModelProvider(requireActivity())[DataViewModel::class.java]
 
         // Permissions launcher setup
         cameraPermissionLauncher = registerForActivityResult(
@@ -173,10 +177,12 @@ class AddEventFragment : Fragment() {
         eventDescription = binding.editTextEventDescription
         addEventButton = binding.addEventButton
 
+        observeViewModel()
+
         geocodeButton.setOnClickListener{
             val locationText = eventLocation.text.toString().trim()
             if (locationText.isNotEmpty()) {
-                geocodeLocation(locationText)
+                viewModel.geocodeLocation(locationText, geocoder)
             } else {
                 showSnackbar("Please enter a location to geocode")
             }
@@ -214,7 +220,16 @@ class AddEventFragment : Fragment() {
         // Button click listener
         addEventButton.setOnClickListener {
             if (validateInputs()) {
-                saveEventToFirebase()
+                binding.progressBar.visibility = View.VISIBLE
+
+                if (imageUri != null) {
+                    // Upload image first, then save event
+                    viewModel.uploadEventImage(imageUri!!)
+                } else {
+                    // Save event with URL from EditText
+                    val photoUrl = eventPhotoURL.text.toString().trim()
+                    saveEvent(photoUrl)
+                }
             }
         }
 
@@ -259,6 +274,58 @@ class AddEventFragment : Fragment() {
             }
             else -> {
                 cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }
+    }
+
+    private fun observeViewModel() {
+        // Observe geocoding results
+        viewModel.geocodeStatus.observe(viewLifecycleOwner) { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    geocodedLocation = resource.data
+                    showSnackbar("Location found: ${resource.data.address}")
+                }
+                is Resource.Error -> {
+                    showSnackbar(resource.message)
+                    geocodedLocation = null
+                }
+                is Resource.Loading -> {
+                    // Show loading state if needed
+                }
+            }
+        }
+
+        // Observe image upload status
+        viewModel.uploadStatus.observe(viewLifecycleOwner) { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    saveEvent(resource.data)
+                }
+                is Resource.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    showSnackbar(resource.message)
+                }
+                is Resource.Loading -> {
+                    // Progress already shown
+                }
+            }
+        }
+
+        // Observe event save status
+        viewModel.addEventStatus.observe(viewLifecycleOwner) { resource ->
+            binding.progressBar.visibility = View.GONE
+            when (resource) {
+                is Resource.Success -> {
+                    showSnackbar("Event added successfully!")
+                    clearForm()
+                }
+                is Resource.Error -> {
+                    showSnackbar(resource.message)
+                }
+                is Resource.Loading -> {
+                    // Progress already shown
+                }
             }
         }
     }
@@ -373,89 +440,6 @@ class AddEventFragment : Fragment() {
     }
 
     /**
-     * Geocodes a location string to get latitude and longitude.
-     * Updates the UI with the geocoded location or shows an error message.
-     * @param locationText The location text to geocode.
-     */
-    private fun geocodeLocation(locationText: String) {
-        // Run geocoding in a background thread to avoid blocking UI
-        thread {
-            try {
-                val addressList = geocoder.getFromLocationName(locationText, 1)
-
-                if (!addressList.isNullOrEmpty()) {
-                    val address = addressList[0]
-                    latitude = address.latitude
-                    longitude = address.longitude
-                    hasValidCoordinates = true
-
-                    val formattedAddress = address.getAddressLine(0) ?: locationText
-
-                    geocodedLocation = EventLocation(latitude, longitude, formattedAddress)
-
-                    // Show success message on UI thread
-                    activity?.runOnUiThread {
-                        showSnackbar("Location found: ${address.getAddressLine(0)}")
-                    }
-                } else {
-                    hasValidCoordinates = false
-                    geocodedLocation = null // reset if not found
-                    activity?.runOnUiThread {
-                        // Only show error if user has finished typing
-                        if (!eventLocation.isFocused) {
-                            showSnackbar("Couldn't find location. Please check the address.")
-                        }
-                    }
-                }
-            } catch (e: IOException) {
-                hasValidCoordinates = false
-                geocodedLocation = null // reset if not found
-                activity?.runOnUiThread {
-                    showSnackbar("Geocoding error: ${e.message}")
-                }
-            }
-        }
-    }
-
-    /**
-     * Reverse geocodes coordinates to get address details
-     * @param lat Latitude
-     * @param lng Longitude
-     * @return Address string or null if not found
-     */
-    private fun reverseGeocode(lat: Double, lng: Double): String? {
-        try {
-            val addresses = geocoder.getFromLocation(lat, lng, 1)
-            if (!addresses.isNullOrEmpty()) {
-                val address = addresses[0]
-                val addressLines = mutableListOf<String>()
-
-                // Get address components
-                val streetNumber = address.subThoroughfare ?: ""
-                val street = address.thoroughfare ?: ""
-                val city = address.locality ?: ""
-                val postalCode = address.postalCode ?: ""
-
-                // Build formatted address
-                if (street.isNotEmpty()) {
-                    addressLines.add("$street $streetNumber")
-                }
-                if (city.isNotEmpty()) {
-                    addressLines.add(city)
-                }
-                if (postalCode.isNotEmpty()) {
-                    addressLines.add(postalCode)
-                }
-
-                return addressLines.joinToString(", ")
-            }
-        } catch (e: IOException) {
-            // Handle exception
-        }
-        return null
-    }
-
-    /**
      * Validates user inputs before saving to Firebase
      * @return Boolean indicating if all inputs are valid
      */
@@ -492,7 +476,7 @@ class AddEventFragment : Fragment() {
         }
 
         // Check if we have valid coordinates
-        if (!hasValidCoordinates) {
+        if (validateCoordinates()) {
             showSnackbar("Location coordinates couldn't be determined. Please check the address.")
             return false
         }
@@ -500,45 +484,14 @@ class AddEventFragment : Fragment() {
         return true
     }
 
-    /**
-     * Saves the event data to Firebase Realtime Database
-     */
-    private fun saveEventToFirebase() {
-        binding.progressBar.visibility = View.VISIBLE
+    private fun validateCoordinates(): Boolean {
+        var locationText = binding.editTextEventLocation.text.toString()
 
-        // Upload photo if available, then save event
-        if (imageUri != null) {
-            uploadPhotoAndSaveEvent()
-        } else {
-            // No photo to upload, just use photoUrl from EditText or empty string
-            val photoUrl = binding.editTextEventPhotoUrl.text.toString().trim()
-            saveEvent(photoUrl)
-        }
-    }
-    /**
-     * Uploads the selected photo to Firebase Storage and saves the event.
-     */
-    private fun uploadPhotoAndSaveEvent() {
-        val storageRef = FirebaseStorage.getInstance().reference
-        val photoRef = storageRef.child("event_photos/${UUID.randomUUID()}")
+        val addressList = geocoder.getFromLocationName(locationText, 1)
 
-        photoRef.putFile(imageUri!!)
-            .addOnSuccessListener { taskSnapshot ->
-                photoRef.downloadUrl.addOnSuccessListener { uri ->
-                    downloadUrl = uri.toString()
-                    saveEvent(downloadUrl)
-                }
-            }
-            .addOnFailureListener { e ->
-                binding.progressBar.visibility = View.GONE
-                showSnackbar("Failed to upload image: ${e.message}")
-            }
+        return addressList.isNullOrEmpty()
     }
 
-    /**
-     * Saves the event data to Firebase Realtime Database.
-     * @param photoUrl The URL of the event photo.
-     */
     private fun saveEvent(photoUrl: String) {
         // Get current user ID
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "anonymous"
@@ -547,8 +500,8 @@ class AddEventFragment : Fragment() {
         val name = binding.editTextEventName.text.toString()
         val locationText = binding.editTextEventLocation.text.toString()
 
-        // Use either geocoded location or default to Copenhagen coordinates
-        val eventLocation = geocodedLocation ?: EventLocation(55.671,12.5683,locationText)
+        // Use either geocoded location or default
+        val eventLocation = geocodedLocation ?: EventLocation(55.671, 12.5683, locationText)
 
         val timestamp = selectedDate ?: System.currentTimeMillis()
         val type = binding.autoCompleteTextViewEventType.text.toString()
@@ -557,25 +510,8 @@ class AddEventFragment : Fragment() {
         // Create event object
         val event = Event(userId, name, eventLocation, photoUrl, timestamp, type, description)
 
-        // Save to Firebase - Fix dotenv initialization
-        val dotenv = dotenv {
-            directory = "./assets"
-            filename = "env"
-        }
-
-        val database = Firebase.database(dotenv["DATABASE_URL"])
-        val eventsRef = database.getReference("Events")
-
-        eventsRef.push().setValue(event)
-            .addOnSuccessListener {
-                binding.progressBar.visibility = View.GONE
-                showSnackbar("Event added successfully!")
-                clearForm()
-            }
-            .addOnFailureListener { e ->
-                binding.progressBar.visibility = View.GONE
-                showSnackbar("Failed to add event: ${e.message}")
-            }
+        // Save using ViewModel
+        viewModel.saveEventToFirebase(event)
     }
 
     /**
