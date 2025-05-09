@@ -20,62 +20,20 @@ class DataViewModel : ViewModel() {
     _events is a MutableLiveData object that holds a list of Event objects.
     events is a LiveData object that provides read-only access to the list of events.
     */
-    private val _events = MutableLiveData<List<Event>>()
+    private val _events = MutableLiveData<List<Event>>(emptyList())
     val events: LiveData<List<Event>>
         get() = _events
 
-    private val _favoriteEvents = MutableLiveData<List<Event>>()
+    private val _favoriteEvents = MutableLiveData<List<Event>>(emptyList())
     val favoriteEvents: LiveData<List<Event>>
         get() = _favoriteEvents
 
-    private val faker = Faker()
-    val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-
-    /*init {
-        fetchEvents()
-    }*/
-
-    private fun generateRandomFavorites (events: List<Event>): List<Event> {
-        val shuffledIndices = (events.indices).shuffled().take(10).sorted()
-        return shuffledIndices.mapNotNull { index -> events.getOrNull(index) }
-    }
-
     /**
-     * Generates and fetches the list of events asynchronously.
-     */
-    /*private fun fetchEvents() {
-        viewModelScope.launch {
-            val eventList = generateEvents()
-            _events.value = eventList
-            _favoriteEvents.value = generateRandomFavorites(eventList)
-        }
-    }*/
-
-    /**
-     * Generates a list of events.
+     * Updates the list of favorite events.
      *
-     * @return A list of Event objects.
+     * @param newFavorites The new list of favorite events to store.
      */
-    /*private suspend fun generateEvents(): List<Event> {
-        return withContext(Dispatchers.Default) {
-            // Simulate generating a list of events
-            val faker = Faker()
-            return@withContext List(20) { _ ->
-                val fakeDate = faker.date().birthday()
-                val timestamp = fakeDate.time
-
-                Event(
-                    creatorUserId = faker.number().randomNumber().toString(),
-                    eventName = faker.lorem().sentence(1),
-                    eventLocation = faker.address().cityName(),
-                    eventPhotoURL = "https://picsum.photos/300/200?random=${System.currentTimeMillis()}",
-                    eventDate = timestamp,
-                    eventType = faker.book().genre(),
-                    eventDescription = faker.lorem().sentence(10)
-                )
-            }
-        }
-    }*/
-
-
+    fun updateFavoriteEvents(newFavorites: List<Event>) {
+        _favoriteEvents.value = newFavorites
+    }
 }
