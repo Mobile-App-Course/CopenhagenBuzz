@@ -14,8 +14,11 @@ import com.firebase.ui.database.FirebaseListAdapter
 import com.firebase.ui.database.FirebaseListOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.R
@@ -31,7 +34,7 @@ import java.util.*
  * - Firebase query-based adapter for dynamically loading events from Firebase.
  * - Pre-sorted list-based adapter for displaying a static list of events.
  *
- * @property favoriteEvents A list of favorite events to highlight in the UI.
+ * @property favoriteEventKeys A set of keys for favorite events to highlight in the UI.
  * @property context The context in which the adapter is used.
  * @property isLoggedIn A flag indicating whether the user is logged in.
  * @property layoutResId The resource ID of the layout used for each item.
@@ -41,6 +44,7 @@ import java.util.*
  * @property locationAvailable Indicates if user location is available for distance calculation.
  */
 class EventAdapter : BaseAdapter {
+    private var favoriteEventKeys: MutableSet<String> = mutableSetOf()
     private var favoriteEvents: List<Event> = emptyList()
     private val context: Context
     private var isLoggedIn: Boolean
@@ -118,6 +122,11 @@ class EventAdapter : BaseAdapter {
                 this@EventAdapter.populateView(view, event, getRef(position).key ?: "")
             }
         }
+
+        // Load favorites immediately if user is logged in
+        if (isLoggedIn) {
+            loadFavorites()
+        }
     }
 
     /**
@@ -133,6 +142,41 @@ class EventAdapter : BaseAdapter {
         this.isLoggedIn = isLoggedIn
         this.sortedEvents = sortedEvents
         this.layoutResId = layoutResId
+
+        // Load favorites immediately if user is logged in
+        if (isLoggedIn) {
+            loadFavorites()
+        }
+    }
+
+    /**
+     * Loads favorite events from Firebase for the current user.
+     */
+    private fun loadFavorites() {
+        val currentUser = auth.currentUser
+        val userId = currentUser?.uid ?: return
+
+        FirebaseDatabase.getInstance().reference
+            .child("Favorites")
+            .child(userId)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    favoriteEventKeys.clear()
+
+                    for (child in snapshot.children) {
+                        val eventKey = child.key
+                        if (eventKey != null) {
+                            favoriteEventKeys.add(eventKey)
+                        }
+                    }
+
+                    notifyDataSetChanged()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                }
+            })
     }
 
     /**
@@ -173,9 +217,6 @@ class EventAdapter : BaseAdapter {
      * @return The view for the item.
      */
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        // Check authentication status before rendering view
-        // updateLoginStatus()
-
         val view = convertView ?: LayoutInflater.from(context).inflate(layoutResId, parent, false)
         val binding: ViewBinding
 
@@ -190,11 +231,22 @@ class EventAdapter : BaseAdapter {
         }
 
         val event = getItem(position)
-        val eventKey = sortedEvents?.get(position)?.first ?: ""
+        val eventKey = getEventKeyAt(position)
 
         populateView(view, event, eventKey)
 
         return view
+    }
+
+    /**
+     * Gets the event key at the specified position.
+     *
+     * @param position The position of the item.
+     * @return The event key.
+     */
+    private fun getEventKeyAt(position: Int): String {
+        return sortedEvents?.get(position)?.first ?:
+        (firebaseAdapter?.getRef(position)?.key ?: "")
     }
 
     /**
@@ -254,8 +306,11 @@ class EventAdapter : BaseAdapter {
             // Show edit button only if the current user is the creator of the event
             editButton.visibility = if (isCreator) View.VISIBLE else View.GONE
 
-            // Change favorite icon color if the event is in the favoriteEvents list
-            if (favoriteEvents.contains(event)) {
+            // Check if this event is favorited
+            val isFavorite = favoriteEventKeys.contains(eventKey) || favoriteEvents.contains(event)
+
+            // Update favorite icon color based on favorite status
+            if (isFavorite) {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                     buttonFavorite.icon.colorFilter = BlendModeColorFilter(Color.RED, android.graphics.BlendMode.SRC_IN)
                 }
@@ -324,8 +379,11 @@ class EventAdapter : BaseAdapter {
             // Show edit button only if the current user is the creator of the event
             editButton.visibility = if (isCreator) View.VISIBLE else View.GONE
 
-            // Change favorite icon color if the event is in the favoriteEvents list
-            if (favoriteEvents.contains(event)) {
+            // Check if this event is favorited
+            val isFavorite = favoriteEventKeys.contains(eventKey) || favoriteEvents.contains(event)
+
+            // Update favorite icon color based on favorite status
+            if (isFavorite) {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                     buttonFavorite.icon.colorFilter = BlendModeColorFilter(Color.RED, android.graphics.BlendMode.SRC_IN)
                 }
@@ -380,14 +438,14 @@ class EventAdapter : BaseAdapter {
                 favoritesRef.child(eventKey).removeValue()
                     .addOnSuccessListener {
                         Snackbar.make(v, "Removed from favorites", Snackbar.LENGTH_SHORT).show()
-                        notifyDataSetChanged() // Refresh to update the icon
+                        // We don't need to call notifyDataSetChanged() because the ValueEventListener will handle it
                     }
             } else {
                 // Not favorited, so add (store true as the value under the eventKey)
                 favoritesRef.child(eventKey).setValue(true)
                     .addOnSuccessListener {
                         Snackbar.make(v, "Added to favorites", Snackbar.LENGTH_SHORT).show()
-                        notifyDataSetChanged() // Refresh to update the icon
+                        // We don't need to call notifyDataSetChanged() because the ValueEventListener will handle it
                     }
                     .addOnFailureListener { e ->
                         Snackbar.make(v, "Failed to add to favorites: ${e.message}", Snackbar.LENGTH_SHORT).show()
@@ -398,6 +456,7 @@ class EventAdapter : BaseAdapter {
 
     /**
      * Sets the list of favorite events.
+     * This method is kept for backward compatibility.
      *
      * @param favoriteEvents The list of favorite events.
      */
