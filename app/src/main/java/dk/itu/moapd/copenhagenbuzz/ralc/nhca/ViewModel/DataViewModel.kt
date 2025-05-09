@@ -69,7 +69,7 @@ class DataViewModel : ViewModel() {
 
                 // Use withContext to perform IO operations
                 withContext(Dispatchers.IO) {
-                    val uploadTask = photoRef.putFile(imageUri).await()
+                    photoRef.putFile(imageUri).await()
                     val downloadUrl = photoRef.downloadUrl.await().toString()
                     _uploadStatus.postValue(Resource.Success(downloadUrl))
                 }
