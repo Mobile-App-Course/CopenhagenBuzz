@@ -122,5 +122,6 @@ dependencies {
 
     // Compose but Coil (picasso of Compose)
     implementation(libs.coil.compose)
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.4")
 
 }

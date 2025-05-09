@@ -20,8 +20,11 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.compose.runtime.livedata.observeAsState
 import coil.compose.rememberAsyncImagePainter
 import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
+import dk.itu.moapd.copenhagenbuzz.ralc.nhca.ViewModel.DataViewModel
 
 
 /**
@@ -33,6 +36,7 @@ import dk.itu.moapd.copenhagenbuzz.ralc.nhca.Model.Event
 class FavoritesFragment : Fragment() {
 
     private lateinit var adapter: FavoriteAdapter
+    private lateinit var viewModel: DataViewModel
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -45,8 +49,14 @@ class FavoritesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Initialize ViewModel
+        viewModel = ViewModelProvider(requireActivity()).get(DataViewModel::class.java)
+
         // Creates and sets the adapter
         adapter = FavoriteAdapter.create(requireContext())
+
+        // Setup the adapter as a data source for the ViewModel
+        setupAdapterWithViewModel()
 
         // Return a ComposeView (which replaced the inflation of the XML layout we did before)
         return ComposeView(requireContext()).apply {
@@ -59,12 +69,22 @@ class FavoritesFragment : Fragment() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colors.background
                     ) {
-                        FavoritesScreen(adapter)
+                        FavoritesScreen(viewModel)
                     }
                 }
             }
         }
+    }
 
+    /**
+     * Sets up the adapter to update the ViewModel when data changes
+     */
+    private fun setupAdapterWithViewModel() {
+        adapter.addDataChangedListener(object : FavoriteAdapter.DataChangedListener {
+            override fun onDataChanged(events: List<Event>) {
+                viewModel.updateFavoriteEvents(events)
+            }
+        })
     }
 
     companion object {
@@ -98,38 +118,21 @@ class FavoritesFragment : Fragment() {
 /**
  * Composable function to display the list of favorite events.
  *
- * @param adapter The adapter used to fetch and manage the list of favorite events.
+ * @param viewModel The ViewModel used to fetch and manage the list of favorite events.
  */
 @Composable
-fun FavoritesScreen(adapter: FavoriteAdapter) {
-    // Collect the events from the adapter
-    val events = remember { mutableStateListOf<Event>() }
-
-    // Effect which updates the events when the data in the adapter changes
-    DisposableEffect(adapter) {
-        val listener = object : FavoriteAdapter.DataChangedListener {
-            override fun onDataChanged(newEvents: List<Event>) {
-                events.clear()
-                events.addAll(newEvents)
-            }
-        }
-        adapter.addDataChangedListener(listener)
-
-        onDispose {
-            adapter.removeDataChangedListener(listener)
-        }
-    }
+fun FavoritesScreen(viewModel: DataViewModel) {
+    // Observe favorite events from the ViewModel
+    val favoriteEvents = viewModel.favoriteEvents.observeAsState(listOf())
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(8.dp)
     ) {
-        items(events) { event ->
+        items(favoriteEvents.value) { event ->
             FavoriteEventCard(event)
         }
     }
-
-
 }
 
 /**
@@ -177,7 +180,7 @@ fun FavoriteEventCard(event: Event) {
                 contentDescription = "Event Photo",
                 modifier = Modifier
                     .weight(0.35f)
-                    . fillMaxHeight(),
+                    .fillMaxHeight(),
                 contentScale = ContentScale.Crop
             )
         }
